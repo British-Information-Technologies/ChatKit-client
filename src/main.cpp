@@ -1,5 +1,7 @@
-#include <iostream>
+#include "controller/ClientController.h"
 
-int main(int, char**) {
-    std::cout << "Hello, world!\n";
+using namespace chat_client_controller;
+
+int main(int argc, char **argv) {
+    ClientController clientController(argc, argv);
 }
