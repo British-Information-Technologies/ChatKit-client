@@ -3,10 +3,11 @@
 
 #include "../view/View.h"
 
+using namespace chat_client_view;
 namespace chat_client_controller {
     class ViewFactory {
         public:
-            chat_client_view::View * createView(int, char**);
+            View * createView(int, char**);
     };
 }
 

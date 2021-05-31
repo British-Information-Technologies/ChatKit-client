@@ -2,6 +2,7 @@
 #define GUI_VIEW_H
 
 #include "../view/View.h"
+
 #include <pthread.h>
 #include <gtk/gtk.h>
 
