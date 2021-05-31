@@ -1,10 +1,10 @@
 set(BINARY ${CMAKE_PROJECT_NAME})
 
 set(SOURCES
-    main.cpp
-    controller/ClientController.cpp
-    controller/ViewFactory.cpp
-    view/GuiView.cpp
+    main.cc
+    controller/client-controller.cc
+    controller/view-factory.cc
+    view/gui-view.cc
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
