@@ -3,10 +3,12 @@
 
 #include "../view/View.h"
 
+using namespace chat_client_view;
+
 namespace chat_client_controller {
     class ClientController {
         private:
-            chat_client_view::View * view;
+            View * view;
 
         public:
             ClientController(int, char**);
