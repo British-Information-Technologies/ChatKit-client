@@ -17,3 +17,6 @@ if(PACKAGE_TESTS)
     include(GoogleTest)
     add_subdirectory(test)
 endif()
+
+include(cppcheck.cmake)
+include(clang-format.cmake)
