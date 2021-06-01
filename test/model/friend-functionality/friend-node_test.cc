@@ -66,3 +66,8 @@ TEST_F(FriendNodeTest, GetNameEqual) {
 
   EXPECT_EQ(friend_one->GetName(), tmp_friend->GetName());
 }
+
+TEST_F(FriendNodeTest, GetUuid) {
+  std::string uuid = "testtesttest1234567890";
+  EXPECT_EQ(friend_one->GetUuid(), uuid);
+}
