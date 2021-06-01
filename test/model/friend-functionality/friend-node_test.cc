@@ -63,3 +63,10 @@ TEST_F(FriendNodeTest, GetNameMany) {
 TEST_F(FriendNodeTest, GetNameNotEqual) {
   EXPECT_NE(friend_one->GetName(), friend_two->GetName());
 }
+
+TEST_F(FriendNodeTest, GetNameEqual) {
+  std::string name = "mitch";
+  FriendNode *tmp_friend = new FriendNode(&name);
+
+  EXPECT_EQ(friend_one->GetName(), tmp_friend->GetName());
+}
