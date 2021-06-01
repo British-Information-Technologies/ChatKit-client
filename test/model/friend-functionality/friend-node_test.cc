@@ -9,8 +9,10 @@ using namespace chat_client_model_friend_functionality;
 class FriendNodeTest : public ::testing::Test {
  public:
   FriendNodeTest() {
-    friend_one = new FriendNode("mitch");
-    friend_two = new FriendNode("micky");
+    std::string name_one = "mitch";
+    std::string name_two = "micky";
+    friend_one = new FriendNode(&name_one);
+    friend_two = new FriendNode(&name_two);
   }
 
  protected:
@@ -29,4 +31,17 @@ TEST_F(FriendNodeTest, GetNameDouble) {
 
   EXPECT_EQ(friend_one->GetName(), name_one);
   EXPECT_EQ(friend_two->GetName(), name_two);
+}
+
+TEST_F(FriendNodeTest, GetNameConstant) {
+  std::string name = "mitch";
+  FriendNode tmp_friend(&name);
+
+  EXPECT_EQ(tmp_friend.GetName(), name);
+
+  name = "bob";
+  EXPECT_NE(tmp_friend.GetName(), name);
+
+  name = "mitch";
+  EXPECT_EQ(tmp_friend.GetName(), name);
 }
