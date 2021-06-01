@@ -9,7 +9,9 @@ class FriendNode {
   std::string name;
 
  public:
-  FriendNode(std::string*);
+  FriendNode(std::string *);
+
+  std::string GetUuid();
 
   std::string GetName();
 };
