@@ -5,7 +5,12 @@
 
 namespace chat_client_model_friend_functionality {
 class FriendNode {
+ private:
+  std::string name;
+
  public:
+  FriendNode(std::string name);
+
   std::string GetName();
 };
 }  // namespace chat_client_model_friend_functionality
