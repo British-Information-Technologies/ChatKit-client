@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include <iostream>
 #include <string>
 
 using namespace chat_client_model_friend_functionality;
@@ -44,4 +45,17 @@ TEST_F(FriendNodeTest, GetNameConstant) {
 
   name = "mitch";
   EXPECT_EQ(tmp_friend.GetName(), name);
+}
+
+TEST_F(FriendNodeTest, GetNameMany) {
+  FriendNode *friends_array[20];
+
+  for (int index = 0; index < 20; ++index) {
+    std::string name = std::to_string(index);
+    friends_array[index] = new FriendNode(&name);
+  }
+
+  for (int index = 0; index < 20; ++index) {
+    EXPECT_EQ(friends_array[index]->GetName(), std::to_string(index));
+  }
 }
