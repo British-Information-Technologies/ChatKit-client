@@ -12,13 +12,19 @@ class FriendNodeTest : public ::testing::Test {
   FriendNodeTest() {
     std::string name_one = "mitch";
     std::string name_two = "micky";
-    friend_one = new FriendNode(&name_one);
-    friend_two = new FriendNode(&name_two);
+
+    std::string uuid_one = "testtesttest1234567890";
+    std::string uuid_two = "testtest1234567890";
+
+    friend_one = new FriendNode(&name_one, &uuid_one);
+    friend_two = new FriendNode(&name_two, &uuid_two);
   }
 
  protected:
   std::string name_one = "mitch";
   std::string name_two = "micky";
+  std::string uuid_one = "testtesttest1234567890";
+  std::string uuid_two = "testtest1234567890";
   FriendNode *friend_one;
   FriendNode *friend_two;
 };
@@ -32,7 +38,8 @@ TEST_F(FriendNodeTest, GetNameDouble) {
 
 TEST_F(FriendNodeTest, GetNameConstant) {
   std::string name = "mitch";
-  FriendNode tmp_friend(&name);
+  std::string uuid = "1234";
+  FriendNode tmp_friend(&name, &uuid);
 
   EXPECT_EQ(tmp_friend.GetName(), name);
 
@@ -45,10 +52,11 @@ TEST_F(FriendNodeTest, GetNameConstant) {
 
 TEST_F(FriendNodeTest, GetNameMany) {
   FriendNode *friends_array[20];
+  std::string uuid = "1234";
 
   for (int index = 0; index < 20; ++index) {
     std::string name = std::to_string(index);
-    friends_array[index] = new FriendNode(&name);
+    friends_array[index] = new FriendNode(&name, &uuid);
   }
 
   for (int index = 0; index < 20; ++index) {
@@ -62,7 +70,8 @@ TEST_F(FriendNodeTest, GetNameNotEqual) {
 
 TEST_F(FriendNodeTest, GetNameEqual) {
   std::string name = "mitch";
-  FriendNode *tmp_friend = new FriendNode(&name);
+  std::string uuid = "1234";
+  FriendNode *tmp_friend = new FriendNode(&name, &uuid);
 
   EXPECT_EQ(friend_one->GetName(), tmp_friend->GetName());
 }
@@ -70,4 +79,9 @@ TEST_F(FriendNodeTest, GetNameEqual) {
 TEST_F(FriendNodeTest, GetUuid) {
   std::string uuid = "testtesttest1234567890";
   EXPECT_EQ(friend_one->GetUuid(), uuid);
+}
+
+TEST_F(FriendNodeTest, GetUuidDouble) {
+  EXPECT_EQ(friend_one->GetUuid(), uuid_one);
+  EXPECT_EQ(friend_two->GetUuid(), uuid_two);
 }
