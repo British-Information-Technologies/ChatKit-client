@@ -99,3 +99,17 @@ TEST_F(FriendNodeTest, GetUuidConstant) {
   uuid = "1234";
   EXPECT_EQ(tmp_friend.GetUuid(), uuid);
 }
+
+TEST_F(FriendNodeTest, GetUuidMany) {
+  FriendNode *friends_array[20];
+  std::string name = "mitch";
+
+  for (int index = 0; index < 20; ++index) {
+    std::string uuid = std::to_string(index);
+    friends_array[index] = new FriendNode(&name, &uuid);
+  }
+
+  for (int index = 0; index < 20; ++index) {
+    EXPECT_EQ(friends_array[index]->GetUuid(), std::to_string(index));
+  }
+}
