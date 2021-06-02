@@ -6,10 +6,11 @@
 namespace chat_client_model_friend_functionality {
 class FriendNode {
  private:
+  std::string uuid;
   std::string name;
 
  public:
-  FriendNode(std::string *);
+  FriendNode(std::string *, std::string *);
 
   std::string GetUuid();
 

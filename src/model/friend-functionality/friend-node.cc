@@ -4,8 +4,11 @@
 
 using namespace chat_client_model_friend_functionality;
 
-FriendNode::FriendNode(std::string *name) { this->name = *name; }
+FriendNode::FriendNode(std::string *name, std::string *uuid) {
+  this->name = *name;
+  this->uuid = *uuid;
+}
 
-std::string FriendNode::GetUuid() { return "testtesttest1234567890"; }
+std::string FriendNode::GetUuid() { return this->uuid; }
 
 std::string FriendNode::GetName() { return this->name; }
