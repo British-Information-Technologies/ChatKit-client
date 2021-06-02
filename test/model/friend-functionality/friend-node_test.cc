@@ -113,3 +113,7 @@ TEST_F(FriendNodeTest, GetUuidMany) {
     EXPECT_EQ(friends_array[index]->GetUuid(), std::to_string(index));
   }
 }
+
+TEST_F(FriendNodeTest, GetUuidNotEqual) {
+  EXPECT_NE(friend_one->GetUuid(), friend_two->GetUuid());
+}
