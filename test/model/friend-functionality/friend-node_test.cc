@@ -117,3 +117,11 @@ TEST_F(FriendNodeTest, GetUuidMany) {
 TEST_F(FriendNodeTest, GetUuidNotEqual) {
   EXPECT_NE(friend_one->GetUuid(), friend_two->GetUuid());
 }
+
+TEST_F(FriendNodeTest, GetUuidEqual) {
+  std::string name = "jeff";
+  std::string uuid = "testtesttest1234567890";
+  FriendNode *tmp_friend = new FriendNode(&name, &uuid);
+
+  EXPECT_EQ(friend_one->GetUuid(), tmp_friend->GetUuid());
+}
