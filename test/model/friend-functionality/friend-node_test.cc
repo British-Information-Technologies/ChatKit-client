@@ -85,3 +85,17 @@ TEST_F(FriendNodeTest, GetUuidDouble) {
   EXPECT_EQ(friend_one->GetUuid(), uuid_one);
   EXPECT_EQ(friend_two->GetUuid(), uuid_two);
 }
+
+TEST_F(FriendNodeTest, GetUuidConstant) {
+  std::string name = "mitch";
+  std::string uuid = "1234";
+  FriendNode tmp_friend(&name, &uuid);
+
+  EXPECT_EQ(tmp_friend.GetUuid(), uuid);
+
+  uuid = "12";
+  EXPECT_NE(tmp_friend.GetUuid(), uuid);
+
+  uuid = "1234";
+  EXPECT_EQ(tmp_friend.GetUuid(), uuid);
+}
