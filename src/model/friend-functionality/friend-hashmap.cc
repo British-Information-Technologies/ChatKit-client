@@ -13,3 +13,9 @@ bool FriendHashmap::AddFriend(FriendNode friend_node) {
 
   return ret.second;
 }
+
+FriendNode* FriendHashmap::GetFriend(const string* uuid) const {
+  string name = "mitch";
+  string uuid_one = "test";
+  return (new FriendNode(&name, &uuid_one));
+}

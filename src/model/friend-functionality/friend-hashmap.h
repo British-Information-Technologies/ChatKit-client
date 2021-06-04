@@ -13,6 +13,8 @@ class FriendHashmap {
 
  public:
   bool AddFriend(FriendNode);
+
+  FriendNode* GetFriend(const std::string*) const;
 };
 }  // namespace chat_client_model_friend_functionality
 
