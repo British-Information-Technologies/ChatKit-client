@@ -8,58 +8,54 @@ using namespace chat_client_model_friend_functionality;
 
 class FriendHashmapTest : public ::testing::Test {
  public:
-  FriendHashmapTest() {}
+  FriendHashmapTest() {
+    name = "mitch";
+    uuid_one = "test";
+    uuid_two = "less";
+    friend_one = new FriendNode(&name, &uuid_one);
+    friend_two = new FriendNode(&name, &uuid_two);
+  }
+
+ protected:
+  std::string name;
+  std::string uuid_one;
+  std::string uuid_two;
+  FriendNode *friend_one;
+  FriendNode *friend_two;
 };
 
 TEST_F(FriendHashmapTest, AddFriendTrue) {
-  std::string name = "mitch";
-  std::string uuid = "test";
-  FriendNode friend_one(&name, &uuid);
   FriendHashmap friend_list;
 
-  EXPECT_TRUE(friend_list.AddFriend(friend_one));
+  EXPECT_TRUE(friend_list.AddFriend(*friend_one));
 }
 
 TEST_F(FriendHashmapTest, AddFriendDoubleTrue) {
-  std::string name = "mitch";
-  std::string uuid_one = "test";
-  std::string uuid_two = "less";
-  FriendNode friend_one(&name, &uuid_one);
-  FriendNode friend_two(&name, &uuid_two);
   FriendHashmap friend_list;
 
-  EXPECT_TRUE(friend_list.AddFriend(friend_one));
-  EXPECT_TRUE(friend_list.AddFriend(friend_two));
+  EXPECT_TRUE(friend_list.AddFriend(*friend_one));
+  EXPECT_TRUE(friend_list.AddFriend(*friend_two));
 }
 
 TEST_F(FriendHashmapTest, AddFriendFalse) {
-  std::string name = "mitch";
-  std::string uuid = "test";
-  FriendNode friend_one(&name, &uuid);
-  FriendNode friend_two(&name, &uuid);
+  FriendNode friend_tmp(&name, &uuid_one);
   FriendHashmap friend_list;
 
-  EXPECT_TRUE(friend_list.AddFriend(friend_one));
-  EXPECT_FALSE(friend_list.AddFriend(friend_two));
+  EXPECT_TRUE(friend_list.AddFriend(*friend_one));
+  EXPECT_FALSE(friend_list.AddFriend(friend_tmp));
 }
 
 TEST_F(FriendHashmapTest, AddFriendDoubleFalse) {
-  std::string name = "mitch";
-  std::string uuid_one = "test";
-  std::string uuid_two = "less";
-  FriendNode friend_one(&name, &uuid_one);
-  FriendNode friend_two(&name, &uuid_two);
   FriendHashmap friend_list;
 
-  EXPECT_TRUE(friend_list.AddFriend(friend_one));
-  EXPECT_TRUE(friend_list.AddFriend(friend_two));
-  EXPECT_FALSE(friend_list.AddFriend(friend_one));
-  EXPECT_FALSE(friend_list.AddFriend(friend_two));
+  EXPECT_TRUE(friend_list.AddFriend(*friend_one));
+  EXPECT_TRUE(friend_list.AddFriend(*friend_two));
+  EXPECT_FALSE(friend_list.AddFriend(*friend_one));
+  EXPECT_FALSE(friend_list.AddFriend(*friend_two));
 }
 
 TEST_F(FriendHashmapTest, AddFriendManyTrue) {
   FriendHashmap friend_list;
-  std::string name = "mitch";
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
@@ -70,7 +66,6 @@ TEST_F(FriendHashmapTest, AddFriendManyTrue) {
 
 TEST_F(FriendHashmapTest, AddFriendManyFalse) {
   FriendHashmap friend_list;
-  std::string name = "mitch";
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
