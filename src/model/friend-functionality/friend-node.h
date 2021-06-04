@@ -10,6 +10,7 @@ class FriendNode {
   std::string name;
 
  public:
+  FriendNode(){};
   FriendNode(std::string *, std::string *);
 
   std::string GetUuid();
