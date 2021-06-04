@@ -5,7 +5,12 @@
 using namespace chat_client_model_friend_functionality;
 
 bool FriendHashmap::AddFriend(FriendNode friend_node) {
-  bool result = (this->prev.GetUuid().compare(friend_node.GetUuid()) != 0);
-  this->prev = friend_node;
-  return result;
+  if (friend_node.GetUuid() != prev[0].GetUuid() &&
+      friend_node.GetUuid() != prev[1].GetUuid()) {
+    prev[pos % 2] = friend_node;
+    ++pos;
+    return true;
+  }
+
+  return false;
 }
