@@ -5,6 +5,9 @@
 
 namespace chat_client_model_friend_functionality {
 class FriendHashmap {
+ private:
+  FriendNode prev;
+
  public:
   bool AddFriend(FriendNode);
 };
