@@ -31,3 +31,14 @@ TEST_F(FriendHashmapTest, AddFriendDoubleTrue) {
   EXPECT_TRUE(friend_list.AddFriend(friend_one));
   EXPECT_TRUE(friend_list.AddFriend(friend_two));
 }
+
+TEST_F(FriendHashmapTest, AddFriendFalse) {
+  std::string name = "mitch";
+  std::string uuid = "test";
+  FriendNode friend_one(&name, &uuid);
+  FriendNode friend_two(&name, &uuid);
+  FriendHashmap friend_list;
+
+  EXPECT_TRUE(friend_list.AddFriend(friend_one));
+  EXPECT_FALSE(friend_list.AddFriend(friend_two));
+}
