@@ -67,3 +67,20 @@ TEST_F(FriendHashmapTest, AddFriendManyTrue) {
     EXPECT_TRUE(friend_list.AddFriend(friend_node));
   }
 }
+
+TEST_F(FriendHashmapTest, AddFriendManyFalse) {
+  FriendHashmap friend_list;
+  std::string name = "mitch";
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    FriendNode friend_node(&name, &uuid);
+    EXPECT_TRUE(friend_list.AddFriend(friend_node));
+  }
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    FriendNode friend_node(&name, &uuid);
+    EXPECT_FALSE(friend_list.AddFriend(friend_node));
+  }
+}
