@@ -79,3 +79,13 @@ TEST_F(FriendHashmapTest, AddFriendManyFalse) {
     EXPECT_FALSE(friend_list.AddFriend(friend_node));
   }
 }
+
+TEST_F(FriendHashmapTest, GetFriendSingle) {
+  FriendHashmap friend_list;
+
+  friend_list.AddFriend(*friend_one);
+  std::string uuid = friend_one->GetUuid();
+  FriendNode *node_one = friend_list.GetFriend(&uuid);
+
+  EXPECT_EQ(node_one->GetUuid(), friend_one->GetUuid());
+}
