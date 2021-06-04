@@ -2,9 +2,20 @@
 
 #include <gtest/gtest.h>
 
+#include "model/friend-functionality/friend-node.h"
+
 using namespace chat_client_model_friend_functionality;
 
 class FriendHashmapTest : public ::testing::Test {
  public:
   FriendHashmapTest() {}
 };
+
+TEST_F(FriendHashmapTest, AddFriendTrue) {
+  std::string name = "mitch";
+  std::string uuid = "test";
+  FriendNode friend_one(&name, &uuid);
+  FriendHashmap friend_list;
+
+  EXPECT_TRUE(friend_list.AddFriend(friend_one));
+}
