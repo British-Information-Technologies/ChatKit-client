@@ -3,14 +3,13 @@
 #include "friend-node.h"
 
 using namespace chat_client_model_friend_functionality;
+using namespace std;
 
 bool FriendHashmap::AddFriend(FriendNode friend_node) {
-  if (friend_node.GetUuid() != prev[0].GetUuid() &&
-      friend_node.GetUuid() != prev[1].GetUuid()) {
-    prev[pos % 2] = friend_node;
-    ++pos;
-    return true;
-  }
+  pair<map<string, FriendNode>::iterator, bool> ret;
+  string uuid = friend_node.GetUuid();
 
-  return false;
+  ret = friend_map.insert(pair<string, FriendNode>(uuid, friend_node));
+
+  return ret.second;
 }
