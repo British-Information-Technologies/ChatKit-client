@@ -7,7 +7,10 @@ set(BINARY ${CMAKE_PROJECT_NAME}_test)
 set(SOURCES
     main.cc
     ../src/model/friend-functionality/friend-node.cc
+    ../src/model/friend-functionality/friend-hashmap.cc
+
     model/friend-functionality/friend-node_test.cc
+    model/friend-functionality/friend-hashmap_test.cc
 )
 
 add_executable(${BINARY} ${SOURCES})
