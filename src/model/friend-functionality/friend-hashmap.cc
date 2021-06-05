@@ -1,21 +1,24 @@
 #include "friend-hashmap.h"
 
+#include <memory>
+#include <string>
+
 #include "friend-node.h"
 
 using namespace chat_client_model_friend_functionality;
 using namespace std;
 
 bool FriendHashmap::AddFriend(FriendNode friend_node) {
-  pair<map<string, FriendNode>::iterator, bool> ret;
+  pair<map<const string, shared_ptr<FriendNode>>::iterator, bool> ret;
   string uuid = friend_node.GetUuid();
+  shared_ptr<FriendNode> friend_ptr = make_shared<FriendNode>(friend_node);
 
-  ret = friend_map.insert(pair<string, FriendNode>(uuid, friend_node));
+  ret = friend_map.insert(
+      pair<const string, shared_ptr<FriendNode>>(uuid, friend_ptr));
 
   return ret.second;
 }
 
-FriendNode* FriendHashmap::GetFriend(const string* uuid) const {
-  string name = "mitch";
-  string uuid_one = "test";
-  return (new FriendNode(&name, &uuid_one));
+shared_ptr<FriendNode> FriendHashmap::GetFriend(const string* uuid) const {
+  return friend_map.at(*uuid);
 }
