@@ -4,6 +4,8 @@ set(SOURCES
     main.cc
     controller/client-controller.cc
     controller/view-factory.cc
+    model/friend-functionality/friend-hashmap.cc
+    model/friend-functionality/friend-node.cc
     view/gui-view.cc
 )
 
