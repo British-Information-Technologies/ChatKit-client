@@ -8,10 +8,12 @@ set(SOURCES
     main.cc
     ../src/model/friend-functionality/friend-node.cc
     ../src/model/friend-functionality/friend-hashmap.cc
+    ../src/model/friend-functionality/friend-utility.cc
     ../src/model/client-model.cc
 
     model/friend-functionality/friend-node_test.cc
     model/friend-functionality/friend-hashmap_test.cc
+    model/friend-functionality/friend-utility_test.cc
     model/client-model_test.cc
 )
 
