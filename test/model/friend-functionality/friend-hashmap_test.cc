@@ -102,3 +102,18 @@ TEST_F(FriendHashmapTest, GetFriendDouble) {
   EXPECT_EQ(node_one->GetUuid(), uuid_one);
   EXPECT_EQ(node_two->GetUuid(), uuid_two);
 }
+
+TEST_F(FriendHashmapTest, GetFriendMany) {
+  FriendHashmap friend_list;
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    FriendNode friend_node(&name, &uuid);
+    EXPECT_TRUE(friend_list.AddFriend(friend_node));
+  }
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    EXPECT_EQ(friend_list.GetFriend(&uuid)->GetUuid(), uuid);
+  }
+}
