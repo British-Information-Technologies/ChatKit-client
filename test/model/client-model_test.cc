@@ -9,16 +9,33 @@
 using namespace chat_client_model;
 using namespace chat_client_model_friend_functionality;
 
-class FriendClientModelTest : public ::testing::Test {};
+class FriendClientModelTest : public ::testing::Test {
+ public:
+  FriendClientModelTest() {
+    name = "mitch";
+    uuid_one = "test";
+    uuid_two = "less";
+    friend_one = new FriendNode(&name, &uuid_one);
+    friend_two = new FriendNode(&name, &uuid_two);
+  }
+
+ protected:
+  std::string name;
+  std::string uuid_one;
+  std::string uuid_two;
+  FriendNode *friend_one;
+  FriendNode *friend_two;
+};
 
 TEST_F(FriendClientModelTest, AddFriendTrue) {
   ClientModel model;
-  std::string name = "mitch";
-  std::string uuid = "test";
-
-  FriendNode *friend_one = new FriendNode(&name, &uuid);
 
   EXPECT_TRUE(model.AddFriend(*friend_one));
+}
 
-  delete friend_one;
+TEST_F(FriendClientModelTest, AddFriendDoubleTrue) {
+  ClientModel model;
+
+  EXPECT_TRUE(model.AddFriend(*friend_one));
+  EXPECT_TRUE(model.AddFriend(*friend_two));
 }
