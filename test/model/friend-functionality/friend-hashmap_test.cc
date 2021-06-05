@@ -1,6 +1,9 @@
 #include "model/friend-functionality/friend-hashmap.h"
 
+#include <gtest/gtest-spi.h>
 #include <gtest/gtest.h>
+
+#include <stdexcept>
 
 #include "model/friend-functionality/friend-node.h"
 
@@ -115,5 +118,16 @@ TEST_F(FriendHashmapTest, GetFriendMany) {
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
     EXPECT_EQ(friend_list.GetFriend(&uuid)->GetUuid(), uuid);
+  }
+}
+
+TEST_F(FriendHashmapTest, GetFriendError) {
+  FriendHashmap friend_list;
+
+  try {
+    friend_list.GetFriend(&uuid_one);
+    FAIL();
+  } catch (const std::out_of_range &err) {
+    EXPECT_STREQ("map::at", err.what());
   }
 }
