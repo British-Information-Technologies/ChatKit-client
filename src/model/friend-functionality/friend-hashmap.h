@@ -13,7 +13,7 @@ class FriendHashmap {
   std::map<const std::string, std::shared_ptr<FriendNode>> friend_map;
 
  public:
-  bool AddFriend(FriendNode);
+  bool AddFriend(FriendNode&);
 
   std::shared_ptr<FriendNode> GetFriend(const std::string&) const;
 };

@@ -8,7 +8,7 @@
 using namespace chat_client_model_friend_functionality;
 using namespace std;
 
-bool FriendHashmap::AddFriend(FriendNode friend_node) {
+bool FriendHashmap::AddFriend(FriendNode& friend_node) {
   pair<map<const string, shared_ptr<FriendNode>>::iterator, bool> ret;
   string uuid = friend_node.GetUuid();
   shared_ptr<FriendNode> friend_ptr = make_shared<FriendNode>(friend_node);
