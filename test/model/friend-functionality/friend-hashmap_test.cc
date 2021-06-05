@@ -88,7 +88,7 @@ TEST_F(FriendHashmapTest, GetFriendSingle) {
 
   friend_list.AddFriend(*friend_one);
   std::string uuid = friend_one->GetUuid();
-  std::shared_ptr<FriendNode> node_one = friend_list.GetFriend(&uuid);
+  std::shared_ptr<FriendNode> node_one = friend_list.GetFriend(uuid);
 
   EXPECT_EQ(node_one->GetUuid(), friend_one->GetUuid());
 }
@@ -99,8 +99,8 @@ TEST_F(FriendHashmapTest, GetFriendDouble) {
   friend_list.AddFriend(*friend_one);
   friend_list.AddFriend(*friend_two);
 
-  std::shared_ptr<FriendNode> node_one = friend_list.GetFriend(&uuid_one);
-  std::shared_ptr<FriendNode> node_two = friend_list.GetFriend(&uuid_two);
+  std::shared_ptr<FriendNode> node_one = friend_list.GetFriend(uuid_one);
+  std::shared_ptr<FriendNode> node_two = friend_list.GetFriend(uuid_two);
 
   EXPECT_EQ(node_one->GetUuid(), uuid_one);
   EXPECT_EQ(node_two->GetUuid(), uuid_two);
@@ -117,7 +117,7 @@ TEST_F(FriendHashmapTest, GetFriendMany) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    EXPECT_EQ(friend_list.GetFriend(&uuid)->GetUuid(), uuid);
+    EXPECT_EQ(friend_list.GetFriend(uuid)->GetUuid(), uuid);
   }
 }
 
@@ -125,7 +125,7 @@ TEST_F(FriendHashmapTest, GetFriendError) {
   FriendHashmap friend_list;
 
   try {
-    friend_list.GetFriend(&uuid_one);
+    friend_list.GetFriend(uuid_one);
     FAIL();
   } catch (const std::out_of_range &err) {
     EXPECT_STREQ("map::at", err.what());
