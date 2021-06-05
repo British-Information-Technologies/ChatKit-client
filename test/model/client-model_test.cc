@@ -39,3 +39,11 @@ TEST_F(FriendClientModelTest, AddFriendDoubleTrue) {
   EXPECT_TRUE(model.AddFriend(*friend_one));
   EXPECT_TRUE(model.AddFriend(*friend_two));
 }
+
+TEST_F(FriendClientModelTest, AddFriendFalse) {
+  FriendNode friend_tmp(&name, &uuid_one);
+  ClientModel model;
+
+  EXPECT_TRUE(model.AddFriend(*friend_one));
+  EXPECT_FALSE(model.AddFriend(friend_tmp));
+}
