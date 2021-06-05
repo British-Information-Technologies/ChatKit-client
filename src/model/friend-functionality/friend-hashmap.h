@@ -5,10 +5,11 @@
 #include <memory>
 #include <string>
 
+#include "friend-list.h"
 #include "friend-node.h"
 
 namespace chat_client_model_friend_functionality {
-class FriendHashmap {
+class FriendHashmap : public FriendList {
  private:
   std::map<const std::string, std::shared_ptr<FriendNode>> friend_map;
 
