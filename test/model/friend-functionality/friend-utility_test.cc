@@ -38,3 +38,11 @@ TEST_F(FriendUtilityTest, AddFriendDoubleTrue) {
   EXPECT_TRUE(utility.AddFriend(*friend_one));
   EXPECT_TRUE(utility.AddFriend(*friend_two));
 }
+
+TEST_F(FriendUtilityTest, AddFriendFalse) {
+  FriendNode friend_tmp(&name, &uuid_one);
+  FriendUtility utility;
+
+  EXPECT_TRUE(utility.AddFriend(*friend_one));
+  EXPECT_FALSE(utility.AddFriend(friend_tmp));
+}
