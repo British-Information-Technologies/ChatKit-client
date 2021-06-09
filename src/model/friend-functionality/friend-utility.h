@@ -4,6 +4,9 @@
 #include "friend-node.h"
 namespace chat_client_model_friend_functionality {
 class FriendUtility {
+ private:
+  FriendNode prev;
+
  public:
   bool AddFriend(FriendNode&);
 };
