@@ -47,3 +47,12 @@ TEST_F(FriendClientModelTest, AddFriendFalse) {
   EXPECT_TRUE(model.AddFriend(*friend_one));
   EXPECT_FALSE(model.AddFriend(friend_tmp));
 }
+
+TEST_F(FriendClientModelTest, AddFriendDoubleFalse) {
+  ClientModel model;
+
+  EXPECT_TRUE(model.AddFriend(*friend_one));
+  EXPECT_TRUE(model.AddFriend(*friend_two));
+  EXPECT_FALSE(model.AddFriend(*friend_one));
+  EXPECT_FALSE(model.AddFriend(*friend_two));
+}
