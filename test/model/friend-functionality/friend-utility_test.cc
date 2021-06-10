@@ -80,3 +80,13 @@ TEST_F(FriendUtilityTest, AddFriendManyFalse) {
     EXPECT_FALSE(utility.AddFriend(friend_node));
   }
 }
+
+TEST_F(FriendUtilityTest, GetFriendSingle) {
+  FriendUtility utility;
+
+  utility.AddFriend(*friend_one);
+  std::string uuid = friend_one->GetUuid();
+  std::shared_ptr<FriendNode> node_one = utility.GetFriend(uuid);
+
+  EXPECT_EQ(node_one->GetUuid(), friend_one->GetUuid());
+}
