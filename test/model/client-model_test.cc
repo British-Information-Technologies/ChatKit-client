@@ -105,3 +105,18 @@ TEST_F(FriendClientModelTest, GetFriendDouble) {
   EXPECT_EQ(node_one->GetUuid(), uuid_one);
   EXPECT_EQ(node_two->GetUuid(), uuid_two);
 }
+
+TEST_F(FriendClientModelTest, GetFriendMany) {
+  ClientModel model;
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    FriendNode friend_node(&name, &uuid);
+    EXPECT_TRUE(model.AddFriend(friend_node));
+  }
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    EXPECT_EQ(model.GetFriend(uuid)->GetUuid(), uuid);
+  }
+}
