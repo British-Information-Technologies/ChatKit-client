@@ -11,6 +11,7 @@ namespace chat_client_model_friend_functionality {
 class FriendUtility : public FriendAPI {
  public:
   bool AddFriend(FriendNode &);
+  shared_ptr<FriendNode> GetFriend(const string &) const;
 };
 }  // namespace chat_client_model_friend_functionality
 
