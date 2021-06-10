@@ -46,3 +46,12 @@ TEST_F(FriendUtilityTest, AddFriendFalse) {
   EXPECT_TRUE(utility.AddFriend(*friend_one));
   EXPECT_FALSE(utility.AddFriend(friend_tmp));
 }
+
+TEST_F(FriendUtilityTest, AddFriendDoubleFalse) {
+  FriendUtility utility;
+
+  EXPECT_TRUE(utility.AddFriend(*friend_one));
+  EXPECT_TRUE(utility.AddFriend(*friend_two));
+  EXPECT_FALSE(utility.AddFriend(*friend_one));
+  EXPECT_FALSE(utility.AddFriend(*friend_two));
+}
