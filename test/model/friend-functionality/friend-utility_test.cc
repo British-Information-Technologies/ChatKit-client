@@ -118,3 +118,14 @@ TEST_F(FriendUtilityTest, GetFriendMany) {
     EXPECT_EQ(utility.GetFriend(uuid)->GetUuid(), uuid);
   }
 }
+
+TEST_F(FriendUtilityTest, GetFriendError) {
+  FriendUtility utility;
+
+  try {
+    utility.GetFriend(uuid_one);
+    FAIL();
+  } catch (const std::out_of_range &err) {
+    EXPECT_STREQ("map::at", err.what());
+  }
+}
