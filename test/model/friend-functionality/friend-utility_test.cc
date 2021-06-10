@@ -55,3 +55,13 @@ TEST_F(FriendUtilityTest, AddFriendDoubleFalse) {
   EXPECT_FALSE(utility.AddFriend(*friend_one));
   EXPECT_FALSE(utility.AddFriend(*friend_two));
 }
+
+TEST_F(FriendUtilityTest, AddFriendManyTrue) {
+  FriendUtility utility;
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    FriendNode friend_node(&name, &uuid);
+    EXPECT_TRUE(utility.AddFriend(friend_node));
+  }
+}
