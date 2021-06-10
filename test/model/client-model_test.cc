@@ -120,3 +120,14 @@ TEST_F(FriendClientModelTest, GetFriendMany) {
     EXPECT_EQ(model.GetFriend(uuid)->GetUuid(), uuid);
   }
 }
+
+TEST_F(FriendClientModelTest, GetFriendError) {
+  ClientModel model;
+
+  try {
+    model.GetFriend(uuid_one);
+    FAIL();
+  } catch (const std::out_of_range &err) {
+    EXPECT_STREQ("map::at", err.what());
+  }
+}
