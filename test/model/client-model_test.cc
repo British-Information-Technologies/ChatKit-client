@@ -82,3 +82,13 @@ TEST_F(FriendClientModelTest, AddFriendManyFalse) {
     EXPECT_FALSE(model.AddFriend(friend_node));
   }
 }
+
+TEST_F(FriendClientModelTest, GetFriendSingle) {
+  ClientModel model;
+
+  model.AddFriend(*friend_one);
+  std::string uuid = friend_one->GetUuid();
+  std::shared_ptr<FriendNode> node_one = model.GetFriend(uuid);
+
+  EXPECT_EQ(node_one->GetUuid(), friend_one->GetUuid());
+}
