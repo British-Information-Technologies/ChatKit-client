@@ -5,7 +5,8 @@
 namespace chat_client_model_friend_functionality {
 class FriendUtility {
  private:
-  FriendNode prev;
+  FriendNode prev[2];
+  int pos = 0;
 
  public:
   bool AddFriend(FriendNode&);
