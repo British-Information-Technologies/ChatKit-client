@@ -14,8 +14,5 @@ bool FriendUtility::AddFriend(FriendNode& friend_node) {
 }
 
 shared_ptr<FriendNode> FriendUtility::GetFriend(const string& uuid) const {
-  string name = "test";
-  FriendNode friend_node(&name, &name);
-  shared_ptr<FriendNode> tmp = make_shared<FriendNode>(friend_node);
-  return tmp;
+  return friend_list->GetFriend(uuid);
 }
