@@ -66,3 +66,19 @@ TEST_F(FriendClientModelTest, AddFriendManyTrue) {
     EXPECT_TRUE(model.AddFriend(friend_node));
   }
 }
+
+TEST_F(FriendClientModelTest, AddFriendManyFalse) {
+  ClientModel model;
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    FriendNode friend_node(&name, &uuid);
+    EXPECT_TRUE(model.AddFriend(friend_node));
+  }
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    FriendNode friend_node(&name, &uuid);
+    EXPECT_FALSE(model.AddFriend(friend_node));
+  }
+}
