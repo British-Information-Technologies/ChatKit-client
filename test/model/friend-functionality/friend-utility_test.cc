@@ -28,7 +28,6 @@ class FriendUtilityTest : public ::testing::Test {
 
 TEST_F(FriendUtilityTest, AddFriendTrue) {
   FriendUtility utility;
-
   EXPECT_TRUE(utility.AddFriend(*friend_one));
 }
 
@@ -63,5 +62,21 @@ TEST_F(FriendUtilityTest, AddFriendManyTrue) {
     std::string uuid = std::to_string(index);
     FriendNode friend_node(&name, &uuid);
     EXPECT_TRUE(utility.AddFriend(friend_node));
+  }
+}
+
+TEST_F(FriendUtilityTest, AddFriendManyFalse) {
+  FriendUtility utility;
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    FriendNode friend_node(&name, &uuid);
+    EXPECT_TRUE(utility.AddFriend(friend_node));
+  }
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    FriendNode friend_node(&name, &uuid);
+    EXPECT_FALSE(utility.AddFriend(friend_node));
   }
 }
