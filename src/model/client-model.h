@@ -8,7 +8,8 @@ using namespace chat_client_model_friend_functionality;
 namespace chat_client_model {
 class ClientModel {
  private:
-  FriendNode prev;
+  FriendNode prev[2];
+  int pos = 0;
 
  public:
   bool AddFriend(FriendNode&);
