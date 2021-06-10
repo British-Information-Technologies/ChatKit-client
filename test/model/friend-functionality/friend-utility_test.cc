@@ -103,3 +103,18 @@ TEST_F(FriendUtilityTest, GetFriendDouble) {
   EXPECT_EQ(node_one->GetUuid(), uuid_one);
   EXPECT_EQ(node_two->GetUuid(), uuid_two);
 }
+
+TEST_F(FriendUtilityTest, GetFriendMany) {
+  FriendUtility utility;
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    FriendNode friend_node(&name, &uuid);
+    EXPECT_TRUE(utility.AddFriend(friend_node));
+  }
+
+  for (int index = 0; index < 100; index++) {
+    std::string uuid = std::to_string(index);
+    EXPECT_EQ(utility.GetFriend(uuid)->GetUuid(), uuid);
+  }
+}
