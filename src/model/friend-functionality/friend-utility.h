@@ -7,12 +7,11 @@
 #include "friend-api.h"
 #include "friend-node.h"
 
-using namespace std;
 namespace chat_client_model_friend_functionality {
 class FriendUtility : public FriendAPI {
  public:
-  bool AddFriend(const string &);
-  shared_ptr<FriendNode> GetFriend(const string &) const;
+  bool AddFriend(const std::string &);
+  std::shared_ptr<FriendNode> GetFriend(const std::string &) const;
 };
 }  // namespace chat_client_model_friend_functionality
 

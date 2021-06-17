@@ -5,14 +5,11 @@
 #include "../view/view.h"
 #include "observer.h"
 
-using namespace chat_client_view;
-using namespace chat_client_model;
-
 namespace chat_client_controller {
 class ClientController : public Observer {
  private:
-  ClientModel model;
-  unique_ptr<View> view;
+  chat_client_model::ClientModel model;
+  std::unique_ptr<chat_client_view::View> view;
 
  public:
   ClientController(int, char **);

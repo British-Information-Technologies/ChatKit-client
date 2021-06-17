@@ -3,6 +3,9 @@
 #include <iostream>
 
 using namespace chat_client_view;
+using namespace std;
+using namespace chat_client_model_friend_functionality;
+using namespace chat_client_controller;
 
 void AddFriend(GtkButton *, gpointer);
 
