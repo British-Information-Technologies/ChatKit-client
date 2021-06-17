@@ -1,13 +1,12 @@
 #include "client-controller.h"
 
-#include <functional>
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "view-factory.h"
 
 using namespace chat_client_controller;
-using namespace std::placeholders;
 using namespace std;
 
 ClientController::ClientController(int argc, char **argv) {
