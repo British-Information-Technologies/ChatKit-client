@@ -13,7 +13,7 @@ class ClientModel {
   FriendAPI *friend_api = new FriendUtility();
 
  public:
-  bool AddFriend(FriendNode &);
+  bool AddFriend(const string &);
   shared_ptr<FriendNode> GetFriend(const string &) const;
 };
 }  // namespace chat_client_model

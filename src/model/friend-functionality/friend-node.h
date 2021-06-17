@@ -3,19 +3,20 @@
 
 #include <string>
 
+using namespace std;
 namespace chat_client_model_friend_functionality {
 class FriendNode {
  private:
-  std::string uuid;
-  std::string name;
+  string uuid;
+  string name;
 
  public:
   FriendNode(){};
-  FriendNode(std::string *, std::string *);
+  FriendNode(const string&, const string&);
 
-  std::string GetUuid();
+  string GetUuid();
 
-  std::string GetName();
+  string GetName();
 };
 }  // namespace chat_client_model_friend_functionality
 
