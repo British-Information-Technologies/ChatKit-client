@@ -14,8 +14,8 @@ class FriendUtilityTest : public ::testing::Test {
     name = "mitch";
     uuid_one = "test";
     uuid_two = "less";
-    friend_one = new FriendNode(&name, &uuid_one);
-    friend_two = new FriendNode(&name, &uuid_two);
+    friend_one = new FriendNode(name, uuid_one);
+    friend_two = new FriendNode(name, uuid_two);
   }
 
  protected:
@@ -28,31 +28,30 @@ class FriendUtilityTest : public ::testing::Test {
 
 TEST_F(FriendUtilityTest, AddFriendTrue) {
   FriendUtility utility;
-  EXPECT_TRUE(utility.AddFriend(*friend_one));
+  EXPECT_TRUE(utility.AddFriend(uuid_one));
 }
 
 TEST_F(FriendUtilityTest, AddFriendDoubleTrue) {
   FriendUtility utility;
 
-  EXPECT_TRUE(utility.AddFriend(*friend_one));
-  EXPECT_TRUE(utility.AddFriend(*friend_two));
+  EXPECT_TRUE(utility.AddFriend(uuid_one));
+  EXPECT_TRUE(utility.AddFriend(uuid_two));
 }
 
 TEST_F(FriendUtilityTest, AddFriendFalse) {
-  FriendNode friend_tmp(&name, &uuid_one);
   FriendUtility utility;
 
-  EXPECT_TRUE(utility.AddFriend(*friend_one));
-  EXPECT_FALSE(utility.AddFriend(friend_tmp));
+  EXPECT_TRUE(utility.AddFriend(uuid_one));
+  EXPECT_FALSE(utility.AddFriend(uuid_one));
 }
 
 TEST_F(FriendUtilityTest, AddFriendDoubleFalse) {
   FriendUtility utility;
 
-  EXPECT_TRUE(utility.AddFriend(*friend_one));
-  EXPECT_TRUE(utility.AddFriend(*friend_two));
-  EXPECT_FALSE(utility.AddFriend(*friend_one));
-  EXPECT_FALSE(utility.AddFriend(*friend_two));
+  EXPECT_TRUE(utility.AddFriend(uuid_one));
+  EXPECT_TRUE(utility.AddFriend(uuid_two));
+  EXPECT_FALSE(utility.AddFriend(uuid_one));
+  EXPECT_FALSE(utility.AddFriend(uuid_two));
 }
 
 TEST_F(FriendUtilityTest, AddFriendManyTrue) {
@@ -60,8 +59,7 @@ TEST_F(FriendUtilityTest, AddFriendManyTrue) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(&name, &uuid);
-    EXPECT_TRUE(utility.AddFriend(friend_node));
+    EXPECT_TRUE(utility.AddFriend(uuid));
   }
 }
 
@@ -70,32 +68,29 @@ TEST_F(FriendUtilityTest, AddFriendManyFalse) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(&name, &uuid);
-    EXPECT_TRUE(utility.AddFriend(friend_node));
+    EXPECT_TRUE(utility.AddFriend(uuid));
   }
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(&name, &uuid);
-    EXPECT_FALSE(utility.AddFriend(friend_node));
+    EXPECT_FALSE(utility.AddFriend(uuid));
   }
 }
 
 TEST_F(FriendUtilityTest, GetFriendSingle) {
   FriendUtility utility;
 
-  utility.AddFriend(*friend_one);
-  std::string uuid = friend_one->GetUuid();
-  std::shared_ptr<FriendNode> node_one = utility.GetFriend(uuid);
+  utility.AddFriend(uuid_one);
+  std::shared_ptr<FriendNode> node_one = utility.GetFriend(uuid_one);
 
-  EXPECT_EQ(node_one->GetUuid(), friend_one->GetUuid());
+  EXPECT_EQ(node_one->GetUuid(), uuid_one);
 }
 
 TEST_F(FriendUtilityTest, GetFriendDouble) {
   FriendUtility utility;
 
-  utility.AddFriend(*friend_one);
-  utility.AddFriend(*friend_two);
+  utility.AddFriend(uuid_one);
+  utility.AddFriend(uuid_two);
 
   std::shared_ptr<FriendNode> node_one = utility.GetFriend(uuid_one);
   std::shared_ptr<FriendNode> node_two = utility.GetFriend(uuid_two);
@@ -109,8 +104,7 @@ TEST_F(FriendUtilityTest, GetFriendMany) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(&name, &uuid);
-    EXPECT_TRUE(utility.AddFriend(friend_node));
+    EXPECT_TRUE(utility.AddFriend(uuid));
   }
 
   for (int index = 0; index < 100; index++) {

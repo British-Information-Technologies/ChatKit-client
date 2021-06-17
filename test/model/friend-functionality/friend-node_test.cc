@@ -16,8 +16,8 @@ class FriendNodeTest : public ::testing::Test {
     std::string uuid_one = "testtesttest1234567890";
     std::string uuid_two = "testtest1234567890";
 
-    friend_one = new FriendNode(&name_one, &uuid_one);
-    friend_two = new FriendNode(&name_two, &uuid_two);
+    friend_one = new FriendNode(name_one, uuid_one);
+    friend_two = new FriendNode(name_two, uuid_two);
   }
 
  protected:
@@ -39,7 +39,7 @@ TEST_F(FriendNodeTest, GetNameDouble) {
 TEST_F(FriendNodeTest, GetNameConstant) {
   std::string name = "mitch";
   std::string uuid = "1234";
-  FriendNode tmp_friend(&name, &uuid);
+  FriendNode tmp_friend(name, uuid);
 
   EXPECT_EQ(tmp_friend.GetName(), name);
 
@@ -56,7 +56,7 @@ TEST_F(FriendNodeTest, GetNameMany) {
 
   for (int index = 0; index < 20; ++index) {
     std::string name = std::to_string(index);
-    friends_array[index] = new FriendNode(&name, &uuid);
+    friends_array[index] = new FriendNode(name, uuid);
   }
 
   for (int index = 0; index < 20; ++index) {
@@ -71,7 +71,7 @@ TEST_F(FriendNodeTest, GetNameNotEqual) {
 TEST_F(FriendNodeTest, GetNameEqual) {
   std::string name = "mitch";
   std::string uuid = "1234";
-  FriendNode *tmp_friend = new FriendNode(&name, &uuid);
+  FriendNode *tmp_friend = new FriendNode(name, uuid);
 
   EXPECT_EQ(friend_one->GetName(), tmp_friend->GetName());
 }
@@ -89,7 +89,7 @@ TEST_F(FriendNodeTest, GetUuidDouble) {
 TEST_F(FriendNodeTest, GetUuidConstant) {
   std::string name = "mitch";
   std::string uuid = "1234";
-  FriendNode tmp_friend(&name, &uuid);
+  FriendNode tmp_friend(name, uuid);
 
   EXPECT_EQ(tmp_friend.GetUuid(), uuid);
 
@@ -106,7 +106,7 @@ TEST_F(FriendNodeTest, GetUuidMany) {
 
   for (int index = 0; index < 20; ++index) {
     std::string uuid = std::to_string(index);
-    friends_array[index] = new FriendNode(&name, &uuid);
+    friends_array[index] = new FriendNode(name, uuid);
   }
 
   for (int index = 0; index < 20; ++index) {
@@ -121,7 +121,7 @@ TEST_F(FriendNodeTest, GetUuidNotEqual) {
 TEST_F(FriendNodeTest, GetUuidEqual) {
   std::string name = "jeff";
   std::string uuid = "testtesttest1234567890";
-  FriendNode *tmp_friend = new FriendNode(&name, &uuid);
+  FriendNode *tmp_friend = new FriendNode(name, uuid);
 
   EXPECT_EQ(friend_one->GetUuid(), tmp_friend->GetUuid());
 }

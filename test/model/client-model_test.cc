@@ -15,8 +15,8 @@ class FriendClientModelTest : public ::testing::Test {
     name = "mitch";
     uuid_one = "test";
     uuid_two = "less";
-    friend_one = new FriendNode(&name, &uuid_one);
-    friend_two = new FriendNode(&name, &uuid_two);
+    friend_one = new FriendNode(name, uuid_one);
+    friend_two = new FriendNode(name, uuid_two);
   }
 
  protected:
@@ -30,31 +30,30 @@ class FriendClientModelTest : public ::testing::Test {
 TEST_F(FriendClientModelTest, AddFriendTrue) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddFriend(*friend_one));
+  EXPECT_TRUE(model.AddFriend(uuid_one));
 }
 
 TEST_F(FriendClientModelTest, AddFriendDoubleTrue) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddFriend(*friend_one));
-  EXPECT_TRUE(model.AddFriend(*friend_two));
+  EXPECT_TRUE(model.AddFriend(uuid_one));
+  EXPECT_TRUE(model.AddFriend(uuid_two));
 }
 
 TEST_F(FriendClientModelTest, AddFriendFalse) {
-  FriendNode friend_tmp(&name, &uuid_one);
   ClientModel model;
 
-  EXPECT_TRUE(model.AddFriend(*friend_one));
-  EXPECT_FALSE(model.AddFriend(friend_tmp));
+  EXPECT_TRUE(model.AddFriend(uuid_one));
+  EXPECT_FALSE(model.AddFriend(uuid_one));
 }
 
 TEST_F(FriendClientModelTest, AddFriendDoubleFalse) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddFriend(*friend_one));
-  EXPECT_TRUE(model.AddFriend(*friend_two));
-  EXPECT_FALSE(model.AddFriend(*friend_one));
-  EXPECT_FALSE(model.AddFriend(*friend_two));
+  EXPECT_TRUE(model.AddFriend(uuid_one));
+  EXPECT_TRUE(model.AddFriend(uuid_two));
+  EXPECT_FALSE(model.AddFriend(uuid_one));
+  EXPECT_FALSE(model.AddFriend(uuid_two));
 }
 
 TEST_F(FriendClientModelTest, AddFriendManyTrue) {
@@ -62,8 +61,7 @@ TEST_F(FriendClientModelTest, AddFriendManyTrue) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(&name, &uuid);
-    EXPECT_TRUE(model.AddFriend(friend_node));
+    EXPECT_TRUE(model.AddFriend(uuid));
   }
 }
 
@@ -72,32 +70,29 @@ TEST_F(FriendClientModelTest, AddFriendManyFalse) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(&name, &uuid);
-    EXPECT_TRUE(model.AddFriend(friend_node));
+    EXPECT_TRUE(model.AddFriend(uuid));
   }
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(&name, &uuid);
-    EXPECT_FALSE(model.AddFriend(friend_node));
+    EXPECT_FALSE(model.AddFriend(uuid));
   }
 }
 
 TEST_F(FriendClientModelTest, GetFriendSingle) {
   ClientModel model;
 
-  model.AddFriend(*friend_one);
-  std::string uuid = friend_one->GetUuid();
-  std::shared_ptr<FriendNode> node_one = model.GetFriend(uuid);
+  model.AddFriend(uuid_one);
+  std::shared_ptr<FriendNode> node_one = model.GetFriend(uuid_one);
 
-  EXPECT_EQ(node_one->GetUuid(), friend_one->GetUuid());
+  EXPECT_EQ(node_one->GetUuid(), uuid_one);
 }
 
 TEST_F(FriendClientModelTest, GetFriendDouble) {
   ClientModel model;
 
-  model.AddFriend(*friend_one);
-  model.AddFriend(*friend_two);
+  model.AddFriend(uuid_one);
+  model.AddFriend(uuid_two);
 
   std::shared_ptr<FriendNode> node_one = model.GetFriend(uuid_one);
   std::shared_ptr<FriendNode> node_two = model.GetFriend(uuid_two);
@@ -111,8 +106,7 @@ TEST_F(FriendClientModelTest, GetFriendMany) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(&name, &uuid);
-    EXPECT_TRUE(model.AddFriend(friend_node));
+    EXPECT_TRUE(model.AddFriend(uuid));
   }
 
   for (int index = 0; index < 100; index++) {
