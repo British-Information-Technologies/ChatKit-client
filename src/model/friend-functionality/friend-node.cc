@@ -3,12 +3,13 @@
 #include <string>
 
 using namespace chat_client_model_friend_functionality;
+using namespace std;
 
-FriendNode::FriendNode(std::string *name, std::string *uuid) {
-  this->name = *name;
-  this->uuid = *uuid;
+FriendNode::FriendNode(const string& name, const string& uuid) {
+  this->name = name;
+  this->uuid = uuid;
 }
 
-std::string FriendNode::GetUuid() { return this->uuid; }
+string FriendNode::GetUuid() { return this->uuid; }
 
-std::string FriendNode::GetName() { return this->name; }
+string FriendNode::GetName() { return this->name; }

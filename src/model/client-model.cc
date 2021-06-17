@@ -2,8 +2,8 @@
 
 using namespace chat_client_model;
 
-bool ClientModel::AddFriend(FriendNode& friend_node) {
-  return friend_api->AddFriend(friend_node);
+bool ClientModel::AddFriend(const string& uuid) {
+  return friend_api->AddFriend(uuid);
 }
 
 shared_ptr<FriendNode> ClientModel::GetFriend(const string& uuid) const {
