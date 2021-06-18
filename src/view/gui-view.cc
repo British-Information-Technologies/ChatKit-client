@@ -51,11 +51,11 @@ void GuiView::InternalThreadEntry() {
   pthread_exit(NULL);
 }
 
-extern "C" {
-void on_main_window_destroy() { gtk_main_quit(); }
-}
-
 void AddFriend(GtkButton *button, gpointer data) {
   Observer *observer = static_cast<Observer *>(data);
-  observer->AddFriend();
+  observer->Execute();
+}
+
+extern "C" {
+void on_main_window_destroy() { gtk_main_quit(); }
 }
