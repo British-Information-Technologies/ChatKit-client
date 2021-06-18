@@ -17,7 +17,7 @@ class View : public thread_wrapper::Thread {
   virtual void AddFriendToFriendList(
       std::shared_ptr<chat_client_model_friend_functionality::FriendNode>) = 0;
   virtual void AddObserverAddFriendButton(
-      chat_client_controller::Observer &controller) = 0;
+      chat_client_controller::Observer&) = 0;
 };
 }  // namespace chat_client_view
 
