@@ -32,8 +32,7 @@ class GuiView : public View {
   void AddFriendToFriendList(
       std::shared_ptr<chat_client_model_friend_functionality::FriendNode>);
 
-  // void AddObserverAddFriendButton(void (*func)(GtkButton *, gpointer));
-  void AddObserverAddFriendButton(chat_client_controller::Observer &controller);
+  void AddObserverAddFriendButton(chat_client_controller::Observer &);
 
  protected:
   void InternalThreadEntry();
