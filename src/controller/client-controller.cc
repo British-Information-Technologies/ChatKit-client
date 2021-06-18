@@ -4,30 +4,22 @@
 #include <memory>
 #include <string>
 
+#include "addfriend-observer.h"
 #include "view-factory.h"
 
 using namespace chat_client_controller;
+using namespace chat_client_model;
 using namespace std;
 
 ClientController::ClientController(int argc, char **argv) {
+  model = make_shared<ClientModel>();
+
   ViewFactory factory;
   view = factory.CreateView(argc, argv);
 
   view->StartInternalThread();
 
-  view->AddObserverAddFriendButton(*this);
+  AddFriendObserver add_friend_observer(model, view);
 
   view->WaitForInternalThreadToExit();
-}
-
-void ClientController::AddFriend() {
-  string uuid = view->GetInputUuidToAdd();
-
-  if (model.AddFriend(uuid)) {
-    shared_ptr<FriendNode> friend_node = model.GetFriend(uuid);
-    view->AddFriendToFriendList(friend_node);
-    return;
-  }
-
-  cout << "already exists" << endl;
 }
