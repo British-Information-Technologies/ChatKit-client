@@ -1,10 +1,23 @@
 set(BINARY ${CMAKE_PROJECT_NAME}_test)
 
-file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.h *.cc)
+# file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.cc)
 
-set(SOURCES ${TEST_SOURCES})
+# set(SOURCES ${TEST_SOURCES})
 
-add_executable(${BINARY} ${TEST_SOURCES})
+set(SOURCES
+    main.cc
+    ../src/model/friend-functionality/friend-node.cc
+    ../src/model/friend-functionality/friend-hashmap.cc
+    ../src/model/friend-functionality/friend-utility.cc
+    ../src/model/client-model.cc
+
+    model/friend-functionality/friend-node_test.cc
+    model/friend-functionality/friend-hashmap_test.cc
+    model/friend-functionality/friend-utility_test.cc
+    model/client-model_test.cc
+)
+
+add_executable(${BINARY} ${SOURCES})
 
 add_test(NAME ${BINARY} COMMAND ${BINARY})
 

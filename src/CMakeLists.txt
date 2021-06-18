@@ -4,6 +4,11 @@ set(SOURCES
     main.cc
     controller/client-controller.cc
     controller/view-factory.cc
+    controller/addfriend-observer.cc
+    model/client-model.cc
+    model/friend-functionality/friend-hashmap.cc
+    model/friend-functionality/friend-node.cc
+    model/friend-functionality/friend-utility.cc
     view/gui-view.cc
 )
 

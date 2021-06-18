@@ -1,37 +1,21 @@
 #include "gui-view.h"
 
-#include <gtk/gtk.h>
+#include <iostream>
 
 using namespace chat_client_view;
+using namespace std;
+using namespace chat_client_model_friend_functionality;
+using namespace chat_client_controller;
+
+void AddFriend(GtkButton *, gpointer);
 
 GuiView::GuiView(int argc, char **argv) {
-  this->initalised = false;
   this->argc = argc;
   this->argv = argv;
 }
 
-void GuiView::Menu() {}
-
-View *GuiView::GetInstance(int argc, char **argv) {
-  if (!initalised) {
-    int thread_status = this->StartInternalThread();
-
-    if (thread_status) {
-      return instance;
-    }
-
-    while (!initalised)
-      ;
-  }
-
-  return instance;
-}
-
-void GuiView::InternalThreadEntry() {
-  GtkBuilder *builder;
-  GtkWidget *window;
-
-  gtk_init(&this->argc, &this->argv);
+void GuiView::Setup(int argc, char **argv) {
+  gtk_init(&argc, &argv);
 
   builder = gtk_builder_new();
   gtk_builder_add_from_file(builder, "resources/mickyb18-chat-client.glade",
@@ -40,15 +24,36 @@ void GuiView::InternalThreadEntry() {
   window = GTK_WIDGET(gtk_builder_get_object(builder, "main_window"));
   gtk_builder_connect_signals(builder, NULL);
 
-  g_object_unref(builder);
+  // MIGHT BREAK EVERYTHING MICKY
+  // g_object_unref(builder);
+}
 
-  this->instance = this;
-  this->initalised = true;
+void GuiView::Menu() {}
 
+string GuiView::GetInputUuidToAdd() { return "filler text"; }
+
+void GuiView::AddFriendToFriendList(shared_ptr<FriendNode> friend_node) {
+  cout << "added" << endl;
+}
+
+void GuiView::AddObserverAddFriendButton(Observer &observer) {
+  GtkWidget *add_friend_button =
+      GTK_WIDGET(gtk_builder_get_object(builder, "add_friend_button"));
+
+  g_signal_connect(G_OBJECT(add_friend_button), "clicked",
+                   G_CALLBACK(AddFriend), &observer);
+}
+
+void GuiView::InternalThreadEntry() {
   gtk_widget_show(window);
   gtk_main();
 
   pthread_exit(NULL);
+}
+
+void AddFriend(GtkButton *button, gpointer data) {
+  Observer *observer = static_cast<Observer *>(data);
+  observer->Execute();
 }
 
 extern "C" {

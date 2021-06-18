@@ -1,15 +1,20 @@
 #ifndef CPPCHATCLIENT_VIEW_GUIVIEW_H_
 #define CPPCHATCLIENT_VIEW_GUIVIEW_H_
 
-#include <pthread.h>
+#include <gtk/gtk.h>
 
+#include <memory>
+#include <string>
+
+#include "../model/friend-functionality/friend-node.h"
 #include "../view/view.h"
 
 namespace chat_client_view {
-class GuiView : View {
+class GuiView : public View {
  private:
-  GuiView *instance;
-  bool initalised;
+  GtkBuilder *builder;
+  GtkWidget *window;
+  // GMainContext *context;
   int argc;
   char **argv;
 
@@ -18,9 +23,16 @@ class GuiView : View {
  public:
   GuiView(int argc, char **argv);
 
+  void Setup(int, char **);
+
   void Menu();
 
-  View *GetInstance(int, char **);
+  std::string GetInputUuidToAdd();
+
+  void AddFriendToFriendList(
+      std::shared_ptr<chat_client_model_friend_functionality::FriendNode>);
+
+  void AddObserverAddFriendButton(chat_client_controller::Observer &);
 
  protected:
   void InternalThreadEntry();

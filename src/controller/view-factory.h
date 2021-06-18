@@ -1,14 +1,14 @@
 #ifndef CPPCHATCLIENT_CONTROLLER_VIEWFACTORY_H_
 #define CPPCHATCLIENT_CONTROLLER_VIEWFACTORY_H_
 
-#include "../view/view.h"
+#include <memory>
 
-using namespace chat_client_view;
+#include "../view/view.h"
 
 namespace chat_client_controller {
 class ViewFactory {
  public:
-  View* CreateView(int, char**);
+  std::shared_ptr<chat_client_view::View> CreateView(int, char **);
 };
 }  // namespace chat_client_controller
 
