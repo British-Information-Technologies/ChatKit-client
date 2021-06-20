@@ -151,3 +151,9 @@ TEST_F(FriendClientModelTest, DeleteFriendMany) {
     EXPECT_TRUE(model.DeleteFriend(uuid_one));
   }
 }
+
+TEST_F(FriendClientModelTest, DeleteFriendError) {
+  ClientModel model;
+
+  EXPECT_FALSE(model.DeleteFriend(uuid_one));
+}
