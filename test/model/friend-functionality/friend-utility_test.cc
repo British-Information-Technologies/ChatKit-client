@@ -155,3 +155,11 @@ TEST_F(FriendUtilityTest, DeleteFriendError) {
 
   EXPECT_FALSE(utility.DeleteFriend(uuid_one));
 }
+
+TEST_F(FriendUtilityTest, AddDeleteDeleteFriendError) {
+  FriendUtility utility;
+
+  EXPECT_TRUE(utility.AddFriend(uuid_one));
+  EXPECT_TRUE(utility.DeleteFriend(uuid_one));
+  EXPECT_FALSE(utility.DeleteFriend(uuid_one));
+}
