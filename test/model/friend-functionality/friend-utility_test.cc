@@ -123,3 +123,10 @@ TEST_F(FriendUtilityTest, GetFriendError) {
     EXPECT_STREQ("map::at", err.what());
   }
 }
+
+TEST_F(FriendUtilityTest, DeleteFriendSingle) {
+  FriendUtility utility;
+
+  EXPECT_TRUE(utility.AddFriend(uuid_one));
+  EXPECT_TRUE(utility.DeleteFriend(uuid_one));
+}
