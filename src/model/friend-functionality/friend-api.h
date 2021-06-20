@@ -10,6 +10,7 @@ namespace chat_client_model_friend_functionality {
 class FriendAPI {
  public:
   virtual bool AddFriend(const std::string &) = 0;
+  virtual bool DeleteFriend(const std::string &) = 0;
   virtual std::shared_ptr<FriendNode> GetFriend(const std::string &) const = 0;
 
  protected:
