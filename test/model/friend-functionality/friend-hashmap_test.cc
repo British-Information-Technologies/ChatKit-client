@@ -157,3 +157,9 @@ TEST_F(FriendHashmapTest, DeleteFriendMany) {
     EXPECT_TRUE(friend_list.DeleteFriend(uuid_one));
   }
 }
+
+TEST_F(FriendHashmapTest, DeleteFriendError) {
+  FriendHashmap friend_list;
+
+  EXPECT_FALSE(friend_list.DeleteFriend(uuid_one));
+}
