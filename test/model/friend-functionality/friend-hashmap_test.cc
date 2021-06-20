@@ -131,3 +131,9 @@ TEST_F(FriendHashmapTest, GetFriendError) {
     EXPECT_STREQ("map::at", err.what());
   }
 }
+
+TEST_F(FriendHashmapTest, DeleteFriendSingle) {
+  FriendHashmap friend_list;
+
+  friend_list.DeleteFriend(uuid_one);
+}
