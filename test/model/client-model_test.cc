@@ -125,3 +125,10 @@ TEST_F(FriendClientModelTest, GetFriendError) {
     EXPECT_STREQ("map::at", err.what());
   }
 }
+
+TEST_F(FriendClientModelTest, DeleteFriendSingle) {
+  ClientModel model;
+
+  EXPECT_TRUE(model.AddFriend(uuid_one));
+  EXPECT_TRUE(model.DeleteFriend(uuid_one));
+}
