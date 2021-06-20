@@ -19,6 +19,8 @@ bool FriendHashmap::AddFriend(FriendNode& friend_node) {
   return ret.second;
 }
 
+bool FriendHashmap::DeleteFriend(const string& uuid) { return true; }
+
 shared_ptr<FriendNode> FriendHashmap::GetFriend(const string& uuid) const {
   return friend_map.at(uuid);
 }
