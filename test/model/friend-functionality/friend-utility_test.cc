@@ -149,3 +149,9 @@ TEST_F(FriendUtilityTest, DeleteFriendMany) {
     EXPECT_TRUE(utility.DeleteFriend(uuid_one));
   }
 }
+
+TEST_F(FriendUtilityTest, DeleteFriendError) {
+  FriendUtility utility;
+
+  EXPECT_FALSE(utility.DeleteFriend(uuid_one));
+}
