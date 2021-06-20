@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 
-#include "../model/client-model.h"
 #include "../view/view.h"
 
 using namespace chat_client_view;
