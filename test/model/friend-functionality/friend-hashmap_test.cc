@@ -144,3 +144,12 @@ TEST_F(FriendHashmapTest, DeleteFriendDouble) {
   friend_list.DeleteFriend(uuid_one);
   friend_list.DeleteFriend(uuid_two);
 }
+
+TEST_F(FriendHashmapTest, DeleteFriendMany) {
+  FriendHashmap friend_list;
+
+  for (int i = 0; i < 100; ++i) {
+    friend_list.AddFriend(*friend_one);
+    friend_list.DeleteFriend(uuid_one);
+  }
+}
