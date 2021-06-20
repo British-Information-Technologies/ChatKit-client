@@ -135,13 +135,17 @@ TEST_F(FriendHashmapTest, GetFriendError) {
 TEST_F(FriendHashmapTest, DeleteFriendSingle) {
   FriendHashmap friend_list;
 
+  friend_list.AddFriend(*friend_one);
   friend_list.DeleteFriend(uuid_one);
 }
 
 TEST_F(FriendHashmapTest, DeleteFriendDouble) {
   FriendHashmap friend_list;
 
+  friend_list.AddFriend(*friend_one);
   friend_list.DeleteFriend(uuid_one);
+
+  friend_list.AddFriend(*friend_two);
   friend_list.DeleteFriend(uuid_two);
 }
 
