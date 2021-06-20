@@ -17,6 +17,7 @@ class ClientModel {
 
  public:
   bool AddFriend(const std::string &);
+  bool DeleteFriend(const std::string &);
   std::shared_ptr<FriendNode> GetFriend(const std::string &) const;
 };
 }  // namespace chat_client_model
