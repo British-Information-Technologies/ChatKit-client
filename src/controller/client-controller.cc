@@ -4,6 +4,7 @@
 #include <string>
 
 #include "addfriend-observer.h"
+#include "deletefriend-observer.h"
 #include "view-factory.h"
 
 using namespace chat_client_controller;
@@ -19,6 +20,7 @@ ClientController::ClientController(int argc, char **argv) {
 
 void ClientController::Body() {
   AddFriendObserver add_friend_observer(model, view);
+  DeleteFriendObserver delete_friend_observer(model, view);
 
   view->Start();
 }

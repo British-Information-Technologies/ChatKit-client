@@ -29,10 +29,16 @@ class GuiView : public View {
 
   std::string GetInputUuidToAdd();
 
+  std::string GetInputUuidToDelete();
+
   void AddFriendToFriendList(
       std::shared_ptr<chat_client_model_friend_functionality::FriendNode>);
 
+  void RemoveFriendFromFriendList(const std::string &);
+
   void AddObserverAddFriendButton(chat_client_controller::Observer &);
+
+  void AddObserverDeleteFriendButton(chat_client_controller::Observer &);
 };
 }  // namespace chat_client_view
 
