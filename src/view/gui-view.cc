@@ -14,6 +14,13 @@ GuiView::GuiView(int argc, char **argv) {
   this->argv = argv;
 }
 
+void GuiView::Start() {
+  gtk_widget_show(window);
+  gtk_main();
+
+  // pthread_exit(NULL);
+}
+
 void GuiView::Setup(int argc, char **argv) {
   gtk_init(&argc, &argv);
 
@@ -44,12 +51,7 @@ void GuiView::AddObserverAddFriendButton(Observer &observer) {
                    G_CALLBACK(AddFriend), &observer);
 }
 
-void GuiView::InternalThreadEntry() {
-  gtk_widget_show(window);
-  gtk_main();
-
-  pthread_exit(NULL);
-}
+// void GuiView::InternalThreadEntry() {}
 
 void AddFriend(GtkButton *button, gpointer data) {
   Observer *observer = static_cast<Observer *>(data);

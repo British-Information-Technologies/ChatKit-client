@@ -4,14 +4,14 @@
 #include <memory>
 #include <string>
 
-#include "../../include/cpp-chat-client/thread.h"
 #include "../controller/observer.h"
 #include "../model/friend-functionality/friend-node.h"
 
 namespace chat_client_view {
 
-class View : public thread_wrapper::Thread {
+class View {
  public:
+  virtual void Start() = 0;
   virtual void Menu() = 0;
   virtual std::string GetInputUuidToAdd() = 0;
   virtual void AddFriendToFriendList(
