@@ -5,6 +5,7 @@ set(SOURCES
     controller/client-controller.cc
     controller/view-factory.cc
     controller/addfriend-observer.cc
+    controller/deletefriend-observer.cc
     model/client-model.cc
     model/friend-functionality/friend-hashmap.cc
     model/friend-functionality/friend-node.cc
