@@ -135,25 +135,25 @@ TEST_F(FriendHashmapTest, GetFriendError) {
 TEST_F(FriendHashmapTest, DeleteFriendSingle) {
   FriendHashmap friend_list;
 
-  friend_list.AddFriend(*friend_one);
-  friend_list.DeleteFriend(uuid_one);
+  EXPECT_TRUE(friend_list.AddFriend(*friend_one));
+  EXPECT_TRUE(friend_list.DeleteFriend(uuid_one));
 }
 
 TEST_F(FriendHashmapTest, DeleteFriendDouble) {
   FriendHashmap friend_list;
 
-  friend_list.AddFriend(*friend_one);
-  friend_list.DeleteFriend(uuid_one);
+  EXPECT_TRUE(friend_list.AddFriend(*friend_one));
+  EXPECT_TRUE(friend_list.DeleteFriend(uuid_one));
 
-  friend_list.AddFriend(*friend_two);
-  friend_list.DeleteFriend(uuid_two);
+  EXPECT_TRUE(friend_list.AddFriend(*friend_two));
+  EXPECT_TRUE(friend_list.DeleteFriend(uuid_two));
 }
 
 TEST_F(FriendHashmapTest, DeleteFriendMany) {
   FriendHashmap friend_list;
 
   for (int i = 0; i < 100; ++i) {
-    friend_list.AddFriend(*friend_one);
-    friend_list.DeleteFriend(uuid_one);
+    EXPECT_TRUE(friend_list.AddFriend(*friend_one));
+    EXPECT_TRUE(friend_list.DeleteFriend(uuid_one));
   }
 }
