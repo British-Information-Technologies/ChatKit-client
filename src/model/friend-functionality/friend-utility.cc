@@ -13,6 +13,10 @@ bool FriendUtility::AddFriend(const string& uuid) {
   return friend_list->AddFriend(friend_node);
 }
 
+bool FriendUtility::DeleteFriend(const string& uuid) {
+  return friend_list->DeleteFriend(uuid);
+}
+
 shared_ptr<FriendNode> FriendUtility::GetFriend(const string& uuid) const {
   return friend_list->GetFriend(uuid);
 }

@@ -131,3 +131,43 @@ TEST_F(FriendHashmapTest, GetFriendError) {
     EXPECT_STREQ("map::at", err.what());
   }
 }
+
+TEST_F(FriendHashmapTest, DeleteFriendSingle) {
+  FriendHashmap friend_list;
+
+  EXPECT_TRUE(friend_list.AddFriend(*friend_one));
+  EXPECT_TRUE(friend_list.DeleteFriend(uuid_one));
+}
+
+TEST_F(FriendHashmapTest, DeleteFriendDouble) {
+  FriendHashmap friend_list;
+
+  EXPECT_TRUE(friend_list.AddFriend(*friend_one));
+  EXPECT_TRUE(friend_list.DeleteFriend(uuid_one));
+
+  EXPECT_TRUE(friend_list.AddFriend(*friend_two));
+  EXPECT_TRUE(friend_list.DeleteFriend(uuid_two));
+}
+
+TEST_F(FriendHashmapTest, DeleteFriendMany) {
+  FriendHashmap friend_list;
+
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_TRUE(friend_list.AddFriend(*friend_one));
+    EXPECT_TRUE(friend_list.DeleteFriend(uuid_one));
+  }
+}
+
+TEST_F(FriendHashmapTest, DeleteFriendError) {
+  FriendHashmap friend_list;
+
+  EXPECT_FALSE(friend_list.DeleteFriend(uuid_one));
+}
+
+TEST_F(FriendHashmapTest, AddDeleteDeleteFriendError) {
+  FriendHashmap friend_list;
+
+  EXPECT_TRUE(friend_list.AddFriend(*friend_one));
+  EXPECT_TRUE(friend_list.DeleteFriend(uuid_one));
+  EXPECT_FALSE(friend_list.DeleteFriend(uuid_one));
+}

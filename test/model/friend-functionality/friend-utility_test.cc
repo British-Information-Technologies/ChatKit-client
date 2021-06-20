@@ -123,3 +123,43 @@ TEST_F(FriendUtilityTest, GetFriendError) {
     EXPECT_STREQ("map::at", err.what());
   }
 }
+
+TEST_F(FriendUtilityTest, DeleteFriendSingle) {
+  FriendUtility utility;
+
+  EXPECT_TRUE(utility.AddFriend(uuid_one));
+  EXPECT_TRUE(utility.DeleteFriend(uuid_one));
+}
+
+TEST_F(FriendUtilityTest, DeleteFriendDouble) {
+  FriendUtility utility;
+
+  EXPECT_TRUE(utility.AddFriend(uuid_one));
+  EXPECT_TRUE(utility.DeleteFriend(uuid_one));
+
+  EXPECT_TRUE(utility.AddFriend(uuid_two));
+  EXPECT_TRUE(utility.DeleteFriend(uuid_two));
+}
+
+TEST_F(FriendUtilityTest, DeleteFriendMany) {
+  FriendUtility utility;
+
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_TRUE(utility.AddFriend(uuid_one));
+    EXPECT_TRUE(utility.DeleteFriend(uuid_one));
+  }
+}
+
+TEST_F(FriendUtilityTest, DeleteFriendError) {
+  FriendUtility utility;
+
+  EXPECT_FALSE(utility.DeleteFriend(uuid_one));
+}
+
+TEST_F(FriendUtilityTest, AddDeleteDeleteFriendError) {
+  FriendUtility utility;
+
+  EXPECT_TRUE(utility.AddFriend(uuid_one));
+  EXPECT_TRUE(utility.DeleteFriend(uuid_one));
+  EXPECT_FALSE(utility.DeleteFriend(uuid_one));
+}

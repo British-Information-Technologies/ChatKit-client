@@ -8,6 +8,7 @@ using namespace chat_client_model_friend_functionality;
 using namespace chat_client_controller;
 
 void AddFriend(GtkButton *, gpointer);
+void DeleteFriend(GtkButton *, gpointer);
 
 GuiView::GuiView(int argc, char **argv) {
   this->argc = argc;
@@ -39,8 +40,14 @@ void GuiView::Menu() {}
 
 string GuiView::GetInputUuidToAdd() { return "filler text"; }
 
+string GuiView::GetInputUuidToDelete() { return "filler text"; }
+
 void GuiView::AddFriendToFriendList(shared_ptr<FriendNode> friend_node) {
   cout << "added" << endl;
+}
+
+void GuiView::RemoveFriendFromFriendList(const std::string &) {
+  cout << "removed" << endl;
 }
 
 void GuiView::AddObserverAddFriendButton(Observer &observer) {
@@ -51,9 +58,21 @@ void GuiView::AddObserverAddFriendButton(Observer &observer) {
                    G_CALLBACK(AddFriend), &observer);
 }
 
-// void GuiView::InternalThreadEntry() {}
+void GuiView::AddObserverDeleteFriendButton(
+    chat_client_controller::Observer &observer) {
+  GtkWidget *delete_friend_button =
+      GTK_WIDGET(gtk_builder_get_object(builder, "delete_friend_button"));
+
+  g_signal_connect(G_OBJECT(delete_friend_button), "clicked",
+                   G_CALLBACK(DeleteFriend), &observer);
+}
 
 void AddFriend(GtkButton *button, gpointer data) {
+  Observer *observer = static_cast<Observer *>(data);
+  observer->Execute();
+}
+
+void DeleteFriend(GtkButton *button, gpointer data) {
   Observer *observer = static_cast<Observer *>(data);
   observer->Execute();
 }

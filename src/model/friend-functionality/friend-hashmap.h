@@ -16,6 +16,8 @@ class FriendHashmap : public FriendList {
  public:
   bool AddFriend(FriendNode&);
 
+  bool DeleteFriend(const std::string&);
+
   std::shared_ptr<FriendNode> GetFriend(const std::string&) const;
 };
 }  // namespace chat_client_model_friend_functionality

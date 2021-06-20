@@ -125,3 +125,43 @@ TEST_F(FriendClientModelTest, GetFriendError) {
     EXPECT_STREQ("map::at", err.what());
   }
 }
+
+TEST_F(FriendClientModelTest, DeleteFriendSingle) {
+  ClientModel model;
+
+  EXPECT_TRUE(model.AddFriend(uuid_one));
+  EXPECT_TRUE(model.DeleteFriend(uuid_one));
+}
+
+TEST_F(FriendClientModelTest, DeleteFriendDouble) {
+  ClientModel model;
+
+  EXPECT_TRUE(model.AddFriend(uuid_one));
+  EXPECT_TRUE(model.DeleteFriend(uuid_one));
+
+  EXPECT_TRUE(model.AddFriend(uuid_two));
+  EXPECT_TRUE(model.DeleteFriend(uuid_two));
+}
+
+TEST_F(FriendClientModelTest, DeleteFriendMany) {
+  ClientModel model;
+
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_TRUE(model.AddFriend(uuid_one));
+    EXPECT_TRUE(model.DeleteFriend(uuid_one));
+  }
+}
+
+TEST_F(FriendClientModelTest, DeleteFriendError) {
+  ClientModel model;
+
+  EXPECT_FALSE(model.DeleteFriend(uuid_one));
+}
+
+TEST_F(FriendClientModelTest, AddDeleteDeleteFriendError) {
+  ClientModel model;
+
+  EXPECT_TRUE(model.AddFriend(uuid_one));
+  EXPECT_TRUE(model.DeleteFriend(uuid_one));
+  EXPECT_FALSE(model.DeleteFriend(uuid_one));
+}
