@@ -142,3 +142,12 @@ TEST_F(FriendClientModelTest, DeleteFriendDouble) {
   EXPECT_TRUE(model.AddFriend(uuid_two));
   EXPECT_TRUE(model.DeleteFriend(uuid_two));
 }
+
+TEST_F(FriendClientModelTest, DeleteFriendMany) {
+  ClientModel model;
+
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_TRUE(model.AddFriend(uuid_one));
+    EXPECT_TRUE(model.DeleteFriend(uuid_one));
+  }
+}
