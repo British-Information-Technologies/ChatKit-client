@@ -140,3 +140,12 @@ TEST_F(FriendUtilityTest, DeleteFriendDouble) {
   EXPECT_TRUE(utility.AddFriend(uuid_two));
   EXPECT_TRUE(utility.DeleteFriend(uuid_two));
 }
+
+TEST_F(FriendUtilityTest, DeleteFriendMany) {
+  FriendUtility utility;
+
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_TRUE(utility.AddFriend(uuid_one));
+    EXPECT_TRUE(utility.DeleteFriend(uuid_one));
+  }
+}
