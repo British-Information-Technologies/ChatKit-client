@@ -120,8 +120,9 @@ along with .  If not, see <http://www.gnu.org/licenses/>.
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="removeFriendButton">
+                  <object class="GtkButton" id="delete_friend_button">
                     <property name="label" translatable="yes">Delete Friend</property>
+                    <property name="name">deleteFriendButton</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
