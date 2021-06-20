@@ -11,7 +11,7 @@
 namespace chat_client_model_friend_functionality {
 class FriendHashmap : public FriendList {
  private:
-  std::map<const std::string, std::shared_ptr<FriendNode>> friend_map;
+  std::map<const std::string, std::shared_ptr<FriendNode> > friend_map;
 
  public:
   bool AddFriend(FriendNode&);
