@@ -18,10 +18,10 @@ class GuiView : public View {
   int argc;
   char **argv;
 
-  void Start();
-
  public:
   GuiView(int argc, char **argv);
+
+  void Start();
 
   void Setup(int, char **);
 
@@ -33,9 +33,6 @@ class GuiView : public View {
       std::shared_ptr<chat_client_model_friend_functionality::FriendNode>);
 
   void AddObserverAddFriendButton(chat_client_controller::Observer &);
-
- protected:
-  void InternalThreadEntry();
 };
 }  // namespace chat_client_view
 

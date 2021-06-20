@@ -3,5 +3,6 @@
 using namespace chat_client_controller;
 
 int main(int argc, char **argv) {
-  ClientController clientController(argc, argv);
+  ClientController client_controller(argc, argv);
+  client_controller.Body();
 }

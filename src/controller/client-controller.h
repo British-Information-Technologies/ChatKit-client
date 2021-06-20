@@ -13,7 +13,7 @@ class ClientController {
  public:
   ClientController(int, char **);
 
-  void AddFriend();
+  void Body();
 };
 }  // namespace chat_client_controller
 

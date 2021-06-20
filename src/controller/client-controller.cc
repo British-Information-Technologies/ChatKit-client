@@ -15,10 +15,10 @@ ClientController::ClientController(int argc, char **argv) {
 
   ViewFactory factory;
   view = factory.CreateView(argc, argv);
+}
 
-  view->StartInternalThread();
-
+void ClientController::Body() {
   AddFriendObserver add_friend_observer(model, view);
 
-  view->WaitForInternalThreadToExit();
+  view->Start();
 }
