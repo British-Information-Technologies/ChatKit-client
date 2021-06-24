@@ -3,6 +3,9 @@
 
 #include <gtkmm-4.0/gtkmm.h>
 
+#include "main-window.h"
+
+using namespace chat_client_view;
 using namespace Gtk;
 
 /**
@@ -13,14 +16,17 @@ using namespace Gtk;
  */
 class MainApplication : public Application {
  private:
-  Window* mainWindow;
+  Glib::RefPtr<Gtk::Builder> builder;
+  Gtk::Widget *main_window;
 
  protected:
-	MainApplication();
+  MainApplication();
   ~MainApplication();
 
+  void on_activate() override;
+
  public:
-	static Glib::RefPtr<MainApplication> create();
+  static Glib::RefPtr<MainApplication> create();
 };
 
 #endif
