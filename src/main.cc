@@ -6,7 +6,7 @@ using namespace chat_client_controller;
 int main(int argc, char **argv) {
 
 	// create application
-  auto app = MainApplication::create("io.github.cpp-chat-app");
+  auto app = MainApplication::create();
 
 	// increases reference count.
 	app->hold();
