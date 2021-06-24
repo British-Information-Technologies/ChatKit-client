@@ -15,9 +15,12 @@ class MainApplication : public Application {
  private:
   Window* mainWindow;
 
- public:
-  MainApplication();
+ protected:
+	MainApplication();
   ~MainApplication();
+
+ public:
+	static Glib::RefPtr<MainApplication> create();
 };
 
 #endif
