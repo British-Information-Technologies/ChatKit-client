@@ -2,8 +2,6 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 
 set(SOURCES
     main.cc
-		MainApplication.h
-		MainApplication.cc
     controller/client-controller.cc
     controller/view-factory.cc
     controller/addfriend-observer.cc
@@ -18,7 +16,7 @@ set(SOURCES
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
+pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 
 add_executable(${BINARY}_run ${SOURCES})
 target_link_directories(${BINARY}_run PRIVATE ${GTKMM_LIBRARY_DIRS})
