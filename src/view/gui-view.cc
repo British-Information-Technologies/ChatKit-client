@@ -16,24 +16,24 @@ GuiView::GuiView(int argc, char **argv) {
 }
 
 void GuiView::Start() {
-  gtk_widget_show(window);
-  gtk_main();
+  // gtk_widget_show(window);
+  // gtk_main();
 
-  // pthread_exit(NULL);
+  // // pthread_exit(NULL);
 }
 
 void GuiView::Setup(int argc, char **argv) {
-  gtk_init(&argc, &argv);
+  // gtk_init(&argc, &argv);
 
-  builder = gtk_builder_new();
-  gtk_builder_add_from_file(builder, "resources/mickyb18-chat-client.glade",
-                            NULL);
+  // builder = gtk_builder_new();
+  // gtk_builder_add_from_file(builder, "resources/mickyb18-chat-client.glade",
+  //                           NULL);
 
-  window = GTK_WIDGET(gtk_builder_get_object(builder, "main_window"));
-  gtk_builder_connect_signals(builder, NULL);
+  // window = GTK_WIDGET(gtk_builder_get_object(builder, "main_window"));
+  // gtk_builder_connect_signals(builder, NULL);
 
-  // MIGHT BREAK EVERYTHING MICKY
-  // g_object_unref(builder);
+  // // MIGHT BREAK EVERYTHING MICKY
+  // // g_object_unref(builder);
 }
 
 void GuiView::Menu() {}
@@ -51,32 +51,32 @@ void GuiView::RemoveFriendFromFriendList(const std::string &) {
 }
 
 void GuiView::AddObserverAddFriendButton(Observer &observer) {
-  GtkWidget *add_friend_button =
-      GTK_WIDGET(gtk_builder_get_object(builder, "add_friend_button"));
+  // GtkWidget *add_friend_button =
+  //     GTK_WIDGET(gtk_builder_get_object(builder, "add_friend_button"));
 
-  g_signal_connect(G_OBJECT(add_friend_button), "clicked",
-                   G_CALLBACK(AddFriend), &observer);
+  // g_signal_connect(G_OBJECT(add_friend_button), "clicked",
+  //                  G_CALLBACK(AddFriend), &observer);
 }
 
 void GuiView::AddObserverDeleteFriendButton(
     chat_client_controller::Observer &observer) {
-  GtkWidget *delete_friend_button =
-      GTK_WIDGET(gtk_builder_get_object(builder, "delete_friend_button"));
+  // GtkWidget *delete_friend_button =
+  //     GTK_WIDGET(gtk_builder_get_object(builder, "delete_friend_button"));
 
-  g_signal_connect(G_OBJECT(delete_friend_button), "clicked",
-                   G_CALLBACK(DeleteFriend), &observer);
+  // g_signal_connect(G_OBJECT(delete_friend_button), "clicked",
+  //                  G_CALLBACK(DeleteFriend), &observer);
 }
 
 void AddFriend(GtkButton *button, gpointer data) {
-  Observer *observer = static_cast<Observer *>(data);
-  observer->Execute();
+  // Observer *observer = static_cast<Observer *>(data);
+  // observer->Execute();
 }
 
 void DeleteFriend(GtkButton *button, gpointer data) {
-  Observer *observer = static_cast<Observer *>(data);
-  observer->Execute();
+  // Observer *observer = static_cast<Observer *>(data);
+  // observer->Execute();
 }
 
-extern "C" {
-void on_main_window_destroy() { gtk_main_quit(); }
-}
+// extern "C" {
+// void on_main_window_destroy() { gtk_main_quit(); }
+// }
