@@ -1,7 +1,7 @@
 #ifndef CPPCHATCLIENT_VIEW_GUIVIEW_H_
 #define CPPCHATCLIENT_VIEW_GUIVIEW_H_
 
-#include <gtkmm-3.0/gtkmm.h>
+#include <gtkmm-4.0/gtkmm.h>
 
 #include <memory>
 #include <string>
