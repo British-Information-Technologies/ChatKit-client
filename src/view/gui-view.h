@@ -12,8 +12,8 @@
 namespace chat_client_view {
 class GuiView : public View {
  private:
-  GtkBuilder *builder;
-  GtkWidget *window;
+  // GtkBuilder *builder;
+  // GtkWidget *window;
   // GMainContext *context;
   int argc;
   char **argv;
