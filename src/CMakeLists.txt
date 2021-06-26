@@ -2,8 +2,7 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 
 set(SOURCES
     main.cc
-		MainApplication.h
-		MainApplication.cc
+	MainApplication.cc
     controller/client-controller.cc
     controller/view-factory.cc
     controller/addfriend-observer.cc
