@@ -1,0 +1,11 @@
+ECDH
+AES-GCM Symmetric Enc and Dec
+hash function = SHA-3
+
+IV can be public but must be random to make each cipher text unique! Attach to end of cipher text and send.
+
+Shared secret must be private and random for each communication session, established and shared via ECDH.
+Shared secret must be hashed to produce shared key.
+
+Symmetric encryption can then be used to send messages between clients with the shared key.
+
