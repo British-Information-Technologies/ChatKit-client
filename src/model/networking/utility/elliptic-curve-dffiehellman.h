@@ -1,13 +1,6 @@
 #ifndef CPPCHATCLIENT_ELLIPTIC_CURVE_DIFFIEHELLMAN_H_
 #define CPPCHATCLIENT_ELLIPTIC_CURVE_DIFFIEHELLMAN_H_
 
-/* Never use a derived secret (final result) directly. Typically it is passed
- * through some hash function to produce a key.
-
-  Must remember to free the keys when done!
-  EVP_PKEY_free(peerkey);
-  EVP_PKEY_free(pkey); */
-
 #include <openssl/ec.h>
 #include <openssl/ecdh.h>
 #include <openssl/evp.h>
@@ -92,15 +85,10 @@ DerivedKey *DeriveSharedSecret(EVP_PKEY *public_key, EVP_PKEY *private_key);
 void handleErrors(void);
 
 EVP_PKEY_free_ptr GenerateKeyPair() {
-  // EVP_PKEY_CTX *pctx, *kctx;
-  // EVP_PKEY_CTX *kctx;
-  // EVP_PKEY *pkey = NULL,
   EVP_PKEY_free_ptr pkey(EVP_PKEY_new(), ::EVP_PKEY_free);
   EVP_PKEY_free_ptr params(EVP_PKEY_new(), ::EVP_PKEY_free);
 
   /* Create the context for parameter generation */
-  // if (NULL == (pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL)))
-  // handleErrors();
   EVP_PKEY_CTX_free_ptr pctx(EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL),
                              ::EVP_PKEY_CTX_free);
 
@@ -116,7 +104,6 @@ EVP_PKEY_free_ptr GenerateKeyPair() {
   if (!EVP_PKEY_paramgen(pctx.get(), &params_ptr)) handleErrors();
 
   /* Create the context for the key generation */
-  // if (NULL == (kctx = EVP_PKEY_CTX_new(params, NULL))) handleErrors();
   EVP_PKEY_CTX_free_ptr kctx(EVP_PKEY_CTX_new(params.get(), NULL),
                              ::EVP_PKEY_CTX_free);
 
@@ -128,19 +115,12 @@ EVP_PKEY_free_ptr GenerateKeyPair() {
   return pkey;
 }
 
-/* Get the peer's public key, and provide the peer with our public key -
- * how this is done will be specific to your circumstances */
-// TODO!
+/* Extract a public key from a provided key pair */
 EVP_PKEY_free_ptr ExtractPublicKey(EVP_PKEY *private_key) {
-  // EC_KEY *ec_key = EVP_PKEY_get1_EC_KEY(private_key);
   EC_KEY_free_ptr ec_key(EVP_PKEY_get1_EC_KEY(private_key), ::EC_KEY_free);
-
   const EC_POINT *ec_point = EC_KEY_get0_public_key(ec_key.get());
 
-  // EVP_PKEY *public_key = EVP_PKEY_new();
   EVP_PKEY_free_ptr public_key(EVP_PKEY_new(), ::EVP_PKEY_free);
-
-  // EC_KEY *public_ec_key = EC_KEY_new_by_curve_name(NID_secp521r1);
   EC_KEY_free_ptr public_ec_key(EC_KEY_new_by_curve_name(NID_secp521r1),
                                 ::EC_KEY_free);
 
@@ -150,12 +130,15 @@ EVP_PKEY_free_ptr ExtractPublicKey(EVP_PKEY *private_key) {
   return public_key;
 }
 
+/*Creates a 512 bit value from a peers public key and your own private
+  key.
+
+  Never use a derived secret directly. Typically it is passed through
+  some hash function to produce a key. */
 DerivedKey *DeriveSharedSecret(EVP_PKEY *public_key, EVP_PKEY *private_key) {
   DerivedKey *derived_key = (DerivedKey *)malloc(sizeof(DerivedKey));
-  // EVP_PKEY_CTX *ctx;
 
   /* Create the context for the shared secret derivation */
-  // if (NULL == (ctx = EVP_PKEY_CTX_new(private_key, NULL))) handleErrors();
   EVP_PKEY_CTX_free_ptr ctx(EVP_PKEY_CTX_new(private_key, NULL),
                             ::EVP_PKEY_CTX_free);
 
@@ -180,8 +163,6 @@ DerivedKey *DeriveSharedSecret(EVP_PKEY *public_key, EVP_PKEY *private_key) {
       (EVP_PKEY_derive(ctx.get(), derived_key->secret, &derived_key->length))) {
     handleErrors();
   }
-
-  // EVP_PKEY_CTX_free(ctx);
 
   return derived_key;
 }
