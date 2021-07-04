@@ -1,5 +1,5 @@
 #ifndef CPPCHATCLIENT_THREAD_H_
-#define CPPCHATCLIENT_THREAD_H
+#define CPPCHATCLIENT_THREAD_H_
 
 #include <pthread.h>
 
