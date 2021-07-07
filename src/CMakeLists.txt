@@ -1,28 +1,31 @@
 set(BINARY ${CMAKE_PROJECT_NAME})
 
 set(SOURCES
-    main.cc
-    
     controller/client-controller.cc
     controller/view-factory.cc
     controller/addfriend-observer.cc
     controller/deletefriend-observer.cc
-    
-    model/client-model.cc
+
+    model/networking/utility/elliptic-curve-diffiehellman.cc
+    model/networking/utility/sha-3-512.cc
     
     model/friend-functionality/friend-hashmap.cc
-    model/friend-functionality/friend-node.cc
     model/friend-functionality/friend-utility.cc
+    model/friend-functionality/friend-node.cc
+
+    model/client-model.cc
 
     view/gui-view.cc
+
+    main.cc
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
-find_package(OpenSSL REQUIRED)
-
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
+
+find_package(OpenSSL REQUIRED)
 
 add_executable(${BINARY}_run ${SOURCES})
 target_link_directories(${BINARY}_run PRIVATE ${GTKMM_LIBRARY_DIRS})
