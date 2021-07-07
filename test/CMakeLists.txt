@@ -9,15 +9,17 @@ set(SOURCES
     ../src/model/friend-functionality/friend-node.cc
     ../src/model/friend-functionality/friend-hashmap.cc
     ../src/model/friend-functionality/friend-utility.cc
+
+    ../src/model/networking/utility/elliptic-curve-diffiehellman.cc
     
     ../src/model/client-model.cc
 
     model/friend-functionality/friend-node_test.cc
     model/friend-functionality/friend-hashmap_test.cc
     model/friend-functionality/friend-utility_test.cc
-
-    model/networking/utility/elliptic-curve-dffiehellman_test.cc
     
+    model/networking/utility/elliptic-curve-diffiehellman_test.cc
+
     model/client-model_test.cc
 )
 

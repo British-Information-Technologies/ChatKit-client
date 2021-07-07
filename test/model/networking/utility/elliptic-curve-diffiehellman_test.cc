@@ -1,8 +1,8 @@
-#include "model/networking/utility/elliptic-curve-dffiehellman.h"
+#include "model/networking/utility/elliptic-curve-diffiehellman.h"
 
 #include <gtest/gtest.h>
 
-using namespace key_agreement;
+using namespace networking_utility;
 
 TEST(EllipticCurveDiffieHellmanTest, CreateKeyPair) {
   EVP_PKEY_free_ptr alice_private_key = GenerateKeyPair();
@@ -54,9 +54,9 @@ TEST(EllipticCurveDiffieHellmanTest, CreateSharedSecret) {
   EXPECT_NE(alice_public_key, nullptr);
   EXPECT_NE(bob_public_key, nullptr);
 
-  derivedKey* secret_alice =
+  DerivedData* secret_alice =
       DeriveSharedSecret(bob_public_key.get(), alice_private_key.get());
-  derivedKey* secret_bob =
+  DerivedData* secret_bob =
       DeriveSharedSecret(alice_public_key.get(), bob_private_key.get());
 
   // turn shared secret into a displayable format
@@ -74,9 +74,7 @@ TEST(EllipticCurveDiffieHellmanTest, CreateSharedSecret) {
   BN_print_fp(stdout, secret_bob_BN);
   std::cout << std::endl;
 
-  if (BN_cmp(secret_alice_BN, secret_bob_BN) == 0) {
-    printf("\n\nSecrets computed were equal! Magic of ECDH\n\n");
-  }
+  EXPECT_EQ(*secret_alice->secret, *secret_bob->secret);
 
   BN_free(secret_alice_BN);
   BN_free(secret_bob_BN);
