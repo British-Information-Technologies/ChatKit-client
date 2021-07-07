@@ -1,10 +1,7 @@
 #ifndef CPPCHATCLIENT_ELLIPTIC_CURVE_DIFFIEHELLMAN_H_
 #define CPPCHATCLIENT_ELLIPTIC_CURVE_DIFFIEHELLMAN_H_
 
-#include <openssl/ec.h>
-#include <openssl/ecdh.h>
 #include <openssl/evp.h>
-#include <openssl/pem.h>
 
 #include <memory>
 

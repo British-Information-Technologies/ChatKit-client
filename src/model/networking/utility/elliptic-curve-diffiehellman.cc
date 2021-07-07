@@ -1,17 +1,18 @@
 #include "elliptic-curve-diffiehellman.h"
 
+#include <openssl/ec.h>
+#include <openssl/ecdh.h>
+#include <openssl/pem.h>
+
 #include <iostream>
 
 using namespace networking_utility;
-
 using EVP_PKEY_CTX_free_ptr =
     std::unique_ptr<EVP_PKEY_CTX, decltype(&::EVP_PKEY_CTX_free)>;
 
 using EC_KEY_free_ptr = std::unique_ptr<EC_KEY, decltype(&::EC_KEY_free)>;
 
-extern "C" {
-
-EVP_PKEY_free_ptr GenerateKeyPair() {
+EVP_PKEY_free_ptr networking_utility::GenerateKeyPair() {
   EVP_PKEY_free_ptr pkey(EVP_PKEY_new(), ::EVP_PKEY_free);
   EVP_PKEY_free_ptr params(EVP_PKEY_new(), ::EVP_PKEY_free);
 
@@ -48,7 +49,7 @@ EVP_PKEY_free_ptr GenerateKeyPair() {
 }
 
 /* Extract a public key from a provided key pair */
-EVP_PKEY_free_ptr ExtractPublicKey(EVP_PKEY *private_key) {
+EVP_PKEY_free_ptr networking_utility::ExtractPublicKey(EVP_PKEY *private_key) {
   EC_KEY_free_ptr ec_key(EVP_PKEY_get1_EC_KEY(private_key), ::EC_KEY_free);
   const EC_POINT *ec_point = EC_KEY_get0_public_key(ec_key.get());
 
@@ -67,7 +68,8 @@ EVP_PKEY_free_ptr ExtractPublicKey(EVP_PKEY *private_key) {
 
   Never use a derived secret directly. Typically it is passed through
   some hash function to produce a key. */
-DerivedData *DeriveSharedSecret(EVP_PKEY *public_key, EVP_PKEY *private_key) {
+DerivedData *networking_utility::DeriveSharedSecret(EVP_PKEY *public_key,
+                                                    EVP_PKEY *private_key) {
   DerivedData *derived_key = (DerivedData *)malloc(sizeof(DerivedData));
 
   /* Create the context for the shared secret derivation */
@@ -98,4 +100,7 @@ DerivedData *DeriveSharedSecret(EVP_PKEY *public_key, EVP_PKEY *private_key) {
 
   return derived_key;
 }
-}
+
+// #ifdef __cplusplus
+// }
+// #endif
