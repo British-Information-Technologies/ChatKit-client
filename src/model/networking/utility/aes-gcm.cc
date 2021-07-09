@@ -24,6 +24,8 @@ int networking_utility::aes_gcm_encrypt(secure_string &plaintext,
   if (1 != EVP_EncryptInit_ex(ctx.get(), EVP_aes_256_gcm(), NULL, NULL, NULL))
     abort();
 
+  ciphertext.resize(plaintext.size());
+
   /*
    * Set IV length if default 12 bytes (96 bits) is not appropriate
    */
@@ -81,6 +83,8 @@ int networking_utility::aes_gcm_decrypt(secure_string &ciphertext,
   if (!EVP_DecryptInit_ex(ctx.get(), EVP_aes_256_gcm(), NULL, NULL, NULL))
     abort();
 
+  plaintext.resize(ciphertext.size());
+
   /* Set IV length. Not necessary if this is 12 bytes (96 bits) */
   if (!EVP_CIPHER_CTX_ctrl(ctx.get(), EVP_CTRL_GCM_SET_IVLEN, iv_len, NULL))
     abort();
@@ -92,7 +96,7 @@ int networking_utility::aes_gcm_decrypt(secure_string &ciphertext,
    * Provide any AAD data. This can be called zero or more times as
    * required
    */
-  if (!EVP_DecryptUpdate(ctx.get(), NULL, &len, (byte *)aad[0],
+  if (!EVP_DecryptUpdate(ctx.get(), NULL, &len, (byte *)&aad[0],
                          (int)aad.size()))
     abort();
 
