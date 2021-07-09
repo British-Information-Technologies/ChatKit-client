@@ -13,9 +13,6 @@ class AESGCMTest : public ::testing::Test {
   }
 
  protected:
-  secure_string plaintext =
-      "hey mitch how are you today. This is pretty crazy wild bam bam !";
-
   DerivedData key;
 
   secure_string additional = "The five boxing wizards jump quickly.";
@@ -25,6 +22,8 @@ class AESGCMTest : public ::testing::Test {
 };
 
 TEST_F(AESGCMTest, SingleEncryptMatchKeyLength) {
+  secure_string plaintext =
+      "hey mitch how are you today. This is pretty crazy wild bam bam !";
   secure_string ciphertext;
   byte tag[16];
 
@@ -37,6 +36,46 @@ TEST_F(AESGCMTest, SingleEncryptMatchKeyLength) {
 }
 
 TEST_F(AESGCMTest, EncryptDecryptMatchKeyLength) {
+  secure_string plaintext =
+      "hey mitch how are you today. This is pretty crazy wild bam bam !";
+  secure_string ciphertext;
+  secure_string decryptedtext;
+  byte tag[16];
+
+  int ciphertext_len =
+      aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
+
+  EXPECT_EQ(plaintext.size(), ciphertext.size());
+  EXPECT_EQ(ciphertext.size(), ciphertext_len);
+  EXPECT_NE(plaintext, ciphertext);
+
+  int decryptedtext_len =
+      aes_gcm_decrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,
+                      iv_len, decryptedtext);
+
+  std::cout << "decrypted: " << decryptedtext << std::endl;
+  std::cout << "plaintext: " << plaintext << std::endl;
+
+  EXPECT_EQ(decryptedtext_len, plaintext.size());
+  EXPECT_EQ(decryptedtext.size(), plaintext.size());
+  EXPECT_EQ(decryptedtext, plaintext);
+}
+
+TEST_F(AESGCMTest, EncryptShortKeyLength) {
+  secure_string plaintext = "hey mitch how are you today.";
+  secure_string ciphertext;
+  byte tag[16];
+
+  int ciphertext_len =
+      aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
+
+  EXPECT_EQ(plaintext.size(), ciphertext.size());
+  EXPECT_EQ(ciphertext.size(), ciphertext_len);
+  EXPECT_NE(plaintext, ciphertext);
+}
+
+TEST_F(AESGCMTest, EncryptDecryptShortKeyLength) {
+  secure_string plaintext = "hey mitch how are you today.";
   secure_string ciphertext;
   secure_string decryptedtext;
   byte tag[16];
