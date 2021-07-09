@@ -98,3 +98,45 @@ TEST_F(AESGCMTest, EncryptDecryptShortKeyLength) {
   EXPECT_EQ(decryptedtext.size(), plaintext.size());
   EXPECT_EQ(decryptedtext, plaintext);
 }
+
+TEST_F(AESGCMTest, EncryptLongKeyLength) {
+  secure_string plaintext =
+      "hey mitch how are you today. epic bam dam wam smash bash ropyras help "
+      "me please i beg you i need help ahahhaha!";
+  secure_string ciphertext;
+  byte tag[16];
+
+  int ciphertext_len =
+      aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
+
+  EXPECT_EQ(plaintext.size(), ciphertext.size());
+  EXPECT_EQ(ciphertext.size(), ciphertext_len);
+  EXPECT_NE(plaintext, ciphertext);
+}
+
+TEST_F(AESGCMTest, EncryptDecryptLongKeyLength) {
+  secure_string plaintext =
+      "hey mitch how are you today. epic bam dam wam smash bash ropyras help "
+      "me please i beg you i need help ahahhaha!";
+  secure_string ciphertext;
+  secure_string decryptedtext;
+  byte tag[16];
+
+  int ciphertext_len =
+      aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
+
+  EXPECT_EQ(plaintext.size(), ciphertext.size());
+  EXPECT_EQ(ciphertext.size(), ciphertext_len);
+  EXPECT_NE(plaintext, ciphertext);
+
+  int decryptedtext_len =
+      aes_gcm_decrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,
+                      iv_len, decryptedtext);
+
+  std::cout << "decrypted: " << decryptedtext << std::endl;
+  std::cout << "plaintext: " << plaintext << std::endl;
+
+  EXPECT_EQ(decryptedtext_len, plaintext.size());
+  EXPECT_EQ(decryptedtext.size(), plaintext.size());
+  EXPECT_EQ(decryptedtext, plaintext);
+}
