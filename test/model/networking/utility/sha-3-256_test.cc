@@ -1,4 +1,4 @@
-#include "model/networking/utility/sha-3-512.h"
+#include "model/networking/utility/sha-3-256.h"
 
 #include <gtest/gtest.h>
 
