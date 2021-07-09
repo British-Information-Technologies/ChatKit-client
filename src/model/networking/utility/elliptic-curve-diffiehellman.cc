@@ -25,7 +25,7 @@ EVP_PKEY_free_ptr networking_utility::GenerateKeyPair() {
   ;
 
   /* We're going to use the ANSI X9.62 Prime 256v1 curve */  //
-  if (1 != EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx.get(), NID_secp521r1))
+  if (1 != EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx.get(), NID_secp256k1))
     abort();
   ;
 
@@ -54,7 +54,7 @@ EVP_PKEY_free_ptr networking_utility::ExtractPublicKey(EVP_PKEY *private_key) {
   const EC_POINT *ec_point = EC_KEY_get0_public_key(ec_key.get());
 
   EVP_PKEY_free_ptr public_key(EVP_PKEY_new(), ::EVP_PKEY_free);
-  EC_KEY_free_ptr public_ec_key(EC_KEY_new_by_curve_name(NID_secp521r1),
+  EC_KEY_free_ptr public_ec_key(EC_KEY_new_by_curve_name(NID_secp256k1),
                                 ::EC_KEY_free);
 
   EC_KEY_set_public_key(public_ec_key.get(), ec_point);
