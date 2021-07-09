@@ -8,6 +8,7 @@ set(SOURCES
 
     model/networking/utility/elliptic-curve-diffiehellman.cc
     model/networking/utility/sha-3-512.cc
+    model/networking/utility/aes-gcm.cc
     
     model/friend-functionality/friend-hashmap.cc
     model/friend-functionality/friend-utility.cc
