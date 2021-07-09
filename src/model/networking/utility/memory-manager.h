@@ -51,6 +51,7 @@ struct zallocator {
   }
 };
 
+typedef unsigned char byte;
 typedef std::basic_string<char, std::char_traits<char>, zallocator<char> >
     secure_string;
 
