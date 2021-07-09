@@ -11,7 +11,8 @@ set(SOURCES
     ../src/model/friend-functionality/friend-utility.cc
 
     ../src/model/networking/utility/elliptic-curve-diffiehellman.cc
-    ../src/model/networking/utility/sha-3-512.cc
+    ../src/model/networking/utility/sha-3-256.cc
+    ../src/model/networking/utility/aes-gcm.cc
     
     ../src/model/client-model.cc
 
@@ -20,7 +21,8 @@ set(SOURCES
     model/friend-functionality/friend-utility_test.cc
     
     model/networking/utility/elliptic-curve-diffiehellman_test.cc
-    model/networking/utility/sha-3-512_test.cc
+    model/networking/utility/sha-3-256_test.cc
+    model/networking/utility/aes-gcm_test.cc
 
     model/client-model_test.cc
 )

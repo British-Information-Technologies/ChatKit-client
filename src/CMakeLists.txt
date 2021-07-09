@@ -7,7 +7,7 @@ set(SOURCES
     controller/deletefriend-observer.cc
 
     model/networking/utility/elliptic-curve-diffiehellman.cc
-    model/networking/utility/sha-3-512.cc
+    model/networking/utility/sha-3-256.cc
     model/networking/utility/aes-gcm.cc
     
     model/friend-functionality/friend-hashmap.cc
