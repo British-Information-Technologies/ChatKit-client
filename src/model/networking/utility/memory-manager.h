@@ -1,3 +1,5 @@
+#include <openssl/crypto.h>
+
 #include <iostream>
 #include <limits>
 #include <memory>
