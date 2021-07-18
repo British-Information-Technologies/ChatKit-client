@@ -13,6 +13,8 @@ using EVP_PKEY_free_ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 
 EVP_PKEY_free_ptr GenerateKeyPair();
 EVP_PKEY_free_ptr ExtractPublicKey(EVP_PKEY *);
+std::string SerializePublicKey(EVP_PKEY *);
+EVP_PKEY_free_ptr DeserializePublicKey(const char *);
 DerivedData *DeriveSharedSecret(EVP_PKEY *, EVP_PKEY *);
 
 }  // namespace networking_utility

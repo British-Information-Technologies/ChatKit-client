@@ -5,12 +5,16 @@
 #include <openssl/pem.h>
 
 #include <iostream>
+#include <nlohmann/json.hpp>
 
 using namespace networking_utility;
+using json = nlohmann::json;
+
 using EVP_PKEY_CTX_free_ptr =
     std::unique_ptr<EVP_PKEY_CTX, decltype(&::EVP_PKEY_CTX_free)>;
 
 using EC_KEY_free_ptr = std::unique_ptr<EC_KEY, decltype(&::EC_KEY_free)>;
+using BIO_free_ptr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
 
 EVP_PKEY_free_ptr networking_utility::GenerateKeyPair() {
   EVP_PKEY_free_ptr pkey(EVP_PKEY_new(), ::EVP_PKEY_free);
@@ -41,11 +45,38 @@ EVP_PKEY_free_ptr networking_utility::GenerateKeyPair() {
   /* Generate the key */
   EVP_PKEY *tmp = pkey.get();
   if (1 != EVP_PKEY_keygen_init(kctx.get())) abort();
-  ;
   if (1 != EVP_PKEY_keygen(kctx.get(), &tmp)) abort();
-  ;
 
   return pkey;
+}
+
+std::string networking_utility::SerializePublicKey(EVP_PKEY *public_key) {
+  BIO_free_ptr bio_public(BIO_new(BIO_s_mem()), ::BIO_free);
+
+  int ret = PEM_write_bio_PUBKEY(bio_public.get(), public_key);
+  if (ret != 1) {
+    std::cout << "ERROR!" << std::endl;
+  }
+  BIO_flush(bio_public.get());
+
+  char *public_key_text;
+  BIO_get_mem_data(bio_public.get(), &public_key_text);
+
+  json json_public_key = {{"key", std::string(public_key_text)}};
+
+  return json_public_key.dump();
+}
+
+EVP_PKEY_free_ptr networking_utility::DeserializePublicKey(const char *buffer) {
+  json json_object = json::parse(buffer);
+  std::string public_key = json_object["key"];
+
+  BIO_free_ptr mem(BIO_new_mem_buf(public_key.c_str(), -1), ::BIO_free);
+
+  EVP_PKEY_free_ptr evp_public_key(
+      PEM_read_bio_PUBKEY(mem.get(), NULL, NULL, 0), ::EVP_PKEY_free);
+
+  return evp_public_key;
 }
 
 /* Extract a public key from a provided key pair */
@@ -100,7 +131,3 @@ DerivedData *networking_utility::DeriveSharedSecret(EVP_PKEY *public_key,
 
   return derived_key;
 }
-
-// #ifdef __cplusplus
-// }
-// #endif
