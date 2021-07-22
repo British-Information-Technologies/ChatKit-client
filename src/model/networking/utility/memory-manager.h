@@ -1,3 +1,6 @@
+#ifndef CPPCHATCLIENT_MEMORY_MANAGER_H_
+#define CPPCHATCLIENT_MEMORY_MANAGER_H_
+
 #include <openssl/crypto.h>
 
 #include <iostream>
@@ -58,3 +61,5 @@ typedef std::basic_string<char, std::char_traits<char>, zallocator<char> >
     secure_string;
 
 }  // namespace networking_utility
+
+#endif
