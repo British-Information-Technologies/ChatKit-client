@@ -11,9 +11,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <nlohmann/json.hpp>
 #include <string>
 
+#include "../utility/memory-manager.h"
 namespace networking_server {
 class ServerConnection {
  private:
@@ -24,7 +24,7 @@ class ServerConnection {
 
  public:
   int create_connection(std::string &, std::string &);
-  int send_message(nlohmann::json &);
+  int send_message(networking_utility::secure_string &);
   int read_message(char *, size_t);
 };
 }  // namespace networking_server
