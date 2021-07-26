@@ -5,6 +5,8 @@
 #include <gtest/gtest.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
@@ -15,7 +17,16 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <nlohmann/json.hpp>
+
+#include "model/networking/utility/aes-gcm.h"
+#include "model/networking/utility/elliptic-curve-diffiehellman.h"
+#include "model/networking/utility/memory-manager.h"
+#include "model/networking/utility/sha-3-256.h"
+
 using namespace networking_server;
+using namespace networking_utility;
+using json = nlohmann::json;
 
 #define BACKLOG 1  // how many pending connections queue will hold
 
@@ -23,6 +34,7 @@ class ServerConnectionTest : public ::testing::Test {
  protected:
   std::string server_ip = "localhost";
   std::string server_port = "3490";
+  DerivedData *key;
 
   pthread_t listener_id;
   int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
@@ -98,6 +110,9 @@ class ServerConnectionTest : public ::testing::Test {
   void TearDown() override {
     pthread_join(listener_id, NULL);
 
+    free(key->secret);
+    free(key);
+
     close(sockfd);
     close(new_fd);
   }
@@ -120,6 +135,8 @@ class ServerConnectionTest : public ::testing::Test {
               s, sizeof s);
     printf("server: got connection from %s\n", s);
 
+    Exchange();
+
     return 0;
   }
 
@@ -131,10 +148,67 @@ class ServerConnectionTest : public ::testing::Test {
 
     return &(((struct sockaddr_in6 *)sa)->sin6_addr);
   }
+
+  void Exchange() {
+    EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
+    EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
+
+    /*public keys need to be shared with other party at this point*/
+    std::string serial_public_key = SerializePublicKey(public_key.get());
+
+    int sent_bytes = send(new_fd, serial_public_key.c_str(),
+                          serial_public_key.length() + 1, 0);
+
+    int buffer_size = 1024;
+    char buffer[buffer_size];
+    int bytes_read = recv(new_fd, buffer, buffer_size - 1, 0);
+    *(buffer + buffer_size) = '\0';
+
+    EVP_PKEY_free_ptr peer_public_key = DeserializePublicKey(buffer);
+
+    /*Create the shared secret with other users public key and your
+      own private key (this has wrong public key as a place holder*/
+    key = DeriveSharedSecret(peer_public_key.get(), key_pair.get());
+
+    /*Hash the secret to create the key*/
+    HashData(key);
+  }
 };
 
 /* TESTS */
 TEST_F(ServerConnectionTest, CreateConnectionTest) {
   ServerConnection server;
   EXPECT_TRUE(server.create_connection(server_ip, server_port));
+}
+
+TEST_F(ServerConnectionTest, SendShortMessageTest) {
+  ServerConnection server;
+  server.create_connection(server_ip, server_port);
+
+  secure_string plaintext = "this is a test";
+
+  EXPECT_GT(server.send_message(plaintext),
+            0);  // There should be more than 0 bytes sent.
+
+  int buffer_size = 1024;
+  char buffer[buffer_size];
+  int bytes_read = recv(new_fd, buffer, buffer_size - 1, 0);
+  *(buffer + buffer_size - 1) = '\0';
+
+  std::cout << "server read: " << buffer << std::endl;
+
+  EXPECT_GT(bytes_read,
+            0);  // There should be more than 0 bytes read by the server.
+
+  secure_string tmp;
+  tmp.assign(buffer);
+  json json_object = json::parse(tmp);
+
+  std::cout << "json object: " << buffer << std::endl;
+
+  std::string encrypted_message = json_object["message"];
+
+  EXPECT_STRNE(encrypted_message.c_str(), plaintext.c_str());
+
+  EXPECT_NE(plaintext.length(), encrypted_message.length());
 }
