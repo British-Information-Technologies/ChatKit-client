@@ -1,6 +1,3 @@
-# Ignore googletest
-lib/googletest
-
 # Ignore build folder
 build/
 CMakeFiles/
