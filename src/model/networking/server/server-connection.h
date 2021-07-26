@@ -13,11 +13,14 @@
 
 #include <string>
 
+#include "../utility/derived-data.h"
 #include "../utility/memory-manager.h"
+
 namespace networking_server {
 class ServerConnection {
  private:
   int sockfd;
+  networking_utility::DerivedData *key;
 
  private:
   void *get_in_addr(struct sockaddr *);

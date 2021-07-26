@@ -63,18 +63,15 @@ int ServerConnection::create_connection(std::string &ip_address,
 
   freeaddrinfo(servinfo);  // all done with this structure
 
-  return 1;
-}
-
-int ServerConnection::send_message(secure_string &plaintext) {
+  /* Create shared secret */
   EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
   EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
 
   /*public keys need to be shared with other party at this point*/
   std::string serial_public_key = SerializePublicKey(public_key.get());
 
-  int sent_bytes =
-      send(sockfd, serial_public_key.c_str(), serial_public_key.length(), 0);
+  int sent_bytes = send(sockfd, serial_public_key.c_str(),
+                        serial_public_key.length() + 1, 0);
 
   int buffer_size = 1024;
   char buffer[buffer_size];
@@ -84,11 +81,15 @@ int ServerConnection::send_message(secure_string &plaintext) {
 
   /*Create the shared secret with other users public key and your
     own private key (this has wrong public key as a place holder*/
-  DerivedData *key = DeriveSharedSecret(peer_public_key.get(), key_pair.get());
+  key = DeriveSharedSecret(peer_public_key.get(), key_pair.get());
 
   /*Hash the secret to create the key*/
   HashData(key);
 
+  return 1;
+}
+
+int ServerConnection::send_message(secure_string &plaintext) {
   /*Encrypt the message with the key, aad, and iv*/
   secure_string aad = "address:port";
   int iv_len = 12;
@@ -109,17 +110,10 @@ int ServerConnection::send_message(secure_string &plaintext) {
 
   /*Format the message into a json string (serialize)*/
   json json_object = {{"message", ciphertext}, {"aad", aad}, {"tag", tag}};
-  std::string json_string = json_object.dump();
-
-  char message[json_string.size() + 1];
-  json_string.copy(message, json_string.size());
-  message[json_string.size()] = '\0';
+  std::string message = json_object.dump();
 
   /*Send message*/
-  sent_bytes = send(sockfd, message, std::strlen(message), 0);
-
-  /*Read response*/
-  read_bytes = read_message(buffer, buffer_size);
+  int sent_bytes = send(sockfd, message.c_str(), message.length() + 1, 0);
 
   return sent_bytes;
 }
