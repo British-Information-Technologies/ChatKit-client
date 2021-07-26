@@ -32,15 +32,19 @@ TEST_F(AESGCMTest, SingleEncryptMatchKeyLength) {
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
-  BIO_dump_fp (stdout, (const char *)&ciphertext[0], ciphertext.size());
+  BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
   std::cout << std::endl;
 
   std::cout << "Tag: ";
-  BIO_dump_fp (stdout, (const char *)tag, 16);
+  BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-  EXPECT_EQ(plaintext.size(), ciphertext.size());
+  EXPECT_NE(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
+
+  std::cout << "Ciphertext: " << ciphertext << std::endl;
+  std::cout << "plaintext : " << plaintext << std::endl;
+
   EXPECT_NE(plaintext, ciphertext);
 }
 
@@ -55,14 +59,14 @@ TEST_F(AESGCMTest, EncryptDecryptMatchKeyLength) {
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
-  BIO_dump_fp (stdout, (const char *)&ciphertext[0], ciphertext.size());
+  BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
   std::cout << std::endl;
 
   std::cout << "Tag: ";
-  BIO_dump_fp (stdout, (const char *)tag, 16);
+  BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-  EXPECT_EQ(plaintext.size(), ciphertext.size());
+  EXPECT_NE(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
   EXPECT_NE(plaintext, ciphertext);
 
@@ -87,14 +91,14 @@ TEST_F(AESGCMTest, EncryptShortKeyLength) {
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
-  BIO_dump_fp (stdout, (const char *)&ciphertext[0], ciphertext.size());
+  BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
   std::cout << std::endl;
 
   std::cout << "Tag: ";
-  BIO_dump_fp (stdout, (const char *)tag, 16);
+  BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-  EXPECT_EQ(plaintext.size(), ciphertext.size());
+  EXPECT_NE(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
   EXPECT_NE(plaintext, ciphertext);
 }
@@ -109,14 +113,14 @@ TEST_F(AESGCMTest, EncryptDecryptShortKeyLength) {
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
-  BIO_dump_fp (stdout, (const char *)&ciphertext[0], ciphertext.size());
+  BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
   std::cout << std::endl;
 
   std::cout << "Tag: ";
-  BIO_dump_fp (stdout, (const char *)tag, 16);
+  BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-  EXPECT_EQ(plaintext.size(), ciphertext.size());
+  EXPECT_NE(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
   EXPECT_NE(plaintext, ciphertext);
 
@@ -143,15 +147,14 @@ TEST_F(AESGCMTest, EncryptLongKeyLength) {
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
-  BIO_dump_fp (stdout, (const char *)&ciphertext[0], ciphertext.size());
+  BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
   std::cout << std::endl;
 
   std::cout << "Tag: ";
-  BIO_dump_fp (stdout, (const char *)tag, 16);
+  BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-
-  EXPECT_EQ(plaintext.size(), ciphertext.size());
+  EXPECT_NE(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
   EXPECT_NE(plaintext, ciphertext);
 }
@@ -159,7 +162,7 @@ TEST_F(AESGCMTest, EncryptLongKeyLength) {
 TEST_F(AESGCMTest, EncryptDecryptLongKeyLength) {
   secure_string plaintext =
       "hey mitch how are you today. epic bam dam wam smash bash ropyras help "
-      "me please i beg you i need help ahahhaha!";
+      "me please i beg you i need help ahahahahaha!";
   secure_string ciphertext;
   secure_string decryptedtext;
   byte tag[16];
@@ -168,14 +171,14 @@ TEST_F(AESGCMTest, EncryptDecryptLongKeyLength) {
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
-  BIO_dump_fp (stdout, (const char *)&ciphertext[0], ciphertext.size());
+  BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
   std::cout << std::endl;
 
   std::cout << "Tag: ";
-  BIO_dump_fp (stdout, (const char *)tag, 16);
+  BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-  EXPECT_EQ(plaintext.size(), ciphertext.size());
+  EXPECT_NE(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
   EXPECT_NE(plaintext, ciphertext);
 
