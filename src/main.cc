@@ -9,9 +9,6 @@ int main(int argc, char **argv) {
   // create application
   auto app = MainApplication::create();
 
-  // increases reference count.
-  app->hold();
-
   // enter main loop
   app->run(argc, argv);
 }
