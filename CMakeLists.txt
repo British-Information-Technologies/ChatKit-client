@@ -14,7 +14,6 @@ find_package(Git QUIET)
 include_directories(src /usr/local/include)
 link_directories(/usr/local/lib)
 
-
 # update git submodules
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     option(GIT_SUBMODULE "Check submodules during build" ON)

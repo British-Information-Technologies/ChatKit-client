@@ -18,7 +18,11 @@ class MainApplication : public Gtk::Application {
   MainApplication();
   ~MainApplication();
 
+	// application lifecycle signals
+	void on_startup() override;
   void on_activate() override;
+	void on_shutdown() override;
+	
 
  public:
   static Glib::RefPtr<MainApplication> create();
