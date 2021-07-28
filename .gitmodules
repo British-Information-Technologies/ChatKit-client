@@ -1,6 +1,8 @@
 [submodule "lib/googletest"]
 	path = lib/googletest
 	url = https://github.com/google/googletest
+	ignore = dirty
 [submodule "lib/json"]
 	path = lib/json
 	url = https://github.com/nlohmann/json
+	ignore = dirty
