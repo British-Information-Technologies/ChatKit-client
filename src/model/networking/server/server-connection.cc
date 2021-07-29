@@ -91,25 +91,29 @@ int ServerConnection::create_connection(std::string &ip_address,
 
 int ServerConnection::send_message(secure_string &plaintext) {
   /*Encrypt the message with the key, aad, and iv*/
-  secure_string aad = "address:port";
-  int iv_len = 12;
-  byte iv[iv_len];
+  secure_string aad = "address:port";  // faked value
+  const int iv_size = 12;
+  byte iv[iv_size + 1];
 
-  int rc = RAND_bytes(iv, iv_len);
+  int rc = RAND_bytes(iv, iv_size);
   unsigned long err = ERR_get_error();
   if (rc != 1) {
     /* show error */
     return 0;
   }
+  iv[iv_size] = '\0';
+
+  const int tag_size = 16;
+  byte tag[tag_size + 1];
+  tag[tag_size] = '\0';
 
   secure_string ciphertext;
-  byte tag[16];
-
   int ciphertext_len =
-      aes_gcm_encrypt(plaintext, aad, key, iv, iv_len, ciphertext, tag);
+      aes_gcm_encrypt(plaintext, aad, key, iv, iv_size, ciphertext, tag);
 
   /*Format the message into a json string (serialize)*/
-  json json_object = {{"message", ciphertext}, {"aad", aad}, {"tag", tag}};
+  json json_object = {
+      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
   std::string message = json_object.dump();
 
   /*Send message*/
