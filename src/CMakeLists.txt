@@ -9,6 +9,7 @@ set(SOURCES
     model/networking/utility/elliptic-curve-diffiehellman.cc
     model/networking/utility/sha-3-256.cc
     model/networking/utility/aes-gcm.cc
+    model/networking/utility/base64.cc
     
     model/networking/server/server-connection.cc
 
