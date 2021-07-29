@@ -53,7 +53,8 @@ TEST_F(AESGCMTest, EncryptDecryptMatchKeyLength) {
       "hey mitch how are you today. This is pretty crazy wild bam bam !";
   secure_string ciphertext;
   secure_string decryptedtext;
-  byte tag[16];
+  byte tag[17];
+  tag[16] = '\0';
 
   int ciphertext_len =
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
