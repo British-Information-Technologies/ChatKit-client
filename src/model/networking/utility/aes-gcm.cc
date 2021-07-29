@@ -5,6 +5,8 @@
 #include <openssl/evp.h>
 #include <string.h>
 
+#include "base64.h"
+
 using namespace networking_utility;
 
 using EVP_CIPHER_CTX_free_ptr =
@@ -65,21 +67,8 @@ int networking_utility::aes_gcm_encrypt(secure_string &plaintext,
   if (1 != EVP_CIPHER_CTX_ctrl(ctx.get(), EVP_CTRL_GCM_GET_TAG, 16, tag))
     abort();
 
-  /* BASE 64 encode the ciphertext
-   * FIX CMAKE WITH GOOGLE TEST DOWNLOAD LIKE JSON */
-  unsigned int input_size = ciphertext.length();
-  unsigned int adjustment = ((input_size % 3) ? (3 - (input_size % 3)) : 0);
-  unsigned int code_padded_size = ((input_size + adjustment) / 3) * 4;
-  unsigned int newline_size = ((code_padded_size) / 72) * 2;
-  unsigned int total_size = code_padded_size + newline_size;
-
-  char encoded_data[total_size + 1];
-  EVP_EncodeBlock((unsigned char *)encoded_data,
-                  (const unsigned char *)ciphertext.c_str(),
-                  ciphertext.length());
-  encoded_data[total_size] = '\0';
-
-  ciphertext.assign(encoded_data);
+  /* BASE 64 encode the ciphertext */
+  ciphertext.assign((std::string)EncodeBase64(ciphertext));
   ciphertext_len = ciphertext.length();
 
   return ciphertext_len;
@@ -93,23 +82,8 @@ int networking_utility::aes_gcm_decrypt(secure_string &ciphertext,
   int plaintext_len;
   int ret;
 
-  std::cout << "ciphertext = " << ciphertext << std::endl;
-
   /* BASE 64 decode the ciphertext */
-  secure_string possible_padding = ciphertext.substr(ciphertext_len - 2, 2);
-  unsigned int padding_count = 0;
-  for (int index = 0; index < ciphertext_len; ++index) {
-    if (ciphertext[index] == '=') ++padding_count;
-  }
-
-  unsigned int total_size = (3 * (ciphertext_len / 4)) - padding_count;
-
-  char decoded_data[total_size + 1];
-  EVP_DecodeBlock((unsigned char *)decoded_data,
-                  (const unsigned char *)ciphertext.c_str(), ciphertext_len);
-  decoded_data[total_size] = '\0';
-
-  ciphertext.assign(decoded_data);
+  ciphertext.assign((std::string)DecodeBase64(ciphertext));
   ciphertext_len = ciphertext.length();
 
   /* Create and initialise the context */
