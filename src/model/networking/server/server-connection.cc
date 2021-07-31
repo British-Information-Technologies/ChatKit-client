@@ -90,6 +90,8 @@ int ServerConnection::create_connection(std::string &ip_address,
 }
 
 int ServerConnection::send_message(secure_string &plaintext) {
+  if (plaintext.length() <= 0) return 0;
+
   /*Encrypt the message with the key, aad, and iv*/
   secure_string aad = "address:port";  // faked value
   const int iv_size = 12;
