@@ -272,3 +272,65 @@ TEST_F(ServerConnectionTest, SendShortMessageDecryptTest) {
 
   EXPECT_STREQ(decryptedtext.c_str(), plaintext.c_str());
 }
+
+TEST_F(ServerConnectionTest, SendLongMessageDecryptTest) {
+  ServerConnection server;
+  server.create_connection(server_ip, server_port);
+  pthread_join(listener_id, NULL);
+
+  secure_string plaintext =
+      "this is a very very very very very very very longgggggggg test! But a "
+      "dsasadasdasdsa sdadasdklaskflkslfkalfkla";
+
+  EXPECT_GT(server.send_message(plaintext),
+            0);  // There should be more than 0 bytes sent.
+
+  int buffer_size = 1024;
+  char buffer[buffer_size];
+  int bytes_read = recv(new_fd, buffer, buffer_size - 1, 0);
+  *(buffer + buffer_size - 1) = '\0';
+
+  std::cout << "server read: " << buffer << std::endl;
+
+  EXPECT_GT(bytes_read,
+            0);  // There should be more than 0 bytes read by the server.
+
+  secure_string tmp;
+  tmp.assign(buffer);
+  json json_object = json::parse(tmp);
+
+  std::cout << "json object: " << json_object << std::endl;
+
+  secure_string encrypted_message = json_object["message"];
+  secure_string aad = json_object["aad"];
+  json tag_object = json_object["tag"];
+  json iv_object = json_object["iv"];
+
+  byte tag[tag_object.size() + 1];
+  int i = 0;
+  for (auto it = tag_object.begin(); it != tag_object.end(); ++it, ++i) {
+    tag[i] = it.value();
+  }
+  tag[tag_object.size()] = '\0';
+
+  byte iv[iv_object.size() + 1];
+  i = 0;
+  for (auto it = iv_object.begin(); it != iv_object.end(); ++it, ++i) {
+    iv[i] = it.value();
+  }
+  iv[iv_object.size()] = '\0';
+
+  EXPECT_STRNE(encrypted_message.c_str(), plaintext.c_str());
+
+  EXPECT_NE(plaintext.length(), encrypted_message.length());
+
+  secure_string decryptedtext;
+  aes_gcm_decrypt(encrypted_message, encrypted_message.length(), aad, tag, key,
+                  iv, strlen((char *)iv), decryptedtext);
+
+  std::cout << "encrypted: " << encrypted_message << std::endl;
+  std::cout << "decrypted: " << decryptedtext << std::endl;
+  std::cout << "plaintext: " << decryptedtext << std::endl;
+
+  EXPECT_STREQ(decryptedtext.c_str(), plaintext.c_str());
+}
