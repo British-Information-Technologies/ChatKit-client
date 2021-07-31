@@ -334,3 +334,15 @@ TEST_F(ServerConnectionTest, SendLongMessageDecryptTest) {
 
   EXPECT_STREQ(decryptedtext.c_str(), plaintext.c_str());
 }
+
+TEST_F(ServerConnectionTest, SendEmptyMessageTest) {
+  ServerConnection server;
+  server.create_connection(server_ip, server_port);
+  pthread_join(listener_id, NULL);
+
+  secure_string plaintext = "";
+
+  EXPECT_EQ(server.send_message(plaintext), 0);
+
+  // No message should be sent, so 0 zero bytes should be returned
+}
