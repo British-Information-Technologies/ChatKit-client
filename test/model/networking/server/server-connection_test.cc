@@ -371,3 +371,30 @@ TEST_F(ServerConnectionTest, ReadShortMessageTest) {
 
   EXPECT_STREQ(result.c_str(), plaintext.c_str());
 }
+
+TEST_F(ServerConnectionTest, ReadLongMessageTest) {
+  ServerConnection server;
+  server.create_connection(server_ip, server_port);
+  pthread_join(listener_id, NULL);
+
+  secure_string plaintext =
+      "this is a test for a very long message, however, its not longer than "
+      "the buffer which will be important!";
+
+  EXPECT_EQ(send(new_fd, plaintext.c_str(), plaintext.length() + 1, 0),
+            plaintext.length() + 1);
+
+  int buffer_size = 1024;
+  char buffer[buffer_size];
+  int bytes_read = server.read_message(buffer, buffer_size);
+
+  std::cout << "server read: " << buffer << std::endl;
+
+  EXPECT_GT(bytes_read,
+            0);  // There should be more than 0 bytes read by the server.
+
+  secure_string result;
+  result.assign(buffer);
+
+  EXPECT_STREQ(result.c_str(), plaintext.c_str());
+}
