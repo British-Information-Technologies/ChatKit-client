@@ -346,3 +346,28 @@ TEST_F(ServerConnectionTest, SendEmptyMessageTest) {
 
   // No message should be sent, so 0 zero bytes should be returned
 }
+
+TEST_F(ServerConnectionTest, ReadShortMessageTest) {
+  ServerConnection server;
+  server.create_connection(server_ip, server_port);
+  pthread_join(listener_id, NULL);
+
+  secure_string plaintext = "this is a test";
+
+  EXPECT_EQ(send(new_fd, plaintext.c_str(), plaintext.length() + 1, 0),
+            plaintext.length() + 1);
+
+  int buffer_size = 1024;
+  char buffer[buffer_size];
+  int bytes_read = server.read_message(buffer, buffer_size);
+
+  std::cout << "server read: " << buffer << std::endl;
+
+  EXPECT_GT(bytes_read,
+            0);  // There should be more than 0 bytes read by the server.
+
+  secure_string result;
+  result.assign(buffer);
+
+  EXPECT_STREQ(result.c_str(), plaintext.c_str());
+}
