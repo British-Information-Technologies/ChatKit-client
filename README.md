@@ -28,4 +28,4 @@ A chat client writen in c++ to interact with a chat server.
 - Encryption:
   - User data: Encrypting/decrypting user data being loaded from disk
 
-> Questions: please add an issue with the question label, we will respond eventually :)
+> Questions: please add an issue with the question label, we will respond eventually :]
