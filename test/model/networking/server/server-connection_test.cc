@@ -442,3 +442,39 @@ TEST_F(ServerConnectionTest, ReadMultipleSmallMessageTest) {
   EXPECT_STREQ(result_one.c_str(), plaintext_first.c_str());
   EXPECT_STREQ(result_two.c_str(), plaintext_second.c_str());
 }
+
+TEST_F(ServerConnectionTest, ReadManySmallMessageTest) {
+  ServerConnection server;
+  server.create_connection(server_ip, server_port);
+  pthread_join(listener_id, NULL);
+
+  secure_string plaintext_first = "first\n";
+  int sent_items = 0;
+  int read_items = 0;
+
+  for (int i = 0; i < 250; ++i) {
+    EXPECT_EQ(
+        send(new_fd, plaintext_first.c_str(), plaintext_first.length(), 0),
+        plaintext_first.length());
+
+    ++sent_items;
+  }
+
+  plaintext_first.erase(plaintext_first.length() - 1, 1);
+
+  for (int i = 0; i < 250; ++i) {
+    secure_string result_one = server.read_message();
+
+    std::cout << "server read: " << result_one << std::endl;
+
+    EXPECT_GT(result_one.length(), 0);
+
+    EXPECT_STREQ(result_one.c_str(), plaintext_first.c_str());
+
+    ++read_items;
+  }
+
+  std::cout << "sent items = " << sent_items << std::endl;
+  std::cout << "read items = " << read_items << std::endl;
+  EXPECT_EQ(sent_items, read_items);
+}
