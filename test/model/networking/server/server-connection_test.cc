@@ -412,3 +412,33 @@ TEST_F(ServerConnectionTest, ReadBufferSizeMessageTest) {
   plaintext.erase(plaintext.length() - 1, 1);
   EXPECT_STREQ(result.c_str(), plaintext.c_str());
 }
+
+TEST_F(ServerConnectionTest, ReadMultipleSmallMessageTest) {
+  ServerConnection server;
+  server.create_connection(server_ip, server_port);
+  pthread_join(listener_id, NULL);
+
+  secure_string plaintext_first = "first\n";
+  secure_string plaintext_second = "second\n";
+
+  EXPECT_EQ(send(new_fd, plaintext_first.c_str(), plaintext_first.length(), 0),
+            plaintext_first.length());
+
+  EXPECT_EQ(
+      send(new_fd, plaintext_second.c_str(), plaintext_second.length(), 0),
+      plaintext_second.length());
+
+  secure_string result_one = server.read_message();
+  secure_string result_two = server.read_message();
+
+  std::cout << "server read: " << result_one << std::endl;
+  std::cout << "server read: " << result_two << std::endl;
+
+  EXPECT_GT(result_one.length(), 0);
+  EXPECT_GT(result_two.length(), 0);
+
+  plaintext_first.erase(plaintext_first.length() - 1, 1);
+  plaintext_second.erase(plaintext_second.length() - 1, 1);
+  EXPECT_STREQ(result_one.c_str(), plaintext_first.c_str());
+  EXPECT_STREQ(result_two.c_str(), plaintext_second.c_str());
+}
