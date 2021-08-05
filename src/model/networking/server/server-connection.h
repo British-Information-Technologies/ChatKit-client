@@ -22,13 +22,21 @@ class ServerConnection {
   int sockfd;
   networking_utility::DerivedData *key;
 
+  const int buffer_size = 1024;
+  char *input_buffer;
+  int read_bytes;
+  int read_index;
+
  private:
   void *get_in_addr(struct sockaddr *);
 
  public:
+  ServerConnection();
+  ~ServerConnection();
+
   int create_connection(std::string &, std::string &);
   int send_message(networking_utility::secure_string &);
-  int read_message(char *, size_t);
+  networking_utility::secure_string read_message();
 };
 }  // namespace networking_server
 

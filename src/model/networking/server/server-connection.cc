@@ -4,6 +4,7 @@
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
+#include <algorithm>
 #include <nlohmann/json.hpp>
 
 #include "../utility/aes-gcm.h"
@@ -18,6 +19,14 @@ using json = nlohmann::json;
 void *ServerConnection::get_in_addr(struct sockaddr *sa) {
   return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
+
+ServerConnection::ServerConnection() {
+  input_buffer = new char[buffer_size];
+  read_bytes = 0;
+  read_index = 0;
+}
+
+ServerConnection::~ServerConnection() { delete[] input_buffer; }
 
 int ServerConnection::create_connection(std::string &ip_address,
                                         std::string &port) {
@@ -73,11 +82,9 @@ int ServerConnection::create_connection(std::string &ip_address,
   int sent_bytes = send(sockfd, serial_public_key.c_str(),
                         serial_public_key.length() + 1, 0);
 
-  int buffer_size = 1024;
-  char buffer[buffer_size];
-  int read_bytes = read_message(buffer, buffer_size);
+  secure_string payload = read_message();
 
-  EVP_PKEY_free_ptr peer_public_key = DeserializePublicKey(buffer);
+  EVP_PKEY_free_ptr peer_public_key = DeserializePublicKey(payload.c_str());
 
   /*Create the shared secret with other users public key and your
     own private key (this has wrong public key as a place holder*/
@@ -124,10 +131,32 @@ int ServerConnection::send_message(secure_string &plaintext) {
   return sent_bytes;
 }
 
-int ServerConnection::read_message(char *buffer, size_t buffer_size) {
-  int numbytes = recv(sockfd, buffer, buffer_size - 1, 0);
+secure_string ServerConnection::read_message() {
+  secure_string payload;
 
-  *(buffer + buffer_size) = '\0';
+  while (1) {
+    if (read_index == 0 && read_bytes == 0) {
+      // This may need a timeout just incase some error occurs
+      read_bytes = recv(sockfd, input_buffer, buffer_size, 0);
+    }
 
-  return numbytes;
+    if (read_bytes > 0) {
+      for (; read_index < read_bytes; ++read_index) {
+        char buffer_char = input_buffer[read_index];
+
+        if (buffer_char == '\n') {
+          ++read_index;
+          return payload;
+        } else {
+          payload += buffer_char;
+        }
+      }
+
+      read_index = 0;
+      read_bytes = 0;
+    } else {
+      // Socket closed or socket error - needs clean up code
+      return "socket close or socket error!";
+    }
+  }
 }
