@@ -9,29 +9,32 @@
 
 #include "../utility/aes-gcm.h"
 #include "../utility/elliptic-curve-diffiehellman.h"
+#include "../utility/insecure-socket-handler.h"
+#include "../utility/secure-socket-handler.h"
 #include "../utility/sha-3-256.h"
 
 using namespace networking_server;
 using namespace networking_utility;
 using json = nlohmann::json;
 
+ServerConnection::ServerConnection() { socket_handler = nullptr; }
+
+ServerConnection::~ServerConnection() { delete socket_handler; }
+
 // get sockaddr, IPv4 or IPv6:
 void *ServerConnection::get_in_addr(struct sockaddr *sa) {
   return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
 
-ServerConnection::ServerConnection() {
-  input_buffer = new char[buffer_size];
-  read_bytes = 0;
-  read_index = 0;
+void ServerConnection::set_state(SocketHandler *next_handler) {
+  delete socket_handler;
+  socket_handler = next_handler;
 }
-
-ServerConnection::~ServerConnection() { delete[] input_buffer; }
 
 int ServerConnection::create_connection(std::string &ip_address,
                                         std::string &port) {
   struct addrinfo hints, *servinfo, *p;
-  int rv;
+  int sockfd, rv;
   char s[INET6_ADDRSTRLEN];
 
   memset(&hints, 0, sizeof hints);
@@ -72,6 +75,8 @@ int ServerConnection::create_connection(std::string &ip_address,
 
   freeaddrinfo(servinfo);  // all done with this structure
 
+  set_state(new InsecureSocketHandler(sockfd));
+
   /* Create shared secret */
   EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
   EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
@@ -82,81 +87,29 @@ int ServerConnection::create_connection(std::string &ip_address,
   int sent_bytes = send(sockfd, serial_public_key.c_str(),
                         serial_public_key.length() + 1, 0);
 
-  secure_string payload = read_message();
+  secure_string payload = socket_handler->recv();
 
   EVP_PKEY_free_ptr peer_public_key = DeserializePublicKey(payload.c_str());
 
   /*Create the shared secret with other users public key and your
     own private key (this has wrong public key as a place holder*/
-  key = DeriveSharedSecret(peer_public_key.get(), key_pair.get());
+  DerivedData *key = DeriveSharedSecret(peer_public_key.get(), key_pair.get());
 
   /*Hash the secret to create the key*/
   HashData(key);
+
+  set_state(new SecureSocketHandler(sockfd, key));
 
   return 1;
 }
 
 int ServerConnection::send_message(secure_string &plaintext) {
-  if (plaintext.length() <= 0) return 0;
-
-  /*Encrypt the message with the key, aad, and iv*/
-  secure_string aad = "address:port";  // faked value
-  const int iv_size = 12;
-  byte iv[iv_size + 1];
-
-  int rc = RAND_bytes(iv, iv_size);
-  unsigned long err = ERR_get_error();
-  if (rc != 1) {
-    /* show error */
-    return 0;
-  }
-  iv[iv_size] = '\0';
-
-  const int tag_size = 16;
-  byte tag[tag_size + 1];
-  tag[tag_size] = '\0';
-
-  secure_string ciphertext;
-  int ciphertext_len =
-      aes_gcm_encrypt(plaintext, aad, key, iv, iv_size, ciphertext, tag);
-
-  /*Format the message into a json string (serialize)*/
-  json json_object = {
-      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
-  std::string message = json_object.dump();
-
-  /*Send message*/
-  int sent_bytes = send(sockfd, message.c_str(), message.length() + 1, 0);
-
+  int sent_bytes = socket_handler->send(plaintext);
   return sent_bytes;
 }
 
 secure_string ServerConnection::read_message() {
-  secure_string payload;
-
-  while (1) {
-    if (read_index == 0 && read_bytes == 0) {
-      // This may need a timeout just incase some error occurs
-      read_bytes = recv(sockfd, input_buffer, buffer_size, 0);
-    }
-
-    if (read_bytes > 0) {
-      for (; read_index < read_bytes; ++read_index) {
-        char buffer_char = input_buffer[read_index];
-
-        if (buffer_char == '\n') {
-          ++read_index;
-          return payload;
-        } else {
-          payload += buffer_char;
-        }
-      }
-
-      read_index = 0;
-      read_bytes = 0;
-    } else {
-      // Socket closed or socket error - needs clean up code
-      return "socket close or socket error!";
-    }
-  }
+  /* Possibly format message into a message object of some kind in the future */
+  secure_string message = socket_handler->recv();
+  return message;
 }

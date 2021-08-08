@@ -13,22 +13,19 @@
 
 #include <string>
 
+#include "../utility/buffer-reader.h"
 #include "../utility/derived-data.h"
 #include "../utility/memory-manager.h"
+#include "../utility/socket-handler.h"
 
 namespace networking_server {
 class ServerConnection {
  private:
-  int sockfd;
-  networking_utility::DerivedData *key;
-
-  const int buffer_size = 1024;
-  char *input_buffer;
-  int read_bytes;
-  int read_index;
+  networking_utility::SocketHandler *socket_handler;
 
  private:
   void *get_in_addr(struct sockaddr *);
+  void set_state(networking_utility::SocketHandler *);
 
  public:
   ServerConnection();
