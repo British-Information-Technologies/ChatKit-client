@@ -353,19 +353,41 @@ TEST_F(ServerConnectionTest, ReadShortMessageTest) {
   server.create_connection(server_ip, server_port);
   pthread_join(listener_id, NULL);
 
-  secure_string plaintext = "this is a test\n";
+  secure_string plaintext = "this is a test";
 
-  EXPECT_EQ(send(new_fd, plaintext.c_str(), plaintext.length(), 0),
-            plaintext.length());
+  secure_string aad = "address:port";  // faked value
+  const int iv_size = 12;
+  byte iv[iv_size + 1];
+
+  int rc = RAND_bytes(iv, iv_size);
+  unsigned long err = ERR_get_error();
+  if (rc != 1) {
+    FAIL();
+  }
+  iv[iv_size] = '\0';
+
+  const int tag_size = 16;
+  byte tag[tag_size + 1];
+  tag[tag_size] = '\0';
+
+  secure_string ciphertext;
+  int ciphertext_len =
+      aes_gcm_encrypt(plaintext, aad, key, iv, iv_size, ciphertext, tag);
+
+  json json_object = {
+      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
+  std::string message = json_object.dump();
+  message.append("\n");
+
+  EXPECT_EQ(send(new_fd, message.c_str(), message.length(), 0),
+            message.length());
 
   secure_string result = server.read_message();
 
   std::cout << "server read: " << result << std::endl;
 
-  EXPECT_GT(result.length(),
-            0);  // There should be more than 0 bytes read by the server.
+  EXPECT_EQ(result.length(), plaintext.length());
 
-  plaintext.erase(plaintext.length() - 1, 1);
   EXPECT_STREQ(result.c_str(), plaintext.c_str());
 }
 
@@ -376,19 +398,41 @@ TEST_F(ServerConnectionTest, ReadLongMessageTest) {
 
   secure_string plaintext =
       "this is a test for a very long message, however, its not longer than "
-      "the buffer which will be important!\n";
+      "the buffer which will be important!";
 
-  EXPECT_EQ(send(new_fd, plaintext.c_str(), plaintext.length(), 0),
-            plaintext.length());
+  secure_string aad = "address:port";  // faked value
+  const int iv_size = 12;
+  byte iv[iv_size + 1];
+
+  int rc = RAND_bytes(iv, iv_size);
+  unsigned long err = ERR_get_error();
+  if (rc != 1) {
+    FAIL();
+  }
+  iv[iv_size] = '\0';
+
+  const int tag_size = 16;
+  byte tag[tag_size + 1];
+  tag[tag_size] = '\0';
+
+  secure_string ciphertext;
+  int ciphertext_len =
+      aes_gcm_encrypt(plaintext, aad, key, iv, iv_size, ciphertext, tag);
+
+  json json_object = {
+      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
+  std::string message = json_object.dump();
+  message.append("\n");
+
+  EXPECT_EQ(send(new_fd, message.c_str(), message.length(), 0),
+            message.length());
 
   secure_string result = server.read_message();
 
   std::cout << "server read: " << result << std::endl;
 
-  EXPECT_GT(result.length(),
-            0);  // There should be more than 0 bytes read by the server.
+  EXPECT_EQ(result.length(), plaintext.length());
 
-  plaintext.erase(plaintext.length() - 1, 1);
   EXPECT_STREQ(result.c_str(), plaintext.c_str());
 }
 
@@ -397,19 +441,41 @@ TEST_F(ServerConnectionTest, ReadBufferSizeMessageTest) {
   server.create_connection(server_ip, server_port);
   pthread_join(listener_id, NULL);
 
-  secure_string plaintext = "this is pp\n";
+  secure_string plaintext = "this is pp";
 
-  EXPECT_EQ(send(new_fd, plaintext.c_str(), plaintext.length(), 0),
-            plaintext.length());
+  secure_string aad = "address:port";  // faked value
+  const int iv_size = 12;
+  byte iv[iv_size + 1];
+
+  int rc = RAND_bytes(iv, iv_size);
+  unsigned long err = ERR_get_error();
+  if (rc != 1) {
+    FAIL();
+  }
+  iv[iv_size] = '\0';
+
+  const int tag_size = 16;
+  byte tag[tag_size + 1];
+  tag[tag_size] = '\0';
+
+  secure_string ciphertext;
+  int ciphertext_len =
+      aes_gcm_encrypt(plaintext, aad, key, iv, iv_size, ciphertext, tag);
+
+  json json_object = {
+      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
+  std::string message = json_object.dump();
+  message.append("\n");
+
+  EXPECT_EQ(send(new_fd, message.c_str(), message.length(), 0),
+            message.length());
 
   secure_string result = server.read_message();
 
   std::cout << "server read: " << result << std::endl;
 
-  EXPECT_GT(result.length(),
-            0);  // There should be more than 0 bytes read by the server.
+  EXPECT_EQ(result.length(), plaintext.length());
 
-  plaintext.erase(plaintext.length() - 1, 1);
   EXPECT_STREQ(result.c_str(), plaintext.c_str());
 }
 
@@ -418,28 +484,66 @@ TEST_F(ServerConnectionTest, ReadMultipleSmallMessageTest) {
   server.create_connection(server_ip, server_port);
   pthread_join(listener_id, NULL);
 
-  secure_string plaintext_first = "first\n";
-  secure_string plaintext_second = "second\n";
+  secure_string aad = "address:port";  // faked value
+  const int iv_size = 12;
+  byte iv[iv_size + 1];
 
-  EXPECT_EQ(send(new_fd, plaintext_first.c_str(), plaintext_first.length(), 0),
-            plaintext_first.length());
+  int rc = RAND_bytes(iv, iv_size);
+  unsigned long err = ERR_get_error();
+  if (rc != 1) {
+    FAIL();
+  }
+  iv[iv_size] = '\0';
 
-  EXPECT_EQ(
-      send(new_fd, plaintext_second.c_str(), plaintext_second.length(), 0),
-      plaintext_second.length());
+  const int tag_size = 16;
+  byte tag[tag_size + 1];
+  tag[tag_size] = '\0';
+
+  secure_string plaintext_first = "first";
+  secure_string plaintext_second = "second";
+
+  secure_string ciphertext_first;
+  secure_string ciphertext_second;
+
+  aes_gcm_encrypt(plaintext_first, aad, key, iv, iv_size, ciphertext_first,
+                  tag);
+
+  json json_object_first = {
+      {"message", ciphertext_first}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
+
+  std::string message_first = json_object_first.dump();
+
+  message_first.append("\n");
+
+  EXPECT_EQ(send(new_fd, message_first.c_str(), message_first.length(), 0),
+            message_first.length());
 
   secure_string result_one = server.read_message();
-  secure_string result_two = server.read_message();
 
   std::cout << "server read: " << result_one << std::endl;
+
+  EXPECT_EQ(result_one.length(), plaintext_first.length());
+
+  EXPECT_STREQ(result_one.c_str(), plaintext_first.c_str());
+
+  aes_gcm_encrypt(plaintext_second, aad, key, iv, iv_size, ciphertext_second,
+                  tag);
+
+  json json_object_second = {
+      {"message", ciphertext_second}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
+
+  std::string message_second = json_object_second.dump();
+  message_second.append("\n");
+
+  EXPECT_EQ(send(new_fd, message_second.c_str(), message_second.length(), 0),
+            message_second.length());
+
+  secure_string result_two = server.read_message();
+
   std::cout << "server read: " << result_two << std::endl;
 
-  EXPECT_GT(result_one.length(), 0);
-  EXPECT_GT(result_two.length(), 0);
+  EXPECT_EQ(result_two.length(), plaintext_second.length());
 
-  plaintext_first.erase(plaintext_first.length() - 1, 1);
-  plaintext_second.erase(plaintext_second.length() - 1, 1);
-  EXPECT_STREQ(result_one.c_str(), plaintext_first.c_str());
   EXPECT_STREQ(result_two.c_str(), plaintext_second.c_str());
 }
 
@@ -448,26 +552,47 @@ TEST_F(ServerConnectionTest, ReadManySmallMessageTest) {
   server.create_connection(server_ip, server_port);
   pthread_join(listener_id, NULL);
 
-  secure_string plaintext_first = "first\n";
+  secure_string plaintext_first = "first";
   int sent_items = 0;
   int read_items = 0;
 
+  secure_string aad = "address:port";  // faked value
+  const int iv_size = 12;
+  byte iv[iv_size + 1];
+
+  int rc = RAND_bytes(iv, iv_size);
+  unsigned long err = ERR_get_error();
+  if (rc != 1) {
+    FAIL();
+  }
+  iv[iv_size] = '\0';
+
+  const int tag_size = 16;
+  byte tag[tag_size + 1];
+  tag[tag_size] = '\0';
+
+  secure_string ciphertext;
+  int ciphertext_len =
+      aes_gcm_encrypt(plaintext_first, aad, key, iv, iv_size, ciphertext, tag);
+
+  json json_object = {
+      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
+  std::string message = json_object.dump();
+  message.append("\n");
+
   for (int i = 0; i < 250; ++i) {
-    EXPECT_EQ(
-        send(new_fd, plaintext_first.c_str(), plaintext_first.length(), 0),
-        plaintext_first.length());
+    EXPECT_EQ(send(new_fd, message.c_str(), message.length(), 0),
+              message.length());
 
     ++sent_items;
   }
-
-  plaintext_first.erase(plaintext_first.length() - 1, 1);
 
   for (int i = 0; i < 250; ++i) {
     secure_string result_one = server.read_message();
 
     std::cout << "server read: " << result_one << std::endl;
 
-    EXPECT_GT(result_one.length(), 0);
+    EXPECT_EQ(result_one.length(), plaintext_first.length());
 
     EXPECT_STREQ(result_one.c_str(), plaintext_first.c_str());
 
@@ -517,17 +642,40 @@ TEST_F(ServerConnectionTest, ReadOverflowMessageTest) {
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahsj"
-      "dshjdhjshdjshdjsdhjshdjhfdsjfdsfkj\n";
+      "dshjdhjshdjshdjsdhjshdjhfdsjfdsfkj";
 
-  EXPECT_EQ(send(new_fd, plaintext_first.c_str(), plaintext_first.length(), 0),
-            plaintext_first.length());
+  secure_string aad = "address:port";  // faked value
+  const int iv_size = 12;
+  byte iv[iv_size + 1];
+
+  int rc = RAND_bytes(iv, iv_size);
+  unsigned long err = ERR_get_error();
+  if (rc != 1) {
+    FAIL();
+  }
+  iv[iv_size] = '\0';
+
+  const int tag_size = 16;
+  byte tag[tag_size + 1];
+  tag[tag_size] = '\0';
+
+  secure_string ciphertext;
+  int ciphertext_len =
+      aes_gcm_encrypt(plaintext_first, aad, key, iv, iv_size, ciphertext, tag);
+
+  json json_object = {
+      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
+  std::string message = json_object.dump();
+  message.append("\n");
+
+  EXPECT_EQ(send(new_fd, message.c_str(), message.length(), 0),
+            message.length());
 
   secure_string result_one = server.read_message();
 
   std::cout << "server read: " << result_one << std::endl;
 
-  EXPECT_GT(result_one.length(), 0);
+  EXPECT_EQ(result_one.length(), plaintext_first.length());
 
-  plaintext_first.erase(plaintext_first.length() - 1, 1);
   EXPECT_STREQ(result_one.c_str(), plaintext_first.c_str());
 }
