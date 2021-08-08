@@ -10,6 +10,11 @@ set(SOURCES
     model/networking/utility/sha-3-256.cc
     model/networking/utility/aes-gcm.cc
     model/networking/utility/base64.cc
+    model/networking/utility/buffer-writer.cc
+    model/networking/utility/buffer-reader.cc
+    model/networking/utility/socket-handler.cc
+    model/networking/utility/secure-socket-handler.cc
+    model/networking/utility/insecure-socket-handler.cc
     
     model/networking/server/server-connection.cc
 
