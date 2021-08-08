@@ -22,6 +22,7 @@ secure_string networking_utility::EncodeBase64(secure_string &input_data) {
 
 secure_string networking_utility::DecodeBase64(secure_string &encoded_data) {
   int encoded_data_len = encoded_data.length();
+
   secure_string possible_padding = encoded_data.substr(encoded_data_len - 2, 2);
   unsigned int padding_count = 0;
   for (int index = 0; index < encoded_data_len; ++index) {
@@ -30,12 +31,11 @@ secure_string networking_utility::DecodeBase64(secure_string &encoded_data) {
 
   unsigned int total_size = (3 * (encoded_data_len / 4)) - padding_count;
 
-  char decoded_data[total_size + 1];
-  EVP_DecodeBlock((unsigned char *)decoded_data,
-                  (const unsigned char *)encoded_data.c_str(),
-                  encoded_data_len);
-
-  decoded_data[total_size] = '\0';
+  secure_string decoded_data;
+  decoded_data.resize(total_size);
+  int encoded = EVP_DecodeBlock((unsigned char *)decoded_data.c_str(),
+                                (const unsigned char *)encoded_data.c_str(),
+                                encoded_data_len);
 
   return decoded_data;
 }
