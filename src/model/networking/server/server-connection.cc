@@ -82,10 +82,12 @@ int ServerConnection::create_connection(std::string &ip_address,
   EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
 
   /*public keys need to be shared with other party at this point*/
-  std::string serial_public_key = SerializePublicKey(public_key.get());
+  secure_string serial_public_key =
+      (secure_string)SerializePublicKey(public_key.get());
 
-  int sent_bytes = send(sockfd, serial_public_key.c_str(),
-                        serial_public_key.length() + 1, 0);
+  // int sent_bytes = send(sockfd, serial_public_key.c_str(),
+  //                       serial_public_key.length() + 1, 0);
+  socket_handler->send(serial_public_key);
 
   secure_string payload = socket_handler->recv();
 
