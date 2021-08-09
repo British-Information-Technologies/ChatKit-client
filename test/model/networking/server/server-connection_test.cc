@@ -21,8 +21,11 @@
 
 #include "model/networking/utility/aes-gcm.h"
 #include "model/networking/utility/elliptic-curve-diffiehellman.h"
+#include "model/networking/utility/insecure-socket-handler.h"
 #include "model/networking/utility/memory-manager.h"
+#include "model/networking/utility/secure-socket-handler.h"
 #include "model/networking/utility/sha-3-256.h"
+#include "model/networking/utility/socket-handler.h"
 
 using namespace networking_server;
 using namespace networking_utility;
@@ -35,6 +38,7 @@ class ServerConnectionTest : public ::testing::Test {
   std::string server_ip = "localhost";
   std::string server_port = "3490";
   DerivedData *key;
+  SocketHandler *socket_handler;
 
   pthread_t listener_id;
   int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
@@ -112,9 +116,15 @@ class ServerConnectionTest : public ::testing::Test {
 
     free(key->secret);
     free(key);
+    free(socket_handler);
 
     close(sockfd);
     close(new_fd);
+  }
+
+  void set_state(SocketHandler *next_handler) {
+    delete socket_handler;
+    socket_handler = next_handler;
   }
 
   static void *ListenForConnectionWrapper(void *context) {
@@ -150,22 +160,20 @@ class ServerConnectionTest : public ::testing::Test {
   }
 
   void Exchange() {
+    set_state(new InsecureSocketHandler(new_fd));
+
     EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
     EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
 
     /*public keys need to be shared with other party at this point*/
-    std::string serial_public_key =
-        SerializePublicKey(public_key.get()).append("\n");
+    secure_string serial_public_key =
+        (secure_string)SerializePublicKey(public_key.get());
 
-    int sent_bytes =
-        send(new_fd, serial_public_key.c_str(), serial_public_key.length(), 0);
+    socket_handler->send(serial_public_key);
 
-    int buffer_size = 1024;
-    char buffer[buffer_size];
-    int bytes_read = recv(new_fd, buffer, buffer_size - 1, 0);
-    *(buffer + buffer_size) = '\0';
+    secure_string result = socket_handler->recv();
 
-    EVP_PKEY_free_ptr peer_public_key = DeserializePublicKey(buffer);
+    EVP_PKEY_free_ptr peer_public_key = DeserializePublicKey(result.c_str());
 
     /*Create the shared secret with other users public key and your
       own private key (this has wrong public key as a place holder*/
@@ -173,6 +181,8 @@ class ServerConnectionTest : public ::testing::Test {
 
     /*Hash the secret to create the key*/
     HashData(key);
+
+    set_state(new SecureSocketHandler(new_fd, key));
   }
 };
 
@@ -185,38 +195,6 @@ TEST_F(ServerConnectionTest, CreateConnectionTest) {
 TEST_F(ServerConnectionTest, SendShortMessageTest) {
   ServerConnection server;
   server.create_connection(server_ip, server_port);
-
-  secure_string plaintext = "this is a test";
-
-  EXPECT_GT(server.send_message(plaintext),
-            0);  // There should be more than 0 bytes sent.
-
-  int buffer_size = 1024;
-  char buffer[buffer_size];
-  int bytes_read = recv(new_fd, buffer, buffer_size - 1, 0);
-  *(buffer + buffer_size - 1) = '\0';
-
-  std::cout << "server read: " << buffer << std::endl;
-
-  EXPECT_GT(bytes_read,
-            0);  // There should be more than 0 bytes read by the server.
-
-  secure_string tmp;
-  tmp.assign(buffer);
-  json json_object = json::parse(tmp);
-
-  std::cout << "json object: " << json_object << std::endl;
-
-  std::string encrypted_message = json_object["message"];
-
-  EXPECT_STRNE(encrypted_message.c_str(), plaintext.c_str());
-
-  EXPECT_NE(plaintext.length(), encrypted_message.length());
-}
-
-TEST_F(ServerConnectionTest, SendShortMessageDecryptTest) {
-  ServerConnection server;
-  server.create_connection(server_ip, server_port);
   pthread_join(listener_id, NULL);
 
   secure_string plaintext = "this is a test";
@@ -224,57 +202,19 @@ TEST_F(ServerConnectionTest, SendShortMessageDecryptTest) {
   EXPECT_GT(server.send_message(plaintext),
             0);  // There should be more than 0 bytes sent.
 
-  int buffer_size = 1024;
-  char buffer[buffer_size];
-  int bytes_read = recv(new_fd, buffer, buffer_size - 1, 0);
-  *(buffer + buffer_size - 1) = '\0';
+  secure_string result = socket_handler->recv();
 
-  std::cout << "server read: " << buffer << std::endl;
+  EXPECT_GT(result.length(),
+            0);  // There should be more than 0 bytes read.
 
-  EXPECT_GT(bytes_read,
-            0);  // There should be more than 0 bytes read by the server.
+  std::cout << "server read: " << result << std::endl;
 
-  secure_string tmp;
-  tmp.assign(buffer);
-  json json_object = json::parse(tmp);
+  EXPECT_EQ(plaintext, result);
 
-  std::cout << "json object: " << json_object << std::endl;
-
-  secure_string encrypted_message = json_object["message"];
-  secure_string aad = json_object["aad"];
-  json tag_object = json_object["tag"];
-  json iv_object = json_object["iv"];
-
-  byte tag[tag_object.size() + 1];
-  int i = 0;
-  for (auto it = tag_object.begin(); it != tag_object.end(); ++it, ++i) {
-    tag[i] = it.value();
-  }
-  tag[tag_object.size()] = '\0';
-
-  byte iv[iv_object.size() + 1];
-  i = 0;
-  for (auto it = iv_object.begin(); it != iv_object.end(); ++it, ++i) {
-    iv[i] = it.value();
-  }
-  iv[iv_object.size()] = '\0';
-
-  EXPECT_STRNE(encrypted_message.c_str(), plaintext.c_str());
-
-  EXPECT_NE(plaintext.length(), encrypted_message.length());
-
-  secure_string decryptedtext;
-  aes_gcm_decrypt(encrypted_message, encrypted_message.length(), aad, tag, key,
-                  iv, strlen((char *)iv), decryptedtext);
-
-  std::cout << "encrypted: " << encrypted_message << std::endl;
-  std::cout << "decrypted: " << decryptedtext << std::endl;
-  std::cout << "plaintext: " << decryptedtext << std::endl;
-
-  EXPECT_STREQ(decryptedtext.c_str(), plaintext.c_str());
+  EXPECT_EQ(plaintext.length(), result.length());
 }
 
-TEST_F(ServerConnectionTest, SendLongMessageDecryptTest) {
+TEST_F(ServerConnectionTest, SendLongMessageTest) {
   ServerConnection server;
   server.create_connection(server_ip, server_port);
   pthread_join(listener_id, NULL);
@@ -286,54 +226,16 @@ TEST_F(ServerConnectionTest, SendLongMessageDecryptTest) {
   EXPECT_GT(server.send_message(plaintext),
             0);  // There should be more than 0 bytes sent.
 
-  int buffer_size = 1024;
-  char buffer[buffer_size];
-  int bytes_read = recv(new_fd, buffer, buffer_size - 1, 0);
-  *(buffer + buffer_size - 1) = '\0';
+  secure_string result = socket_handler->recv();
 
-  std::cout << "server read: " << buffer << std::endl;
+  EXPECT_GT(result.length(),
+            0);  // There should be more than 0 bytes read.
 
-  EXPECT_GT(bytes_read,
-            0);  // There should be more than 0 bytes read by the server.
+  std::cout << "server read: " << result << std::endl;
 
-  secure_string tmp;
-  tmp.assign(buffer);
-  json json_object = json::parse(tmp);
+  EXPECT_EQ(plaintext, result);
 
-  std::cout << "json object: " << json_object << std::endl;
-
-  secure_string encrypted_message = json_object["message"];
-  secure_string aad = json_object["aad"];
-  json tag_object = json_object["tag"];
-  json iv_object = json_object["iv"];
-
-  byte tag[tag_object.size() + 1];
-  int i = 0;
-  for (auto it = tag_object.begin(); it != tag_object.end(); ++it, ++i) {
-    tag[i] = it.value();
-  }
-  tag[tag_object.size()] = '\0';
-
-  byte iv[iv_object.size() + 1];
-  i = 0;
-  for (auto it = iv_object.begin(); it != iv_object.end(); ++it, ++i) {
-    iv[i] = it.value();
-  }
-  iv[iv_object.size()] = '\0';
-
-  EXPECT_STRNE(encrypted_message.c_str(), plaintext.c_str());
-
-  EXPECT_NE(plaintext.length(), encrypted_message.length());
-
-  secure_string decryptedtext;
-  aes_gcm_decrypt(encrypted_message, encrypted_message.length(), aad, tag, key,
-                  iv, strlen((char *)iv), decryptedtext);
-
-  std::cout << "encrypted: " << encrypted_message << std::endl;
-  std::cout << "decrypted: " << decryptedtext << std::endl;
-  std::cout << "plaintext: " << decryptedtext << std::endl;
-
-  EXPECT_STREQ(decryptedtext.c_str(), plaintext.c_str());
+  EXPECT_EQ(plaintext.length(), result.length());
 }
 
 TEST_F(ServerConnectionTest, SendEmptyMessageTest) {
@@ -343,9 +245,8 @@ TEST_F(ServerConnectionTest, SendEmptyMessageTest) {
 
   secure_string plaintext = "";
 
-  EXPECT_EQ(server.send_message(plaintext), 0);
-
   // No message should be sent, so 0 zero bytes should be returned
+  EXPECT_EQ(server.send_message(plaintext), 0);
 }
 
 TEST_F(ServerConnectionTest, ReadShortMessageTest) {
@@ -355,32 +256,9 @@ TEST_F(ServerConnectionTest, ReadShortMessageTest) {
 
   secure_string plaintext = "this is a test";
 
-  secure_string aad = "address:port";  // faked value
-  const int iv_size = 12;
-  byte iv[iv_size + 1];
+  int sent_bytes = socket_handler->send(plaintext);
 
-  int rc = RAND_bytes(iv, iv_size);
-  unsigned long err = ERR_get_error();
-  if (rc != 1) {
-    FAIL();
-  }
-  iv[iv_size] = '\0';
-
-  const int tag_size = 16;
-  byte tag[tag_size + 1];
-  tag[tag_size] = '\0';
-
-  secure_string ciphertext;
-  int ciphertext_len =
-      aes_gcm_encrypt(plaintext, aad, key, iv, iv_size, ciphertext, tag);
-
-  json json_object = {
-      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
-  std::string message = json_object.dump();
-  message.append("\n");
-
-  EXPECT_EQ(send(new_fd, message.c_str(), message.length(), 0),
-            message.length());
+  EXPECT_NE(sent_bytes, plaintext.length());
 
   secure_string result = server.read_message();
 
@@ -388,7 +266,7 @@ TEST_F(ServerConnectionTest, ReadShortMessageTest) {
 
   EXPECT_EQ(result.length(), plaintext.length());
 
-  EXPECT_STREQ(result.c_str(), plaintext.c_str());
+  EXPECT_EQ(result, plaintext);
 }
 
 TEST_F(ServerConnectionTest, ReadLongMessageTest) {
@@ -400,32 +278,9 @@ TEST_F(ServerConnectionTest, ReadLongMessageTest) {
       "this is a test for a very long message, however, its not longer than "
       "the buffer which will be important!";
 
-  secure_string aad = "address:port";  // faked value
-  const int iv_size = 12;
-  byte iv[iv_size + 1];
+  int sent_bytes = socket_handler->send(plaintext);
 
-  int rc = RAND_bytes(iv, iv_size);
-  unsigned long err = ERR_get_error();
-  if (rc != 1) {
-    FAIL();
-  }
-  iv[iv_size] = '\0';
-
-  const int tag_size = 16;
-  byte tag[tag_size + 1];
-  tag[tag_size] = '\0';
-
-  secure_string ciphertext;
-  int ciphertext_len =
-      aes_gcm_encrypt(plaintext, aad, key, iv, iv_size, ciphertext, tag);
-
-  json json_object = {
-      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
-  std::string message = json_object.dump();
-  message.append("\n");
-
-  EXPECT_EQ(send(new_fd, message.c_str(), message.length(), 0),
-            message.length());
+  EXPECT_NE(sent_bytes, plaintext.length());
 
   secure_string result = server.read_message();
 
@@ -433,7 +288,7 @@ TEST_F(ServerConnectionTest, ReadLongMessageTest) {
 
   EXPECT_EQ(result.length(), plaintext.length());
 
-  EXPECT_STREQ(result.c_str(), plaintext.c_str());
+  EXPECT_EQ(result, plaintext);
 }
 
 TEST_F(ServerConnectionTest, ReadBufferSizeMessageTest) {
@@ -441,34 +296,26 @@ TEST_F(ServerConnectionTest, ReadBufferSizeMessageTest) {
   server.create_connection(server_ip, server_port);
   pthread_join(listener_id, NULL);
 
-  secure_string plaintext = "this is pp";
+  secure_string plaintext =
+      "this message is the same length as the buffer, but one char is missing "
+      "for the new line character. but I must say this is still very short, "
+      "I'm going to start copy and pasting to reach a size of 1023 chars now: "
+      "this message is the same length as the buffer, but one char is missing "
+      "for the new line character. but I must say this is still very short, "
+      "I'm going to start copy and pasting to reach a size of 1023 chars now: "
+      "this message is the same length as the buffer, but one char is missing "
+      "for the new line character. but I must say this is still very short, "
+      "I'm going to start copy and pasting to reach a size of 1023 chars now: "
+      "this message is the same length as the buffer, but one char is missing "
+      "for the new line character. but I must say this is still very short, "
+      "I'm going to start copy and pasting to reach a size of 1023 chars now: "
+      "this message is the same length as the buffer, but one char is missing "
+      "for the new line character. but I must say this is still very short, "
+      "I'm going to start copy and pasting to ";
 
-  secure_string aad = "address:port";  // faked value
-  const int iv_size = 12;
-  byte iv[iv_size + 1];
+  int sent_bytes = socket_handler->send(plaintext);
 
-  int rc = RAND_bytes(iv, iv_size);
-  unsigned long err = ERR_get_error();
-  if (rc != 1) {
-    FAIL();
-  }
-  iv[iv_size] = '\0';
-
-  const int tag_size = 16;
-  byte tag[tag_size + 1];
-  tag[tag_size] = '\0';
-
-  secure_string ciphertext;
-  int ciphertext_len =
-      aes_gcm_encrypt(plaintext, aad, key, iv, iv_size, ciphertext, tag);
-
-  json json_object = {
-      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
-  std::string message = json_object.dump();
-  message.append("\n");
-
-  EXPECT_EQ(send(new_fd, message.c_str(), message.length(), 0),
-            message.length());
+  EXPECT_NE(sent_bytes, plaintext.length());
 
   secure_string result = server.read_message();
 
@@ -476,7 +323,7 @@ TEST_F(ServerConnectionTest, ReadBufferSizeMessageTest) {
 
   EXPECT_EQ(result.length(), plaintext.length());
 
-  EXPECT_STREQ(result.c_str(), plaintext.c_str());
+  EXPECT_EQ(result, plaintext);
 }
 
 TEST_F(ServerConnectionTest, ReadMultipleSmallMessageTest) {
@@ -484,67 +331,35 @@ TEST_F(ServerConnectionTest, ReadMultipleSmallMessageTest) {
   server.create_connection(server_ip, server_port);
   pthread_join(listener_id, NULL);
 
-  secure_string aad = "address:port";  // faked value
-  const int iv_size = 12;
-  byte iv[iv_size + 1];
-
-  int rc = RAND_bytes(iv, iv_size);
-  unsigned long err = ERR_get_error();
-  if (rc != 1) {
-    FAIL();
-  }
-  iv[iv_size] = '\0';
-
-  const int tag_size = 16;
-  byte tag[tag_size + 1];
-  tag[tag_size] = '\0';
-
   secure_string plaintext_first = "first";
   secure_string plaintext_second = "second";
 
   secure_string ciphertext_first;
   secure_string ciphertext_second;
 
-  aes_gcm_encrypt(plaintext_first, aad, key, iv, iv_size, ciphertext_first,
-                  tag);
+  int sent_bytes_first = socket_handler->send(plaintext_first);
 
-  json json_object_first = {
-      {"message", ciphertext_first}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
+  EXPECT_NE(sent_bytes_first, plaintext_first.length());
 
-  std::string message_first = json_object_first.dump();
+  secure_string result_first = server.read_message();
 
-  message_first.append("\n");
+  std::cout << "server read: " << result_first << std::endl;
 
-  EXPECT_EQ(send(new_fd, message_first.c_str(), message_first.length(), 0),
-            message_first.length());
+  EXPECT_EQ(result_first.length(), plaintext_first.length());
 
-  secure_string result_one = server.read_message();
+  EXPECT_EQ(result_first, plaintext_first);
 
-  std::cout << "server read: " << result_one << std::endl;
+  int sent_bytes_second = socket_handler->send(plaintext_second);
 
-  EXPECT_EQ(result_one.length(), plaintext_first.length());
+  EXPECT_NE(sent_bytes_second, plaintext_second.length());
 
-  EXPECT_STREQ(result_one.c_str(), plaintext_first.c_str());
+  secure_string result_second = server.read_message();
 
-  aes_gcm_encrypt(plaintext_second, aad, key, iv, iv_size, ciphertext_second,
-                  tag);
+  std::cout << "server read: " << result_second << std::endl;
 
-  json json_object_second = {
-      {"message", ciphertext_second}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
+  EXPECT_EQ(result_second.length(), plaintext_second.length());
 
-  std::string message_second = json_object_second.dump();
-  message_second.append("\n");
-
-  EXPECT_EQ(send(new_fd, message_second.c_str(), message_second.length(), 0),
-            message_second.length());
-
-  secure_string result_two = server.read_message();
-
-  std::cout << "server read: " << result_two << std::endl;
-
-  EXPECT_EQ(result_two.length(), plaintext_second.length());
-
-  EXPECT_STREQ(result_two.c_str(), plaintext_second.c_str());
+  EXPECT_EQ(result_second, plaintext_second);
 }
 
 TEST_F(ServerConnectionTest, ReadManySmallMessageTest) {
@@ -552,49 +367,23 @@ TEST_F(ServerConnectionTest, ReadManySmallMessageTest) {
   server.create_connection(server_ip, server_port);
   pthread_join(listener_id, NULL);
 
-  secure_string plaintext_first = "first";
+  secure_string plaintext = "first";
   int sent_items = 0;
   int read_items = 0;
 
-  secure_string aad = "address:port";  // faked value
-  const int iv_size = 12;
-  byte iv[iv_size + 1];
-
-  int rc = RAND_bytes(iv, iv_size);
-  unsigned long err = ERR_get_error();
-  if (rc != 1) {
-    FAIL();
-  }
-  iv[iv_size] = '\0';
-
-  const int tag_size = 16;
-  byte tag[tag_size + 1];
-  tag[tag_size] = '\0';
-
-  secure_string ciphertext;
-  int ciphertext_len =
-      aes_gcm_encrypt(plaintext_first, aad, key, iv, iv_size, ciphertext, tag);
-
-  json json_object = {
-      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
-  std::string message = json_object.dump();
-  message.append("\n");
-
   for (int i = 0; i < 250; ++i) {
-    EXPECT_EQ(send(new_fd, message.c_str(), message.length(), 0),
-              message.length());
+    int sent_bytes = socket_handler->send(plaintext);
+    EXPECT_NE(sent_bytes, plaintext.length());
 
     ++sent_items;
   }
 
   for (int i = 0; i < 250; ++i) {
-    secure_string result_one = server.read_message();
+    secure_string result = server.read_message();
+    std::cout << "server read: " << result << std::endl;
 
-    std::cout << "server read: " << result_one << std::endl;
-
-    EXPECT_EQ(result_one.length(), plaintext_first.length());
-
-    EXPECT_STREQ(result_one.c_str(), plaintext_first.c_str());
+    EXPECT_EQ(result.length(), plaintext.length());
+    EXPECT_EQ(result, plaintext);
 
     ++read_items;
   }
@@ -609,7 +398,7 @@ TEST_F(ServerConnectionTest, ReadOverflowMessageTest) {
   server.create_connection(server_ip, server_port);
   pthread_join(listener_id, NULL);
 
-  secure_string plaintext_first =
+  secure_string plaintext =
       "this message must be larger than the buffer of 1024 bytes to ensure the "
       "read method can successfully retrieve messages beyond this bound even "
       "if they overflow out the end! Very very very very very "
@@ -644,38 +433,15 @@ TEST_F(ServerConnectionTest, ReadOverflowMessageTest) {
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahsj"
       "dshjdhjshdjshdjsdhjshdjhfdsjfdsfkj";
 
-  secure_string aad = "address:port";  // faked value
-  const int iv_size = 12;
-  byte iv[iv_size + 1];
+  int sent_bytes = socket_handler->send(plaintext);
 
-  int rc = RAND_bytes(iv, iv_size);
-  unsigned long err = ERR_get_error();
-  if (rc != 1) {
-    FAIL();
-  }
-  iv[iv_size] = '\0';
+  EXPECT_NE(sent_bytes, plaintext.length());
 
-  const int tag_size = 16;
-  byte tag[tag_size + 1];
-  tag[tag_size] = '\0';
+  secure_string result = server.read_message();
 
-  secure_string ciphertext;
-  int ciphertext_len =
-      aes_gcm_encrypt(plaintext_first, aad, key, iv, iv_size, ciphertext, tag);
+  std::cout << "server read: " << result << std::endl;
 
-  json json_object = {
-      {"message", ciphertext}, {"aad", aad}, {"iv", iv}, {"tag", tag}};
-  std::string message = json_object.dump();
-  message.append("\n");
+  EXPECT_EQ(result.length(), plaintext.length());
 
-  EXPECT_EQ(send(new_fd, message.c_str(), message.length(), 0),
-            message.length());
-
-  secure_string result_one = server.read_message();
-
-  std::cout << "server read: " << result_one << std::endl;
-
-  EXPECT_EQ(result_one.length(), plaintext_first.length());
-
-  EXPECT_STREQ(result_one.c_str(), plaintext_first.c_str());
+  EXPECT_EQ(result, plaintext);
 }
