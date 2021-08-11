@@ -26,7 +26,8 @@ TEST_F(AESGCMTest, SingleEncryptMatchKeyLength) {
   secure_string plaintext =
       "hey mitch how are you today. This is pretty crazy wild bam bam !";
   secure_string ciphertext;
-  byte tag[16];
+  byte tag[17];
+  tag[16] = '\0';
 
   int ciphertext_len =
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
@@ -86,7 +87,8 @@ TEST_F(AESGCMTest, EncryptDecryptMatchKeyLength) {
 TEST_F(AESGCMTest, EncryptShortKeyLength) {
   secure_string plaintext = "hey mitch how are you today.";
   secure_string ciphertext;
-  byte tag[16];
+  byte tag[17];
+  tag[16] = '\0';
 
   int ciphertext_len =
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
@@ -108,7 +110,8 @@ TEST_F(AESGCMTest, EncryptDecryptShortKeyLength) {
   secure_string plaintext = "hey mitch how are you today.";
   secure_string ciphertext;
   secure_string decryptedtext;
-  byte tag[16];
+  byte tag[17];
+  tag[16] = '\0';
 
   int ciphertext_len =
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
@@ -142,7 +145,8 @@ TEST_F(AESGCMTest, EncryptLongKeyLength) {
       "hey mitch how are you today. epic bam dam wam smash bash ropyras help "
       "me please i beg you i need help ahahhaha!";
   secure_string ciphertext;
-  byte tag[16];
+  byte tag[17];
+  tag[16] = '\0';
 
   int ciphertext_len =
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
