@@ -2,7 +2,7 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 
 set(SOURCES
     main.cc
-	MainApplication.cc
+	view/MainApplication.cc
     controller/client-controller.cc
     controller/view-factory.cc
     controller/addfriend-observer.cc
@@ -11,7 +11,6 @@ set(SOURCES
     model/friend-functionality/friend-hashmap.cc
     model/friend-functionality/friend-node.cc
     model/friend-functionality/friend-utility.cc
-    view/gui-view.cc
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
