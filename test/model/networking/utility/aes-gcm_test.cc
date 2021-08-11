@@ -166,7 +166,8 @@ TEST_F(AESGCMTest, EncryptDecryptLongKeyLength) {
       "me please i beg you i need help ahahahahaha!";
   secure_string ciphertext;
   secure_string decryptedtext;
-  byte tag[16];
+  byte tag[17];
+  tag[16] = '\0';
 
   int ciphertext_len =
       aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
@@ -193,4 +194,40 @@ TEST_F(AESGCMTest, EncryptDecryptLongKeyLength) {
   EXPECT_EQ(decryptedtext_len, plaintext.size());
   EXPECT_EQ(decryptedtext.size(), plaintext.size());
   EXPECT_EQ(decryptedtext, plaintext);
+}
+
+TEST_F(AESGCMTest, EncryptDecryptManyMessages) {
+  secure_string plaintext = "hey mitch how are you today.";
+  secure_string ciphertext;
+  secure_string decryptedtext;
+  byte tag[17];
+  tag[16] = '\0';
+
+  for (int i = 0; i < 250; ++i) {
+    int ciphertext_len = aes_gcm_encrypt(plaintext, additional, &key, iv,
+                                         iv_len, ciphertext, tag);
+
+    std::cout << "Ciphertext: ";
+    BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
+    std::cout << std::endl;
+
+    std::cout << "Tag: ";
+    BIO_dump_fp(stdout, (const char *)tag, 16);
+    std::cout << std::endl;
+
+    EXPECT_NE(plaintext.size(), ciphertext.size());
+    EXPECT_EQ(ciphertext.size(), ciphertext_len);
+    EXPECT_NE(plaintext, ciphertext);
+
+    int decryptedtext_len =
+        aes_gcm_decrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,
+                        iv_len, decryptedtext);
+
+    std::cout << "decrypted: " << decryptedtext << std::endl;
+    std::cout << "plaintext: " << plaintext << std::endl;
+
+    EXPECT_EQ(decryptedtext_len, plaintext.size());
+    EXPECT_EQ(decryptedtext.size(), plaintext.size());
+    EXPECT_EQ(decryptedtext, plaintext);
+  }
 }
