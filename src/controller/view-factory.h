@@ -3,12 +3,12 @@
 
 #include <memory>
 
-#include "../view/view.h"
+#include "../view/MainApplication.h"
 
 namespace chat_client_controller {
 class ViewFactory {
  public:
-  std::shared_ptr<chat_client_view::View> CreateView(int, char **);
+  Glib::RefPtr<MainApplication> CreateView(int, char **);
 };
 }  // namespace chat_client_controller
 
