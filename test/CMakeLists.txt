@@ -24,6 +24,9 @@ set(SOURCES
     model/friend-functionality/friend-hashmap_test.cc
     model/friend-functionality/friend-utility_test.cc
     
+    model/networking/temporary-server.cc
+    model/networking/temporary-client.cc
+
     model/networking/utility/elliptic-curve-diffiehellman_test.cc
     model/networking/utility/sha-3-256_test.cc
     model/networking/utility/aes-gcm_test.cc
