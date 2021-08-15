@@ -13,6 +13,8 @@ set(SOURCES
     ../src/model/networking/utility/elliptic-curve-diffiehellman.cc
     ../src/model/networking/utility/sha-3-256.cc
     ../src/model/networking/utility/aes-gcm.cc
+    ../src/model/networking/utility/socket-handler.cc
+    ../src/model/networking/utility/secure-socket-handler.cc
     
     ../src/model/networking/server/server-connection.cc
 
@@ -25,6 +27,7 @@ set(SOURCES
     model/networking/utility/elliptic-curve-diffiehellman_test.cc
     model/networking/utility/sha-3-256_test.cc
     model/networking/utility/aes-gcm_test.cc
+    model/networking/utility/secure-socket-handler_test.cc
 
     model/networking/server/server-connection_test.cc
 
