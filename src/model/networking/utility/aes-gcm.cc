@@ -63,10 +63,6 @@ int networking_utility::aes_gcm_encrypt(secure_string &plaintext,
     abort();
   ciphertext_len += len;
 
-  /* Get the tag */
-  if (1 != EVP_CIPHER_CTX_ctrl(ctx.get(), EVP_CTRL_GCM_GET_TAG, 16, tag))
-    abort();
-
   /* BASE 64 encode the ciphertext */
   ciphertext.assign((std::string)EncodeBase64(ciphertext));
   ciphertext_len = ciphertext.length();
@@ -118,9 +114,6 @@ int networking_utility::aes_gcm_decrypt(secure_string &ciphertext,
                          (const byte *)&ciphertext[0], ciphertext_len))
     abort();
   plaintext_len = len;
-
-  /* Set expected tag value. Works in OpenSSL 1.0.1d and later */
-  if (!EVP_CIPHER_CTX_ctrl(ctx.get(), EVP_CTRL_GCM_SET_TAG, 16, tag)) abort();
 
   /*
    * Finalise the decryption. A positive return value indicates success,
