@@ -39,3 +39,16 @@ class BufferWriterTest : public ::testing::Test {
     free(client);
   }
 };
+
+TEST_F(BufferWriterTest, SendAndReadManyMessagesTest) {
+  std::string message = "success";
+
+  for (int i = 0; i < 250; ++i) {
+    client_writer->write_line(message);
+  }
+
+  for (int i = 0; i < 250; ++i) {
+    std::string result = server_reader->read_line();
+    EXPECT_EQ(message, result);
+  }
+}
