@@ -99,7 +99,7 @@ int TemporaryServer::setup() {
   pthread_create(&listener_id, NULL,
                  &TemporaryServer::ListenForConnectionWrapper, this);
 
-  return new_fd;
+  return 1;
 }
 
 void TemporaryServer::teardown() {

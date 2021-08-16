@@ -7,11 +7,14 @@
 #include <string>
 
 class TemporaryServer {
+ public:
+  pthread_t listener_id;
+  int new_fd;
+
  private:
   std::string ip;
   std::string port;
-  pthread_t listener_id;
-  int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
+  int sockfd;  // listen on sock_fd, new connection on new_fd
   socklen_t sin_size;
   struct sockaddr_storage their_addr;  // connector's address information
   char s[INET6_ADDRSTRLEN];
