@@ -10,6 +10,8 @@ set(SOURCES
     ../src/model/friend-functionality/friend-hashmap.cc
     ../src/model/friend-functionality/friend-utility.cc
 
+    ../src/model/message-functionality/message-node.cc
+
     ../src/model/networking/utility/elliptic-curve-diffiehellman.cc
     ../src/model/networking/utility/sha-3-256.cc
     ../src/model/networking/utility/aes-gcm.cc
@@ -26,6 +28,8 @@ set(SOURCES
     model/friend-functionality/friend-hashmap_test.cc
     model/friend-functionality/friend-utility_test.cc
     
+    model/message-functionality/message-node_test.cc
+
     model/networking/temporary-server.cc
     model/networking/temporary-client.cc
 
