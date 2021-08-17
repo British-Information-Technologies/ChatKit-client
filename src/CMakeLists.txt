@@ -22,6 +22,8 @@ set(SOURCES
     model/friend-functionality/friend-utility.cc
     model/friend-functionality/friend-node.cc
 
+    model/message-functionality/message-node.cc
+
     model/client-model.cc
 
     view/gui-view.cc
