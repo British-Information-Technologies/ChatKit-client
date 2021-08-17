@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include "model/message-functionality/client-stream-in.h"
+
 using namespace chat_client_model_message_functionality;
 
 TEST(MessageNodeTest, GetContent) {
@@ -31,4 +33,12 @@ TEST(MessageNodeTest, GetContentMany) {
 
     EXPECT_EQ(message.GetContent(), content);
   }
+}
+
+TEST(MessageNodeTest, GetTypeConnected) {
+  std::string content = "one";
+
+  MessageNode message(content);
+
+  EXPECT_EQ(message.GetType(), ClientStreamIn::Connect);
 }
