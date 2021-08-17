@@ -66,3 +66,11 @@ TEST(MessageNodeTest, GetTypeSendGlobalMessage) {
 
   EXPECT_EQ(message.GetType(), ClientStreamIn::SendGlobalMessage);
 }
+
+TEST(MessageNodeTest, GetTypeDisconnect) {
+  std::string content = "one";
+
+  MessageNode message(content, ClientStreamIn::Disconnect);
+
+  EXPECT_EQ(message.GetType(), ClientStreamIn::Disconnect);
+}
