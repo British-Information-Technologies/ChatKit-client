@@ -50,3 +50,11 @@ TEST(MessageNodeTest, GetTypeUpdate) {
 
   EXPECT_EQ(message.GetType(), ClientStreamIn::Update);
 }
+
+TEST(MessageNodeTest, GetTypeSendMessage) {
+  std::string content = "one";
+
+  MessageNode message(content, ClientStreamIn::SendMessage);
+
+  EXPECT_EQ(message.GetType(), ClientStreamIn::SendMessage);
+}
