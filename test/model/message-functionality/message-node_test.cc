@@ -22,3 +22,13 @@ TEST(MessageNodeTest, GetContentDouble) {
   EXPECT_EQ(message_one.GetContent(), content_one);
   EXPECT_EQ(message_two.GetContent(), content_two);
 }
+
+TEST(MessageNodeTest, GetContentMany) {
+  for (int i = 0; i < 250; ++i) {
+    std::string content = std::to_string(i);
+
+    MessageNode message(content);
+
+    EXPECT_EQ(message.GetContent(), content);
+  }
+}
