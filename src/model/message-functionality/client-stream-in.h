@@ -2,7 +2,7 @@
 #define CPPCHATCLIENT_MODEL_MESSAGEFUNCTIONALITY_CLIENTSTREAMIN_
 
 namespace chat_client_model_message_functionality {
-enum class ClientStreamIn { Connect, Update };
+enum class ClientStreamIn { Connect, Update, SendMessage };
 }
 
 #endif
