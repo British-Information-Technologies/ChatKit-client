@@ -10,7 +10,6 @@ set(SOURCES
     ../src/model/friend-functionality/friend-hashmap.cc
     ../src/model/friend-functionality/friend-utility.cc
 
-    ../src/model/message-functionality/client-stream-in/connected-message.cc
     ../src/model/message-functionality/client-stream-in/update-message.cc
     ../src/model/message-functionality/client-stream-in/send-message.cc
     ../src/model/message-functionality/client-stream-in/send-global-message.cc
@@ -32,7 +31,6 @@ set(SOURCES
     model/friend-functionality/friend-hashmap_test.cc
     model/friend-functionality/friend-utility_test.cc
     
-    model/message-functionality/client-stream-in/connected-message_test.cc
     model/message-functionality/client-stream-in/update-message_test.cc
     model/message-functionality/client-stream-in/send-message_test.cc
     model/message-functionality/client-stream-in/send-global-message_test.cc

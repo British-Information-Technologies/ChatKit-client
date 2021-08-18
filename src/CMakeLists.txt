@@ -22,7 +22,6 @@ set(SOURCES
     model/friend-functionality/friend-utility.cc
     model/friend-functionality/friend-node.cc
 
-    model/message-functionality/client-stream-in/connected-message.cc
     model/message-functionality/client-stream-in/update-message.cc
     model/message-functionality/client-stream-in/send-message.cc
     model/message-functionality/client-stream-in/send-global-message.cc
