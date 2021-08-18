@@ -8,15 +8,24 @@ using namespace chat_client_model_message_functionality_client_stream_in;
 using json = nlohmann::json;
 
 TEST(SendMessageTest, ToStringTest) {
-  SendMessage message;
+  std::string to = "mitch";
+  std::string content = "hey hey hey";
 
-  EXPECT_EQ(message.ToString(), "{\"type\":\"SendMessage\"}");
+  SendMessage message(to, content);
+
+  EXPECT_EQ(message.ToString(),
+            "{\"content\":\"hey hey "
+            "hey\",\"to\":\"mitch\",\"type\":\"SendMessage\"}");
 }
 
 TEST(SendMessageTest, ToJsonTest) {
-  SendMessage message;
+  std::string to = "mitch";
+  std::string content = "hey hey hey";
 
-  json json_object = {{"type", "SendMessage"}};
+  SendMessage message(to, content);
+
+  json json_object = {
+      {"type", "SendMessage"}, {"to", to}, {"content", content}};
 
   EXPECT_EQ(message.ToJson(), json_object);
 }

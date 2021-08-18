@@ -8,15 +8,20 @@ using namespace chat_client_model_message_functionality_client_stream_in;
 using json = nlohmann::json;
 
 TEST(SendGlobalMessageTest, ToStringTest) {
-  SendGlobalMessage message;
+  std::string content = "hey hey hey";
 
-  EXPECT_EQ(message.ToString(), "{\"type\":\"SendGlobalMessage\"}");
+  SendGlobalMessage message(content);
+
+  EXPECT_EQ(message.ToString(),
+            "{\"content\":\"hey hey hey\",\"type\":\"SendGlobalMessage\"}");
 }
 
 TEST(SendGlobalMessageTest, ToJsonTest) {
-  SendGlobalMessage message;
+  std::string content = "hey hey hey";
 
-  json json_object = {{"type", "SendGlobalMessage"}};
+  SendGlobalMessage message(content);
+
+  json json_object = {{"type", "SendGlobalMessage"}, {"content", content}};
 
   EXPECT_EQ(message.ToJson(), json_object);
 }
