@@ -23,7 +23,7 @@ set(SOURCES
     model/friend-functionality/friend-node.cc
 
     model/message-functionality/client-stream-in/connected-message.cc
-
+    model/message-functionality/client-stream-in/update-message.cc
 
     model/client-model.cc
 
