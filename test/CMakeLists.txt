@@ -13,6 +13,7 @@ set(SOURCES
     ../src/model/message-functionality/client-stream-in/connected-message.cc
     ../src/model/message-functionality/client-stream-in/update-message.cc
     ../src/model/message-functionality/client-stream-in/send-message.cc
+    ../src/model/message-functionality/client-stream-in/send-global-message.cc
 
     ../src/model/networking/utility/elliptic-curve-diffiehellman.cc
     ../src/model/networking/utility/sha-3-256.cc
@@ -33,6 +34,7 @@ set(SOURCES
     model/message-functionality/client-stream-in/connected-message_test.cc
     model/message-functionality/client-stream-in/update-message_test.cc
     model/message-functionality/client-stream-in/send-message_test.cc
+    model/message-functionality/client-stream-in/send-global-message_test.cc
 
     model/networking/temporary-server.cc
     model/networking/temporary-client.cc
