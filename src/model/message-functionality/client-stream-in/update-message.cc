@@ -7,7 +7,7 @@ using json = nlohmann::json;
 std::string UpdateMessage::ToString() { return this->ToJson().dump(); }
 
 json UpdateMessage::ToJson() {
-  json json_object = {{"type", "update"}};
+  json json_object = {{"type", "Update"}};
 
   return json_object;
 }

@@ -10,13 +10,13 @@ using json = nlohmann::json;
 TEST(UpdateMessageTest, ToStringTest) {
   UpdateMessage message;
 
-  EXPECT_EQ(message.ToString(), "{\"type\":\"update\"}");
+  EXPECT_EQ(message.ToString(), "{\"type\":\"Update\"}");
 }
 
 TEST(UpdateMessageTest, ToJsonTest) {
   UpdateMessage message;
 
-  json json_object = {{"type", "update"}};
+  json json_object = {{"type", "Update"}};
 
   EXPECT_EQ(message.ToJson(), json_object);
 }

@@ -10,13 +10,13 @@ using json = nlohmann::json;
 TEST(ConnectedMessageTest, ToStringTest) {
   ConnectedMessage message;
 
-  EXPECT_EQ(message.ToString(), "{\"type\":\"connect\"}");
+  EXPECT_EQ(message.ToString(), "{\"type\":\"Connect\"}");
 }
 
 TEST(ConnectedMessageTest, ToJsonTest) {
   ConnectedMessage message;
 
-  json json_object = {{"type", "connect"}};
+  json json_object = {{"type", "Connect"}};
 
   EXPECT_EQ(message.ToJson(), json_object);
 }

@@ -7,7 +7,7 @@ using json = nlohmann::json;
 std::string ConnectedMessage::ToString() { return this->ToJson().dump(); }
 
 json ConnectedMessage::ToJson() {
-  json json_object = {{"type", "connect"}};
+  json json_object = {{"type", "Connect"}};
 
   return json_object;
 }
