@@ -32,6 +32,7 @@ set(SOURCES
     model/message-functionality/client-stream-out/global-message.cc
     model/message-functionality/client-stream-out/update-message.cc
     model/message-functionality/client-stream-out/disconnected-message.cc
+    model/message-functionality/client-stream-out/error-message.cc
 
     model/client-model.cc
 
