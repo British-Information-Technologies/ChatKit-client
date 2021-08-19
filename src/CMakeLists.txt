@@ -28,6 +28,7 @@ set(SOURCES
     model/message-functionality/client-stream-in/disconnect-message.cc
 
     model/message-functionality/client-stream-out/connect-message.cc
+    model/message-functionality/client-stream-out/user-message.cc
 
     model/client-model.cc
 

@@ -16,6 +16,8 @@ set(SOURCES
     ../src/model/message-functionality/client-stream-in/disconnect-message.cc
 
     ../src/model/message-functionality/client-stream-out/connect-message.cc
+    ../src/model/message-functionality/client-stream-out/user-message.cc
+
 
     ../src/model/networking/utility/elliptic-curve-diffiehellman.cc
     ../src/model/networking/utility/sha-3-256.cc
@@ -39,6 +41,7 @@ set(SOURCES
     model/message-functionality/client-stream-in/disconnect-message_test.cc
 
     model/message-functionality/client-stream-out/connect-message_test.cc
+    model/message-functionality/client-stream-out/user-message_test.cc
 
     model/networking/temporary-server.cc
     model/networking/temporary-client.cc
