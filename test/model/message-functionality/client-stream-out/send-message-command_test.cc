@@ -1,31 +1,31 @@
-#include "model/message-functionality/client-stream-in/send-message.h"
-
 #include <gtest/gtest.h>
 
 #include <nlohmann/json.hpp>
 
-using namespace chat_client_model_message_functionality_client_stream_in;
+#include "model/message-functionality/client-stream-out/send-message-command.h"
+
+using namespace chat_client_model_message_functionality_client_stream_out;
 using json = nlohmann::json;
 
-TEST(SendMessageTest, ToStringTest) {
+TEST(SendMessageCommandTest, ToStringTest) {
   std::string to = "mitch";
   std::string content = "hey hey hey";
 
-  SendMessage message(to, content);
+  SendMessageCommand command(to, content);
 
-  EXPECT_EQ(message.ToString(),
+  EXPECT_EQ(command.ToString(),
             "{\"content\":\"hey hey "
             "hey\",\"to\":\"mitch\",\"type\":\"SendMessage\"}");
 }
 
-TEST(SendMessageTest, ToJsonTest) {
+TEST(SendMessageCommandTest, ToJsonTest) {
   std::string to = "mitch";
   std::string content = "hey hey hey";
 
-  SendMessage message(to, content);
+  SendMessageCommand command(to, content);
 
   json json_object = {
       {"type", "SendMessage"}, {"to", to}, {"content", content}};
 
-  EXPECT_EQ(message.ToJson(), json_object);
+  EXPECT_EQ(command.ToJson(), json_object);
 }

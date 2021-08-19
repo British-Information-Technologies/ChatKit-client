@@ -1,31 +1,31 @@
+#include "model/message-functionality/client-stream-in/user-message-command.h"
+
 #include <gtest/gtest.h>
 
 #include <nlohmann/json.hpp>
 
-#include "model/message-functionality/client-stream-out/user-message.h"
-
-using namespace chat_client_model_message_functionality_client_stream_out;
+using namespace chat_client_model_message_functionality_client_stream_in;
 using json = nlohmann::json;
 
-TEST(UserMessageTest, ToStringTest) {
+TEST(UserMessageCommandTest, ToStringTest) {
   std::string from = "mitch";
   std::string content = "hey hey hey";
 
-  UserMessage message(from, content);
+  UserMessageCommand command(from, content);
 
-  EXPECT_EQ(message.ToString(),
+  EXPECT_EQ(command.ToString(),
             "{\"content\":\"hey hey "
             "hey\",\"from\":\"mitch\",\"type\":\"UserMessage\"}");
 }
 
-TEST(UserMessageTest, ToJsonTest) {
+TEST(UserMessageCommandTest, ToJsonTest) {
   std::string from = "mitch";
   std::string content = "hey hey hey";
 
-  UserMessage message(from, content);
+  UserMessageCommand command(from, content);
 
   json json_object = {
       {"type", "UserMessage"}, {"from", from}, {"content", content}};
 
-  EXPECT_EQ(message.ToJson(), json_object);
+  EXPECT_EQ(command.ToJson(), json_object);
 }

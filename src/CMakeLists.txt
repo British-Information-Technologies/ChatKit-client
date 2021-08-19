@@ -22,17 +22,17 @@ set(SOURCES
     model/friend-functionality/friend-utility.cc
     model/friend-functionality/friend-node.cc
 
-    model/message-functionality/client-stream-in/update-message.cc
-    model/message-functionality/client-stream-in/send-message.cc
-    model/message-functionality/client-stream-in/send-global-message.cc
-    model/message-functionality/client-stream-in/disconnect-message.cc
+    model/message-functionality/client-stream-out/update-command.cc
+    model/message-functionality/client-stream-out/send-message-command.cc
+    model/message-functionality/client-stream-out/send-global-message-command.cc
+    model/message-functionality/client-stream-out/disconnect-command.cc
 
-    model/message-functionality/client-stream-out/connect-message.cc
-    model/message-functionality/client-stream-out/user-message.cc
-    model/message-functionality/client-stream-out/global-message.cc
-    model/message-functionality/client-stream-out/update-message.cc
-    model/message-functionality/client-stream-out/disconnected-message.cc
-    model/message-functionality/client-stream-out/error-message.cc
+    model/message-functionality/client-stream-in/connect-command.cc
+    model/message-functionality/client-stream-in/user-message-command.cc
+    model/message-functionality/client-stream-in/global-message-command.cc
+    model/message-functionality/client-stream-in/update-command.cc
+    model/message-functionality/client-stream-in/disconnected-command.cc
+    model/message-functionality/client-stream-in/error-command.cc
 
     model/client-model.cc
 

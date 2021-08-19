@@ -1,10 +1,11 @@
-#ifndef MODEL_MESSAGEFUNCTIONALITY_CLIENTSTREAMOUT_CONNECTMESSAGE_
-#define MODEL_MESSAGEFUNCTIONALITY_CLIENTSTREAMOUT_CONNECTMESSAGE_
+#ifndef MODEL_MESSAGEFUNCTIONALITY_CLIENTSTREAMOUT_DISCONNECTCOMMAND_
+#define MODEL_MESSAGEFUNCTIONALITY_CLIENTSTREAMOUT_DISCONNECTCOMMAND_
 
 #include "../message.h"
 
 namespace chat_client_model_message_functionality_client_stream_out {
-class ConnectMessage : public chat_client_model_message_functionality::Message {
+class DisconnectCommand
+    : public chat_client_model_message_functionality::Message {
  public:
   std::string ToString();
 

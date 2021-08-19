@@ -10,17 +10,17 @@ set(SOURCES
     ../src/model/friend-functionality/friend-hashmap.cc
     ../src/model/friend-functionality/friend-utility.cc
 
-    ../src/model/message-functionality/client-stream-in/update-message.cc
-    ../src/model/message-functionality/client-stream-in/send-message.cc
-    ../src/model/message-functionality/client-stream-in/send-global-message.cc
-    ../src/model/message-functionality/client-stream-in/disconnect-message.cc
+    ../src/model/message-functionality/client-stream-out/update-command.cc
+    ../src/model/message-functionality/client-stream-out/send-message-command.cc
+    ../src/model/message-functionality/client-stream-out/send-global-message-command.cc
+    ../src/model/message-functionality/client-stream-out/disconnect-command.cc
 
-    ../src/model/message-functionality/client-stream-out/connect-message.cc
-    ../src/model/message-functionality/client-stream-out/user-message.cc
-    ../src/model/message-functionality/client-stream-out/global-message.cc
-    ../src/model/message-functionality/client-stream-out/update-message.cc
-    ../src/model/message-functionality/client-stream-out/disconnected-message.cc
-    ../src/model/message-functionality/client-stream-out/error-message.cc
+    ../src/model/message-functionality/client-stream-in/connect-command.cc
+    ../src/model/message-functionality/client-stream-in/user-message-command.cc
+    ../src/model/message-functionality/client-stream-in/global-message-command.cc
+    ../src/model/message-functionality/client-stream-in/update-command.cc
+    ../src/model/message-functionality/client-stream-in/disconnected-command.cc
+    ../src/model/message-functionality/client-stream-in/error-command.cc
 
     ../src/model/networking/utility/elliptic-curve-diffiehellman.cc
     ../src/model/networking/utility/sha-3-256.cc
@@ -38,17 +38,17 @@ set(SOURCES
     model/friend-functionality/friend-hashmap_test.cc
     model/friend-functionality/friend-utility_test.cc
     
-    model/message-functionality/client-stream-in/update-message_test.cc
-    model/message-functionality/client-stream-in/send-message_test.cc
-    model/message-functionality/client-stream-in/send-global-message_test.cc
-    model/message-functionality/client-stream-in/disconnect-message_test.cc
+    model/message-functionality/client-stream-out/update-command_test.cc
+    model/message-functionality/client-stream-out/send-message-command_test.cc
+    model/message-functionality/client-stream-out/send-global-message-command_test.cc
+    model/message-functionality/client-stream-out/disconnect-command_test.cc
 
-    model/message-functionality/client-stream-out/connect-message_test.cc
-    model/message-functionality/client-stream-out/user-message_test.cc
-    model/message-functionality/client-stream-out/global-message_test.cc
-    model/message-functionality/client-stream-out/update-message_test.cc
-    model/message-functionality/client-stream-out/disconnected-message_test.cc
-    model/message-functionality/client-stream-out/error-message_test.cc
+    model/message-functionality/client-stream-in/connect-command_test.cc
+    model/message-functionality/client-stream-in/user-message-command_test.cc
+    model/message-functionality/client-stream-in/global-message-command_test.cc
+    model/message-functionality/client-stream-in/update-command_test.cc
+    model/message-functionality/client-stream-in/disconnected-command_test.cc
+    model/message-functionality/client-stream-in/error-command_test.cc
 
     model/networking/temporary-server.cc
     model/networking/temporary-client.cc
