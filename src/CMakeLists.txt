@@ -27,6 +27,8 @@ set(SOURCES
     model/message-functionality/client-stream-in/send-global-message.cc
     model/message-functionality/client-stream-in/disconnect-message.cc
 
+    model/message-functionality/client-stream-out/connect-message.cc
+
     model/client-model.cc
 
     view/gui-view.cc
