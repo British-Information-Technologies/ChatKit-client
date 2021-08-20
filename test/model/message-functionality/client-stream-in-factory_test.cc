@@ -47,3 +47,16 @@ TEST(ClientStreamInFactoryTest, GetGlobalMessageCommandTest) {
 
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
+
+TEST(ClientStreamInFactoryTest, GetManyGlobalMessageCommandTest) {
+  ClientStreamInFactory factory;
+
+  for (int i = 0; i < 250; ++i) {
+    json json_object = {{"type", "GlobalMessage"},
+                        {"content", std::to_string(i)}};
+
+    std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+    EXPECT_EQ(message->ToString(), json_object.dump());
+  }
+}
