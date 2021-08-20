@@ -2,6 +2,7 @@
 
 #include "client-stream-in/connect-command.h"
 #include "client-stream-in/disconnected-command.h"
+#include "client-stream-in/error-command.h"
 
 using namespace chat_client_model_message_functionality;
 using namespace chat_client_model_message_functionality_client_stream_in;
@@ -14,7 +15,9 @@ std::unique_ptr<Message> ClientStreamInFactory::GetMessage(
 
   if (type.compare("Connect") == 0) {
     return std::make_unique<ConnectCommand>();
+  } else if (type.compare("Disconnected") == 0) {
+    return std::make_unique<DisconnectedCommand>();
   }
 
-  return std::make_unique<DisconnectedCommand>();
+  return std::make_unique<ErrorCommand>();
 }
