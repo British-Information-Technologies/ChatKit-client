@@ -5,6 +5,7 @@
 #include "client-stream-in/error-command.h"
 #include "client-stream-in/global-message-command.h"
 #include "client-stream-in/update-command.h"
+#include "client-stream-in/user-message-command.h"
 
 using namespace chat_client_model_message_functionality;
 using namespace chat_client_model_message_functionality_client_stream_in;
@@ -24,7 +25,11 @@ std::unique_ptr<Message> ClientStreamInFactory::GetMessage(
   } else if (type.compare("GlobalMessage") == 0) {
     std::string content = plaintext_object["content"];
     return std::make_unique<GlobalMessageCommand>(content);
+  } else if (type.compare("UpdateCommand") == 0) {
+    return std::make_unique<UpdateCommand>();
   }
 
-  return std::make_unique<UpdateCommand>();
+  std::string from = plaintext_object["from"];
+  std::string content = plaintext_object["content"];
+  return std::make_unique<UserMessageCommand>(from, content);
 }
