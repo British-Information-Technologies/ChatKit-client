@@ -13,7 +13,9 @@ GotInfoCommand::GotInfoCommand(const std::string &server_name,
 std::string GotInfoCommand::ToString() { return this->ToJson().dump(); }
 
 json GotInfoCommand::ToJson() {
-  json json_object = {{"type", "GotInfo"}};
+  json json_object = {{"type", "GotInfo"},
+                      {"server name", this->server_name},
+                      {"server owner", this->server_owner}};
 
   return json_object;
 }
