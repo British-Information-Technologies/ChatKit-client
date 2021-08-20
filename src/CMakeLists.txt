@@ -41,6 +41,8 @@ set(SOURCES
     model/message-functionality/network-stream-out/connect-command.cc
     model/message-functionality/network-stream-out/info-command.cc
 
+    model/message-functionality/client-stream-in-factory.cc
+
     model/client-model.cc
 
     view/gui-view.cc

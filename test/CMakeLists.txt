@@ -29,6 +29,8 @@ set(SOURCES
     ../src/model/message-functionality/network-stream-out/connect-command.cc
     ../src/model/message-functionality/network-stream-out/info-command.cc
 
+    ../src/model/message-functionality/client-stream-in-factory.cc
+
     ../src/model/networking/utility/elliptic-curve-diffiehellman.cc
     ../src/model/networking/utility/sha-3-256.cc
     ../src/model/networking/utility/aes-gcm.cc
@@ -63,6 +65,8 @@ set(SOURCES
 
     model/message-functionality/network-stream-out/connect-command_test.cc
     model/message-functionality/network-stream-out/info-command_test.cc
+
+    model/message-functionality/client-stream-in-factory_test.cc
 
     model/networking/temporary-server.cc
     model/networking/temporary-client.cc
