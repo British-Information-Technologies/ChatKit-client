@@ -22,5 +22,6 @@ std::unique_ptr<Message> ClientStreamInFactory::GetMessage(
     return std::make_unique<ErrorCommand>();
   }
 
-  return std::make_unique<GlobalMessageCommand>("this is a message!");
+  std::string content = plaintext_object["content"];
+  return std::make_unique<GlobalMessageCommand>(content);
 }
