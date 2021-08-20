@@ -70,3 +70,14 @@ TEST(ClientStreamInFactoryTest, GetUpdateCommandTest) {
 
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
+
+TEST(ClientStreamInFactoryTest, GetUserMessageCommandTest) {
+  ClientStreamInFactory factory;
+
+  json json_object = {
+      {"type", "UserMessage"}, {"content", "hey hey hey!"}, {"from", "mitch"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), json_object.dump());
+}
