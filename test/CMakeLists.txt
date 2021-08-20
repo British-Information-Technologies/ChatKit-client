@@ -22,6 +22,10 @@ set(SOURCES
     ../src/model/message-functionality/client-stream-in/disconnected-command.cc
     ../src/model/message-functionality/client-stream-in/error-command.cc
 
+    ../src/model/message-functionality/network-stream-in/request-command.cc
+    ../src/model/message-functionality/network-stream-in/got-info-command.cc
+    ../src/model/message-functionality/network-stream-in/connecting-command.cc
+
     ../src/model/networking/utility/elliptic-curve-diffiehellman.cc
     ../src/model/networking/utility/sha-3-256.cc
     ../src/model/networking/utility/aes-gcm.cc
@@ -49,6 +53,10 @@ set(SOURCES
     model/message-functionality/client-stream-in/update-command_test.cc
     model/message-functionality/client-stream-in/disconnected-command_test.cc
     model/message-functionality/client-stream-in/error-command_test.cc
+
+    model/message-functionality/network-stream-in/request-command_test.cc
+    model/message-functionality/network-stream-in/got-info-command_test.cc
+    model/message-functionality/network-stream-in/connecting-command_test.cc
 
     model/networking/temporary-server.cc
     model/networking/temporary-client.cc

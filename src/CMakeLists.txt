@@ -34,6 +34,10 @@ set(SOURCES
     model/message-functionality/client-stream-in/disconnected-command.cc
     model/message-functionality/client-stream-in/error-command.cc
 
+    model/message-functionality/network-stream-in/request-command.cc
+    model/message-functionality/network-stream-in/got-info-command.cc
+    model/message-functionality/network-stream-in/connecting-command.cc
+
     model/client-model.cc
 
     view/gui-view.cc
