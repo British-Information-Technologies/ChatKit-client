@@ -16,3 +16,13 @@ TEST(ClientStreamInFactoryTest, GetConnectCommandTest) {
 
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
+
+TEST(ClientStreamInFactoryTest, GetDisconnectedCommandTest) {
+  ClientStreamInFactory factory;
+
+  json json_object = {{"type", "Disconnected"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), json_object.dump());
+}
