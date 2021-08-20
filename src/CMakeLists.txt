@@ -38,6 +38,9 @@ set(SOURCES
     model/message-functionality/network-stream-in/got-info-command.cc
     model/message-functionality/network-stream-in/connecting-command.cc
 
+    model/message-functionality/network-stream-out/connect-command.cc
+    model/message-functionality/network-stream-out/info-command.cc
+
     model/client-model.cc
 
     view/gui-view.cc
