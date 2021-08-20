@@ -13,7 +13,9 @@ TEST(GotInfoCommandTest, ToStringTest) {
 
   GotInfoCommand command(server_name, server_owner);
 
-  EXPECT_EQ(command.ToString(), "{\"type\":\"GotInfo\"}");
+  EXPECT_EQ(command.ToString(),
+            "{\"server name\":\"test server\",\"server "
+            "owner\":\"mitch\",\"type\":\"GotInfo\"}");
 }
 
 TEST(GotInfoCommandTest, ToJsonTest) {
@@ -22,7 +24,9 @@ TEST(GotInfoCommandTest, ToJsonTest) {
 
   GotInfoCommand command(server_name, server_owner);
 
-  json json_object = {{"type", "GotInfo"}};
+  json json_object = {{"type", "GotInfo"},
+                      {"server name", server_name},
+                      {"server owner", server_owner}};
 
   EXPECT_EQ(command.ToJson(), json_object);
 }
