@@ -43,3 +43,16 @@ TEST(ClientStreamOutFactoryTest, GetManySendGlobalMessageCommandTest) {
     EXPECT_EQ(message->ToString(), json_object.dump());
   }
 }
+
+TEST(ClientStreamOutFactoryTest, GetSendMessageCommandTest) {
+  ClientStreamOutFactory factory;
+  std::string type = "SendMessage";
+  std::string to = "mitch";
+  std::string content = "hey!";
+
+  json json_object = {{"type", type}, {"to", to}, {"content", content}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(type, to, content);
+
+  EXPECT_EQ(message->ToString(), json_object.dump());
+}
