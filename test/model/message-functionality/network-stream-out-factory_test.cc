@@ -39,3 +39,13 @@ TEST(NetworkStreamOutFactoryTest, GetManyConnectCommandTest) {
     EXPECT_EQ(message->ToString(), json_object.dump());
   }
 }
+
+TEST(NetworkStreamOutFactoryTest, GetInfoCommandTest) {
+  NetworkStreamOutFactory factory;
+
+  json json_object = {{"type", "Info"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage();
+
+  EXPECT_EQ(message->ToString(), json_object.dump());
+}
