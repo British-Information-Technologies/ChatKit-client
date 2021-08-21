@@ -44,6 +44,7 @@ set(SOURCES
     model/message-functionality/client-stream-in-factory.cc
     model/message-functionality/client-stream-out-factory.cc
     model/message-functionality/network-stream-in-factory.cc
+    model/message-functionality/network-stream-out-factory.cc
 
     model/client-model.cc
 
