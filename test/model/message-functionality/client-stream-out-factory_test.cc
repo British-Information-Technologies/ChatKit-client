@@ -72,3 +72,14 @@ TEST(ClientStreamOutFactoryTest, GetManySendMessageCommandTest) {
     EXPECT_EQ(message->ToString(), json_object.dump());
   }
 }
+
+TEST(ClientStreamOutFactoryTest, GetUpdateCommandTest) {
+  ClientStreamOutFactory factory;
+  std::string type = "Update";
+
+  json json_object = {{"type", type}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(type);
+
+  EXPECT_EQ(message->ToString(), json_object.dump());
+}
