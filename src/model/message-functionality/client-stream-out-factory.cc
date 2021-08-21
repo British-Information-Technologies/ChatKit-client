@@ -9,9 +9,10 @@ using json = nlohmann::json;
 
 std::unique_ptr<Message> ClientStreamOutFactory::GetMessage(
     const std::string &type) {
-  if (type.compare("Disconnect") == 0) {
-    return std::make_unique<DisconnectCommand>();
-  }
+  return std::make_unique<DisconnectCommand>();
+}
 
-  return std::make_unique<SendGlobalMessageCommand>("very good content ay :]");
+std::unique_ptr<Message> ClientStreamOutFactory::GetMessage(
+    const std::string &type, const std::string &content) {
+  return std::make_unique<SendGlobalMessageCommand>(content);
 }
