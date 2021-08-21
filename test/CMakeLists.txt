@@ -29,6 +29,8 @@ set(SOURCES
     ../src/model/message-functionality/network-stream-out/connect-command.cc
     ../src/model/message-functionality/network-stream-out/info-command.cc
 
+    ../src/model/message-functionality/general/invalid-command.cc
+
     ../src/model/message-functionality/client-stream-in-factory.cc
     ../src/model/message-functionality/client-stream-out-factory.cc
     ../src/model/message-functionality/network-stream-in-factory.cc
@@ -68,6 +70,8 @@ set(SOURCES
 
     model/message-functionality/network-stream-out/connect-command_test.cc
     model/message-functionality/network-stream-out/info-command_test.cc
+
+    model/message-functionality/general/invalid-command_test.cc
 
     model/message-functionality/client-stream-in-factory_test.cc
     model/message-functionality/client-stream-out-factory_test.cc
