@@ -30,6 +30,7 @@ set(SOURCES
     ../src/model/message-functionality/network-stream-out/info-command.cc
 
     ../src/model/message-functionality/client-stream-in-factory.cc
+    ../src/model/message-functionality/client-stream-out-factory.cc
     ../src/model/message-functionality/network-stream-in-factory.cc
 
     ../src/model/networking/utility/elliptic-curve-diffiehellman.cc
@@ -68,6 +69,7 @@ set(SOURCES
     model/message-functionality/network-stream-out/info-command_test.cc
 
     model/message-functionality/client-stream-in-factory_test.cc
+    model/message-functionality/client-stream-out-factory_test.cc
     model/message-functionality/network-stream-in-factory_test.cc
 
     model/networking/temporary-server.cc
