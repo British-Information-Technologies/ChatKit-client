@@ -21,10 +21,25 @@ TEST(ClientStreamOutFactoryTest, GetDisconnectCommandTest) {
 TEST(ClientStreamOutFactoryTest, GetSendGlobalMessageCommandTest) {
   ClientStreamOutFactory factory;
   std::string type = "SendGlobalMessage";
+  std::string content = "very good content ay :]";
 
-  json json_object = {{"type", type}, {"content", "very good content ay :]"}};
+  json json_object = {{"type", type}, {"content", content}};
 
-  std::unique_ptr<Message> message = factory.GetMessage(type);
+  std::unique_ptr<Message> message = factory.GetMessage(type, content);
 
   EXPECT_EQ(message->ToString(), json_object.dump());
+}
+
+TEST(ClientStreamOutFactoryTest, GetManySendGlobalMessageCommandTest) {
+  ClientStreamOutFactory factory;
+  std::string type = "SendGlobalMessage";
+
+  for (int i = 0; i < 250; ++i) {
+    json json_object = {{"type", type}, {"content", std::to_string(i)}};
+
+    std::unique_ptr<Message> message =
+        factory.GetMessage(type, std::to_string(i));
+
+    EXPECT_EQ(message->ToString(), json_object.dump());
+  }
 }
