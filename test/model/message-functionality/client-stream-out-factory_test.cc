@@ -9,10 +9,22 @@ using json = nlohmann::json;
 
 TEST(ClientStreamOutFactoryTest, GetDisconnectCommandTest) {
   ClientStreamOutFactory factory;
+  std::string type = "Disconnect";
 
-  json json_object = {{"type", "Disconnect"}};
+  json json_object = {{"type", type}};
 
-  std::unique_ptr<Message> message = factory.GetMessage();
+  std::unique_ptr<Message> message = factory.GetMessage(type);
+
+  EXPECT_EQ(message->ToString(), json_object.dump());
+}
+
+TEST(ClientStreamOutFactoryTest, GetSendGlobalMessageCommandTest) {
+  ClientStreamOutFactory factory;
+  std::string type = "SendGlobalMessage";
+
+  json json_object = {{"type", type}, {"content", "very good content ay :]"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(type);
 
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
