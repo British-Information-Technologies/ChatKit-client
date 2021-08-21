@@ -56,3 +56,19 @@ TEST(ClientStreamOutFactoryTest, GetSendMessageCommandTest) {
 
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
+
+TEST(ClientStreamOutFactoryTest, GetManySendMessageCommandTest) {
+  ClientStreamOutFactory factory;
+  std::string type = "SendMessage";
+
+  for (int i = 0; i < 250; ++i) {
+    json json_object = {{"type", type},
+                        {"to", std::to_string(i)},
+                        {"content", std::to_string(i)}};
+
+    std::unique_ptr<Message> message =
+        factory.GetMessage(type, std::to_string(i), std::to_string(i));
+
+    EXPECT_EQ(message->ToString(), json_object.dump());
+  }
+}
