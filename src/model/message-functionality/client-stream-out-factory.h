@@ -8,7 +8,7 @@
 namespace chat_client_model_message_functionality {
 class ClientStreamOutFactory {
  public:
-  std::unique_ptr<Message> GetMessage();
+  std::unique_ptr<Message> GetMessage(const std::string &type);
 };
 }  // namespace chat_client_model_message_functionality
 
