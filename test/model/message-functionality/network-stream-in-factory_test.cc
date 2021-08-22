@@ -52,3 +52,46 @@ TEST(NetworkStreamInFactoryTest, GetRequestCommandTest) {
 
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
+
+TEST(NetworkStreamInFactoryTest, GetInvalidCommandTest) {
+  NetworkStreamInFactory factory;
+
+  json json_object = {{"type", "Connect"}};
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}
+
+TEST(NetworkStreamInFactoryTest, GetInvalidGotInfoCommandNoNameTest) {
+  NetworkStreamInFactory factory;
+
+  json json_object = {{"type", "GotInfo"}, {"server owner", "mitch"}};
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}
+
+TEST(NetworkStreamInFactoryTest, GetInvalidGotInfoCommandNoOwnerTest) {
+  NetworkStreamInFactory factory;
+  json json_object = {{"type", "GotInfo"}, {"server name", "mitch"}};
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}
+
+TEST(NetworkStreamInFactoryTest, GetInvalidCommandNoTypeTest) {
+  NetworkStreamInFactory factory;
+
+  json json_object = {{"content", "hahaha"}};
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}

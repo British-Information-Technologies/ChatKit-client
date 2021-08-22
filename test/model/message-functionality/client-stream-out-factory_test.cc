@@ -83,3 +83,40 @@ TEST(ClientStreamOutFactoryTest, GetUpdateCommandTest) {
 
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
+
+TEST(NetworkStreamOutFactoryTest, GetInvalidCommandFromDisconnectCommandTest) {
+  ClientStreamOutFactory factory;
+  std::string type = "SendGlobalMessageCommand";
+
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(type);
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}
+
+TEST(NetworkStreamOutFactoryTest,
+     GetInvalidCommandFromSendGlobalMessageCommandTest) {
+  ClientStreamOutFactory factory;
+  std::string type = "SendMessageCommand";
+  std::string content = "this is so meeeeee!";
+
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(type, content);
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}
+
+TEST(NetworkStreamOutFactoryTest, GetInvalidCommandFromSendMessageCommandTest) {
+  ClientStreamOutFactory factory;
+  std::string type = "SendMessageCommand";
+  std::string to = "mitch";
+  std::string content = "this is so meeeeee!";
+
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(type, to, content);
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}

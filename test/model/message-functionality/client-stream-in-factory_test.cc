@@ -95,3 +95,58 @@ TEST(ClientStreamInFactoryTest, GetManyUserMessageCommandTest) {
     EXPECT_EQ(message->ToString(), json_object.dump());
   }
 }
+
+TEST(ClientStreamInFactoryTest, GetInvalidCommandTest) {
+  ClientStreamInFactory factory;
+
+  json json_object = {{"type", "Info"}};
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}
+
+TEST(ClientStreamInFactoryTest, GetInvalidGlobalMessageCommandNoContentTest) {
+  ClientStreamInFactory factory;
+
+  json json_object = {{"type", "GlobalMessage"}};
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}
+
+TEST(ClientStreamInFactoryTest, GetInvalidUserMessageCommandNoContentTest) {
+  ClientStreamInFactory factory;
+
+  json json_object = {{"type", "UserMessage"}, {"from", "mitch"}};
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}
+
+TEST(ClientStreamInFactoryTest, GetInvalidUserMessageCommandNoFromTest) {
+  ClientStreamInFactory factory;
+
+  json json_object = {{"type", "UserMessage"}, {"content", "hahaha"}};
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}
+
+TEST(ClientStreamInFactoryTest, GetInvalidCommandNoTypeTest) {
+  ClientStreamInFactory factory;
+
+  json json_object = {{"content", "hahaha"}};
+  json invalid_object = {{"type", "Invalid"}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), invalid_object.dump());
+}
