@@ -9,9 +9,12 @@ using namespace chat_client_model_message_functionality_general;
 using namespace chat_client_model_message_functionality_network_stream_out;
 using json = nlohmann::json;
 
+#define INFO "Info"
+#define CONNECT "Connect"
+
 std::unique_ptr<Message> NetworkStreamOutFactory::GetMessage(
     const std::string &type) {
-  if (type.compare("Info") == 0) {
+  if (type.compare(INFO) == 0) {
     return std::make_unique<InfoCommand>();
   }
 
@@ -21,7 +24,7 @@ std::unique_ptr<Message> NetworkStreamOutFactory::GetMessage(
 std::unique_ptr<Message> NetworkStreamOutFactory::GetMessage(
     const std::string &type, const std::string &uuid,
     const std::string &username, const std::string &address) {
-  if (type.compare("Connect") == 0) {
+  if (type.compare(CONNECT) == 0) {
     return std::make_unique<ConnectCommand>(uuid, username, address);
   }
 

@@ -10,20 +10,24 @@ using namespace chat_client_model_message_functionality_network_stream_in;
 using namespace chat_client_model_message_functionality_general;
 using json = nlohmann::json;
 
+#define CONNECTING "Connecting"
+#define GOTINFO "GotInfo"
+#define REQUEST "Request"
+
 std::unique_ptr<Message> NetworkStreamInFactory::GetMessage(
     const std::string &plaintext) {
   try {
     json plaintext_object = json::parse(plaintext);
     std::string type = plaintext_object["type"];
 
-    if (type.compare("Connecting") == 0) {
+    if (type.compare(CONNECTING) == 0) {
       return std::make_unique<ConnectingCommand>();
-    } else if (type.compare("GotInfo") == 0) {
+    } else if (type.compare(GOTINFO) == 0) {
       std::string server_name = plaintext_object["server name"];
       std::string server_owner = plaintext_object["server owner"];
 
       return std::make_unique<GotInfoCommand>(server_name, server_owner);
-    } else if (type.compare("Request") == 0) {
+    } else if (type.compare(REQUEST) == 0) {
       return std::make_unique<RequestCommand>();
     }
 

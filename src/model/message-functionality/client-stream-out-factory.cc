@@ -11,11 +11,16 @@ using namespace chat_client_model_message_functionality_client_stream_out;
 using namespace chat_client_model_message_functionality_general;
 using json = nlohmann::json;
 
+#define DISCONNECT "Disconnect"
+#define UPDATE "Update"
+#define SENDGLOBALMESSAGE "SendGlobalMessage"
+#define SENDMESSAGE "SendMessage"
+
 std::unique_ptr<Message> ClientStreamOutFactory::GetMessage(
     const std::string &type) {
-  if (type.compare("Disconnect") == 0) {
+  if (type.compare(DISCONNECT) == 0) {
     return std::make_unique<DisconnectCommand>();
-  } else if (type.compare("Update") == 0) {
+  } else if (type.compare(UPDATE) == 0) {
     return std::make_unique<UpdateCommand>();
   }
 
@@ -24,7 +29,7 @@ std::unique_ptr<Message> ClientStreamOutFactory::GetMessage(
 
 std::unique_ptr<Message> ClientStreamOutFactory::GetMessage(
     const std::string &type, const std::string &content) {
-  if (type.compare("SendGlobalMessage") == 0) {
+  if (type.compare(SENDGLOBALMESSAGE) == 0) {
     return std::make_unique<SendGlobalMessageCommand>(content);
   }
 
@@ -34,7 +39,7 @@ std::unique_ptr<Message> ClientStreamOutFactory::GetMessage(
 std::unique_ptr<Message> ClientStreamOutFactory::GetMessage(
     const std::string &type, const std::string &to,
     const std::string &content) {
-  if (type.compare("SendMessage") == 0) {
+  if (type.compare(SENDMESSAGE) == 0) {
     return std::make_unique<SendMessageCommand>(to, content);
   }
 
