@@ -8,9 +8,10 @@
 namespace chat_client_model_message_functionality {
 class NetworkStreamOutFactory {
  public:
-  std::unique_ptr<Message> GetMessage();
+  std::unique_ptr<Message> GetMessage(const std::string &type);
 
-  std::unique_ptr<Message> GetMessage(const std::string &uuid,
+  std::unique_ptr<Message> GetMessage(const std::string &type,
+                                      const std::string &uuid,
                                       const std::string &username,
                                       const std::string &address);
 };
