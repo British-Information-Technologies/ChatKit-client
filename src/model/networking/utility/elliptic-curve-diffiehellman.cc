@@ -62,7 +62,8 @@ std::string networking_utility::SerializePublicKey(EVP_PKEY *public_key) {
   char *public_key_text;
   BIO_get_mem_data(bio_public.get(), &public_key_text);
 
-  json json_public_key = {{"key", std::string(public_key_text)}};
+  json json_public_key = {{"type", "Encrypt"},
+                          {"key", std::string(public_key_text)}};
 
   return json_public_key.dump();
 }
