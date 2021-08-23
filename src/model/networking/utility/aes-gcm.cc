@@ -5,8 +5,6 @@
 #include <openssl/evp.h>
 #include <string.h>
 
-#include "base64.h"
-
 using namespace networking_utility;
 
 using EVP_CIPHER_CTX_free_ptr =
@@ -63,10 +61,6 @@ int networking_utility::aes_gcm_encrypt(secure_string &plaintext,
     abort();
   ciphertext_len += len;
 
-  /* BASE 64 encode the ciphertext */
-  ciphertext.assign((std::string)EncodeBase64(ciphertext));
-  ciphertext_len = ciphertext.length();
-
   return ciphertext_len;
 }
 
@@ -77,10 +71,6 @@ int networking_utility::aes_gcm_decrypt(secure_string &ciphertext,
   int len;
   int plaintext_len;
   int ret;
-
-  /* BASE 64 decode the ciphertext */
-  ciphertext.assign((std::string)DecodeBase64(ciphertext));
-  ciphertext_len = ciphertext.length();
 
   /* Create and initialise the context */
   EVP_CIPHER_CTX_free_ptr ctx(EVP_CIPHER_CTX_new(), ::EVP_CIPHER_CTX_free);
