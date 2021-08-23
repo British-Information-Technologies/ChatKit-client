@@ -6,6 +6,7 @@
 #include <nlohmann/json.hpp>
 
 #include "aes-gcm.h"
+#include "base64.h"
 
 using namespace networking_utility;
 using json = nlohmann::json;
@@ -38,6 +39,9 @@ int SecureSocketHandler::send(secure_string &plaintext) {
   secure_string ciphertext;
   aes_gcm_encrypt(plaintext, aad, key, iv, iv_size, ciphertext, tag);
 
+  /* BASE 64 encode the ciphertext */
+  ciphertext.assign((std::string)EncodeBase64(ciphertext));
+
   /*Send message*/
   return writer->write_line((std::string)ciphertext);
 }
@@ -51,6 +55,9 @@ secure_string SecureSocketHandler::recv() {
   byte iv[] = "bbbbbbbbbbbb\0";
 
   byte tag[16 + 1];
+
+  /* BASE 64 decode the ciphertext */
+  payload.assign((std::string)DecodeBase64(payload));
 
   // aes decrypt
   secure_string decryptedtext;
