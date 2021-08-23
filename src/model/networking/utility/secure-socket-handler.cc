@@ -23,8 +23,17 @@ int SecureSocketHandler::send(secure_string &plaintext) {
 
   /*Encrypt the message with the key, aad, and iv (faked values) */
   secure_string aad = "address:port";
+
   const int iv_size = 12;
-  byte iv[] = "bbbbbbbbbbbb\0";
+  byte iv[iv_size + 1];
+
+  int rc = RAND_bytes(iv, iv_size);
+  unsigned long err = ERR_get_error();
+  if (rc != 1) {
+    /* show error */
+    return 0;
+  }
+  iv[iv_size] = '\0';
 
   const int tag_size = 16;
   byte tag[tag_size + 1];
@@ -49,15 +58,15 @@ int SecureSocketHandler::send(secure_string &plaintext) {
 secure_string SecureSocketHandler::recv() {
   secure_string payload = (secure_string)reader->read_line();
 
+  /* BASE 64 decode the ciphertext */
+  payload.assign((std::string)DecodeBase64(payload));
+
   /* faked values */
   secure_string aad = "address:port";
   const int iv_size = 12;
   byte iv[] = "bbbbbbbbbbbb\0";
 
   byte tag[16 + 1];
-
-  /* BASE 64 decode the ciphertext */
-  payload.assign((std::string)DecodeBase64(payload));
 
   // aes decrypt
   secure_string decryptedtext;
