@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "controller/client-controller.h"
 
 using namespace chat_client_controller;

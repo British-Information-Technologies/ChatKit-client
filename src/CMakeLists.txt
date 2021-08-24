@@ -50,7 +50,7 @@ set(SOURCES
 
     model/client-model.cc
 
-    view/gui-view.cc
+    view/MainApplication.cc
 
     main.cc
 )
@@ -58,7 +58,7 @@ set(SOURCES
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
+pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 
 find_package(OpenSSL REQUIRED)
 

@@ -1,7 +1,9 @@
 #include "client-controller.h"
 
+#include <iostream>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include "addfriend-observer.h"
 #include "deletefriend-observer.h"
@@ -19,8 +21,13 @@ ClientController::ClientController(int argc, char **argv) {
 }
 
 void ClientController::Body() {
+  // setup the gui
+  view->register_application();
+
+  // add observers to buttons
   AddFriendObserver add_friend_observer(model, view);
   DeleteFriendObserver delete_friend_observer(model, view);
 
-  view->Start();
+  // enter main loop
+  view->run();
 }

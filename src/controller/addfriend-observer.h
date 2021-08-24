@@ -2,6 +2,7 @@
 #define CPPCHATCLIENT_CONTROLLER_ADDFRIEND_OBSERVER_H_
 
 #include "../model/client-model.h"
+#include "../view/MainApplication.h"
 #include "observer.h"
 
 namespace chat_client_controller {
@@ -11,7 +12,7 @@ class AddFriendObserver : public Observer {
 
  public:
   AddFriendObserver(std::shared_ptr<chat_client_model::ClientModel>,
-                    std::shared_ptr<chat_client_view::View>);
+                    Glib::RefPtr<MainApplication>);
 
   void Execute();
 };

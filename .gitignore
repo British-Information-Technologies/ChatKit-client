@@ -1,8 +1,6 @@
-# Ignore googletest
-lib/googletest
-
 # Ignore build folder
 build/
+CMakeFiles/
 
 # Ignore .vscode folder
 .vscode/
@@ -36,6 +34,23 @@ build/
 *.lib
 
 # Executables
+cpp-chat-client_*
 *.exe
 *.out
 *.app
+
+# binary files
+*.bin
+
+# log files
+*.log
+
+# CMake generated files
+CMakeCache.txt
+CPackConfig.cmake
+CPackSourceConfig.cmake
+cmake_install.cmake
+CTestTestfile.cmake
+
+# All generated make files
+Makefile
