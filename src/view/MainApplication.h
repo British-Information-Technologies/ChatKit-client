@@ -1,8 +1,7 @@
 #ifndef CPPCHATCLIENT_CONTROLLER_APPLICATION_H_
 #define CPPCHATCLIENT_CONTROLLER_APPLICATION_H_
 
-#include <controller/observer.h>
-
+#include "controller/observers/observer.h"
 #include "model/friend-functionality/friend-node.h"
 
 /**
@@ -14,9 +13,14 @@
 class MainApplication : public Gtk::Application {
  private:
   Glib::RefPtr<Gtk::Builder> builder = nullptr;
+
   Gtk::Window* main_window = nullptr;
+
   Gtk::Button* add_friend_button = nullptr;
   Gtk::Button* delete_friend_button = nullptr;
+  Gtk::Button* send_button = nullptr;
+
+  Gtk::Entry* message_box = nullptr;
 
  protected:
   MainApplication();
@@ -32,6 +36,7 @@ class MainApplication : public Gtk::Application {
 
   std::string GetInputUuidToAdd();
   std::string GetInputUuidToDelete();
+  std::string GetMessageBoxText();
 
   void AddFriendToFriendList(
       std::shared_ptr<chat_client_model_friend_functionality::FriendNode>);
@@ -39,6 +44,7 @@ class MainApplication : public Gtk::Application {
 
   void AddObserverAddFriendButton(chat_client_controller::Observer&);
   void AddObserverDeleteFriendButton(chat_client_controller::Observer&);
+  void AddObserverSendButton(chat_client_controller::Observer&);
 };
 
 #endif

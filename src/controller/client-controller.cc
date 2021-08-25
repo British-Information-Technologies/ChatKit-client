@@ -5,8 +5,8 @@
 #include <string>
 #include <thread>
 
-#include "addfriend-observer.h"
-#include "deletefriend-observer.h"
+#include "observers/addfriend-observer.h"
+#include "observers/deletefriend-observer.h"
 #include "view-factory.h"
 
 using namespace chat_client_controller;

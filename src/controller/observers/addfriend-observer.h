@@ -1,8 +1,8 @@
 #ifndef CPPCHATCLIENT_CONTROLLER_ADDFRIEND_OBSERVER_H_
 #define CPPCHATCLIENT_CONTROLLER_ADDFRIEND_OBSERVER_H_
 
-#include "../model/client-model.h"
-#include "../view/MainApplication.h"
+#include "../../model/client-model.h"
+#include "../../view/MainApplication.h"
 #include "observer.h"
 
 namespace chat_client_controller {

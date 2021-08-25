@@ -3,8 +3,8 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 set(SOURCES
     controller/client-controller.cc
     controller/view-factory.cc
-    controller/addfriend-observer.cc
-    controller/deletefriend-observer.cc
+    controller/observers/addfriend-observer.cc
+    controller/observers/deletefriend-observer.cc
 
     model/networking/utility/elliptic-curve-diffiehellman.cc
     model/networking/utility/sha-3-256.cc

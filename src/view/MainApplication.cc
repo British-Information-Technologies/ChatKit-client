@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "controller/deletefriend-observer.h"
+#include "controller/observers/deletefriend-observer.h"
 
 using namespace Gtk;
 using namespace chat_client_controller;
@@ -29,6 +29,10 @@ void MainApplication::on_startup() {
 
   delete_friend_button =
       builder->get_widget<Gtk::Button>("delete_friend_button");
+
+  send_button = builder->get_widget<Gtk::Button>("send_button");
+
+  message_box = builder->get_widget<Gtk::Entry>("message_box");
 }
 
 void MainApplication::on_activate() {
@@ -49,6 +53,10 @@ std::string MainApplication::GetInputUuidToAdd() { return "filler text"; }
 
 std::string MainApplication::GetInputUuidToDelete() { return "filler text"; }
 
+std::string MainApplication::GetMessageBoxText() {
+  return message_box->get_text();
+}
+
 void MainApplication::AddFriendToFriendList(
     shared_ptr<FriendNode> friend_node) {
   cout << "added" << endl;
@@ -65,5 +73,10 @@ void MainApplication::AddObserverAddFriendButton(Observer &observer) {
 
 void MainApplication::AddObserverDeleteFriendButton(Observer &observer) {
   delete_friend_button->signal_clicked().connect(
+      sigc::mem_fun(observer, &Observer::Execute));
+}
+
+void MainApplication::AddObserverSendButton(Observer &observer) {
+  send_button->signal_clicked().connect(
       sigc::mem_fun(observer, &Observer::Execute));
 }
