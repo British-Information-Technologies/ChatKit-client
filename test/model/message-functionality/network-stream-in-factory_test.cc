@@ -53,6 +53,32 @@ TEST(NetworkStreamInFactoryTest, GetRequestCommandTest) {
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
 
+TEST(NetworkStreamInFactoryTest, GetKeyCommandTest) {
+  NetworkStreamInFactory factory;
+
+  std::string key = "1234";
+
+  json json_object = {{"type", "Key"}, {"key", key}};
+
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+  EXPECT_EQ(message->ToString(), json_object.dump());
+}
+
+TEST(NetworkStreamInFactoryTest, GetManyKeyCommandTest) {
+  NetworkStreamInFactory factory;
+
+  for (int i = 0; i < 250; ++i) {
+    std::string key = std::to_string(i);
+
+    json json_object = {{"type", "Key"}, {"key", key}};
+
+    std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
+
+    EXPECT_EQ(message->ToString(), json_object.dump());
+  }
+}
+
 TEST(NetworkStreamInFactoryTest, GetInvalidCommandTest) {
   NetworkStreamInFactory factory;
 

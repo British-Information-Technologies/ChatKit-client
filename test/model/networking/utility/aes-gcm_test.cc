@@ -16,16 +16,16 @@ class AESGCMTest : public ::testing::Test {
  protected:
   DerivedData key;
 
-  secure_string additional = "The five boxing wizards jump quickly.";
+  std::string additional = "The five boxing wizards jump quickly.";
 
   byte *iv = (unsigned char *)"0123456789012345";
   size_t iv_len = 16;
 };
 
 TEST_F(AESGCMTest, SingleEncryptMatchKeyLength) {
-  secure_string plaintext =
+  std::string plaintext =
       "hey mitch how are you today. This is pretty crazy wild bam bam !";
-  secure_string ciphertext;
+  std::string ciphertext;
   byte tag[17];
   tag[16] = '\0';
 
@@ -40,7 +40,7 @@ TEST_F(AESGCMTest, SingleEncryptMatchKeyLength) {
   BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-  EXPECT_NE(plaintext.size(), ciphertext.size());
+  EXPECT_EQ(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
 
   std::cout << "Ciphertext: " << ciphertext << std::endl;
@@ -50,10 +50,10 @@ TEST_F(AESGCMTest, SingleEncryptMatchKeyLength) {
 }
 
 TEST_F(AESGCMTest, EncryptDecryptMatchKeyLength) {
-  secure_string plaintext =
+  std::string plaintext =
       "hey mitch how are you today. This is pretty crazy wild bam bam !";
-  secure_string ciphertext;
-  secure_string decryptedtext;
+  std::string ciphertext;
+  std::string decryptedtext;
   byte tag[17];
   tag[16] = '\0';
 
@@ -68,9 +68,11 @@ TEST_F(AESGCMTest, EncryptDecryptMatchKeyLength) {
   BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-  EXPECT_NE(plaintext.size(), ciphertext.size());
+  EXPECT_EQ(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
   EXPECT_NE(plaintext, ciphertext);
+
+  std::cout << "encrypted: " << ciphertext << std::endl;
 
   int decryptedtext_len =
       aes_gcm_decrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,
@@ -85,8 +87,8 @@ TEST_F(AESGCMTest, EncryptDecryptMatchKeyLength) {
 }
 
 TEST_F(AESGCMTest, EncryptShortKeyLength) {
-  secure_string plaintext = "hey mitch how are you today.";
-  secure_string ciphertext;
+  std::string plaintext = "hey mitch how are you today.";
+  std::string ciphertext;
   byte tag[17];
   tag[16] = '\0';
 
@@ -101,15 +103,15 @@ TEST_F(AESGCMTest, EncryptShortKeyLength) {
   BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-  EXPECT_NE(plaintext.size(), ciphertext.size());
+  EXPECT_EQ(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
   EXPECT_NE(plaintext, ciphertext);
 }
 
 TEST_F(AESGCMTest, EncryptDecryptShortKeyLength) {
-  secure_string plaintext = "hey mitch how are you today.";
-  secure_string ciphertext;
-  secure_string decryptedtext;
+  std::string plaintext = "hey mitch how are you today.";
+  std::string ciphertext;
+  std::string decryptedtext;
   byte tag[17];
   tag[16] = '\0';
 
@@ -124,9 +126,11 @@ TEST_F(AESGCMTest, EncryptDecryptShortKeyLength) {
   BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-  EXPECT_NE(plaintext.size(), ciphertext.size());
+  EXPECT_EQ(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
   EXPECT_NE(plaintext, ciphertext);
+
+  std::cout << "encrypted: " << ciphertext << std::endl;
 
   int decryptedtext_len =
       aes_gcm_decrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,
@@ -141,10 +145,10 @@ TEST_F(AESGCMTest, EncryptDecryptShortKeyLength) {
 }
 
 TEST_F(AESGCMTest, EncryptLongKeyLength) {
-  secure_string plaintext =
+  std::string plaintext =
       "hey mitch how are you today. epic bam dam wam smash bash ropyras help "
       "me please i beg you i need help ahahhaha!";
-  secure_string ciphertext;
+  std::string ciphertext;
   byte tag[17];
   tag[16] = '\0';
 
@@ -159,17 +163,17 @@ TEST_F(AESGCMTest, EncryptLongKeyLength) {
   BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-  EXPECT_NE(plaintext.size(), ciphertext.size());
+  EXPECT_EQ(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
   EXPECT_NE(plaintext, ciphertext);
 }
 
 TEST_F(AESGCMTest, EncryptDecryptLongKeyLength) {
-  secure_string plaintext =
+  std::string plaintext =
       "hey mitch how are you today. epic bam dam wam smash bash ropyras help "
       "me please i beg you i need help ahahahahaha!";
-  secure_string ciphertext;
-  secure_string decryptedtext;
+  std::string ciphertext;
+  std::string decryptedtext;
   byte tag[17];
   tag[16] = '\0';
 
@@ -184,9 +188,11 @@ TEST_F(AESGCMTest, EncryptDecryptLongKeyLength) {
   BIO_dump_fp(stdout, (const char *)tag, 16);
   std::cout << std::endl;
 
-  EXPECT_NE(plaintext.size(), ciphertext.size());
+  EXPECT_EQ(plaintext.size(), ciphertext.size());
   EXPECT_EQ(ciphertext.size(), ciphertext_len);
   EXPECT_NE(plaintext, ciphertext);
+
+  std::cout << "encrypted: " << ciphertext << std::endl;
 
   int decryptedtext_len =
       aes_gcm_decrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,
@@ -201,9 +207,9 @@ TEST_F(AESGCMTest, EncryptDecryptLongKeyLength) {
 }
 
 TEST_F(AESGCMTest, EncryptDecryptManyMessages) {
-  secure_string plaintext = "hey mitch how are you today.";
-  secure_string ciphertext;
-  secure_string decryptedtext;
+  std::string plaintext = "hey mitch how are you today.";
+  std::string ciphertext;
+  std::string decryptedtext;
   byte tag[17];
   tag[16] = '\0';
 
@@ -219,9 +225,11 @@ TEST_F(AESGCMTest, EncryptDecryptManyMessages) {
     BIO_dump_fp(stdout, (const char *)tag, 16);
     std::cout << std::endl;
 
-    EXPECT_NE(plaintext.size(), ciphertext.size());
+    EXPECT_EQ(plaintext.size(), ciphertext.size());
     EXPECT_EQ(ciphertext.size(), ciphertext_len);
     EXPECT_NE(plaintext, ciphertext);
+
+    std::cout << "encrypted: " << ciphertext << std::endl;
 
     int decryptedtext_len =
         aes_gcm_decrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,

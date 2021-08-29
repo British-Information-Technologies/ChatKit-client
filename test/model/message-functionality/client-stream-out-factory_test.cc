@@ -13,7 +13,7 @@ TEST(ClientStreamOutFactoryTest, GetDisconnectCommandTest) {
 
   json json_object = {{"type", type}};
 
-  std::unique_ptr<Message> message = factory.GetMessage(type);
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
 
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
@@ -24,8 +24,9 @@ TEST(ClientStreamOutFactoryTest, GetSendGlobalMessageCommandTest) {
   std::string content = "very good content ay :]";
 
   json json_object = {{"type", type}, {"content", content}};
+  std::string json_string = json_object.dump();
 
-  std::unique_ptr<Message> message = factory.GetMessage(type, content);
+  std::unique_ptr<Message> message = factory.GetMessage(json_string);
 
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
@@ -36,9 +37,9 @@ TEST(ClientStreamOutFactoryTest, GetManySendGlobalMessageCommandTest) {
 
   for (int i = 0; i < 250; ++i) {
     json json_object = {{"type", type}, {"content", std::to_string(i)}};
+    std::string json_string = json_object.dump();
 
-    std::unique_ptr<Message> message =
-        factory.GetMessage(type, std::to_string(i));
+    std::unique_ptr<Message> message = factory.GetMessage(json_string);
 
     EXPECT_EQ(message->ToString(), json_object.dump());
   }
@@ -51,8 +52,9 @@ TEST(ClientStreamOutFactoryTest, GetSendMessageCommandTest) {
   std::string content = "hey!";
 
   json json_object = {{"type", type}, {"to", to}, {"content", content}};
+  std::string json_string = json_object.dump();
 
-  std::unique_ptr<Message> message = factory.GetMessage(type, to, content);
+  std::unique_ptr<Message> message = factory.GetMessage(json_string);
 
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
@@ -65,9 +67,9 @@ TEST(ClientStreamOutFactoryTest, GetManySendMessageCommandTest) {
     json json_object = {{"type", type},
                         {"to", std::to_string(i)},
                         {"content", std::to_string(i)}};
+    std::string json_string = json_object.dump();
 
-    std::unique_ptr<Message> message =
-        factory.GetMessage(type, std::to_string(i), std::to_string(i));
+    std::unique_ptr<Message> message = factory.GetMessage(json_string);
 
     EXPECT_EQ(message->ToString(), json_object.dump());
   }
@@ -79,7 +81,7 @@ TEST(ClientStreamOutFactoryTest, GetUpdateCommandTest) {
 
   json json_object = {{"type", type}};
 
-  std::unique_ptr<Message> message = factory.GetMessage(type);
+  std::unique_ptr<Message> message = factory.GetMessage(json_object.dump());
 
   EXPECT_EQ(message->ToString(), json_object.dump());
 }
@@ -102,8 +104,9 @@ TEST(NetworkStreamOutFactoryTest,
   std::string content = "this is so meeeeee!";
 
   json invalid_object = {{"type", "Invalid"}};
+  std::string json_string = invalid_object.dump();
 
-  std::unique_ptr<Message> message = factory.GetMessage(type, content);
+  std::unique_ptr<Message> message = factory.GetMessage(json_string);
 
   EXPECT_EQ(message->ToString(), invalid_object.dump());
 }
@@ -115,8 +118,9 @@ TEST(NetworkStreamOutFactoryTest, GetInvalidCommandFromSendMessageCommandTest) {
   std::string content = "this is so meeeeee!";
 
   json invalid_object = {{"type", "Invalid"}};
+  std::string json_string = invalid_object.dump();
 
-  std::unique_ptr<Message> message = factory.GetMessage(type, to, content);
+  std::unique_ptr<Message> message = factory.GetMessage(json_string);
 
   EXPECT_EQ(message->ToString(), invalid_object.dump());
 }
