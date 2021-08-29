@@ -25,9 +25,11 @@ set(SOURCES
     ../src/model/message-functionality/network-stream-in/request-command.cc
     ../src/model/message-functionality/network-stream-in/got-info-command.cc
     ../src/model/message-functionality/network-stream-in/connecting-command.cc
+    ../src/model/message-functionality/network-stream-in/key-command.cc
 
     ../src/model/message-functionality/network-stream-out/connect-command.cc
     ../src/model/message-functionality/network-stream-out/info-command.cc
+    ../src/model/message-functionality/network-stream-out/encrypt-command.cc
 
     ../src/model/message-functionality/general/invalid-command.cc
 
@@ -67,9 +69,11 @@ set(SOURCES
     model/message-functionality/network-stream-in/request-command_test.cc
     model/message-functionality/network-stream-in/got-info-command_test.cc
     model/message-functionality/network-stream-in/connecting-command_test.cc
+    model/message-functionality/network-stream-in/key-command_test.cc
 
     model/message-functionality/network-stream-out/connect-command_test.cc
     model/message-functionality/network-stream-out/info-command_test.cc
+    model/message-functionality/network-stream-out/encrypt-command_test.cc
 
     model/message-functionality/general/invalid-command_test.cc
 
