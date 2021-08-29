@@ -5,7 +5,7 @@
 #include "../../view/MainApplication.h"
 #include "observer.h"
 
-namespace chat_client_controller {
+namespace chat_client_controller_observers {
 class DeleteFriendObserver : public Observer {
  private:
   std::shared_ptr<chat_client_model::ClientModel> model;
@@ -16,6 +16,6 @@ class DeleteFriendObserver : public Observer {
 
   void Execute();
 };
-}  // namespace chat_client_controller
+}  // namespace chat_client_controller_observers
 
 #endif

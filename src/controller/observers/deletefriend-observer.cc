@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-using namespace chat_client_controller;
+using namespace chat_client_controller_observers;
 using namespace chat_client_model;
 using namespace std;
 

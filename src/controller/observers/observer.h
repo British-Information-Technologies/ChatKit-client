@@ -5,11 +5,7 @@
 
 class MainApplication;
 
-namespace chat_client_view {
-class View;
-}
-
-namespace chat_client_controller {
+namespace chat_client_controller_observers {
 class Observer {
  protected:
   Glib::RefPtr<MainApplication> view;
@@ -17,6 +13,6 @@ class Observer {
  public:
   virtual void Execute() = 0;
 };
-}  // namespace chat_client_controller
+}  // namespace chat_client_controller_observers
 
 #endif
