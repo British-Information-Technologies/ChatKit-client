@@ -9,6 +9,7 @@
 #include "base64.h"
 
 using namespace networking_utility;
+using namespace chat_client_model_message_functionality;
 using json = nlohmann::json;
 
 SecureSocketHandler::SecureSocketHandler(int sockfd, DerivedData *key)
@@ -18,11 +19,12 @@ SecureSocketHandler::SecureSocketHandler(int sockfd, DerivedData *key)
 
 SecureSocketHandler::~SecureSocketHandler() { delete key; }
 
-int SecureSocketHandler::send(secure_string &plaintext) {
-  if (plaintext.length() <= 0) return 0;
+int SecureSocketHandler::send(Message *message) {
+  std::string type = message->ToJson()["type"];
+  if (type.compare(INVALID) == 0) return 0;
 
   /*Encrypt the message with the key, aad, and iv (faked values) */
-  secure_string aad = "address:port";
+  std::string aad = "address:port";
 
   const int iv_size = 12;
   byte iv[iv_size + 1];
@@ -40,36 +42,33 @@ int SecureSocketHandler::send(secure_string &plaintext) {
   tag[tag_size] = '\0';
 
   /*Format the message into a json string (serialize)*/
-  json json_object = {{"message", plaintext}};
-  std::string message = json_object.dump();
+  std::string json_string = message->ToString();
 
-  plaintext.assign(message);
-
-  secure_string ciphertext;
-  aes_gcm_encrypt(plaintext, aad, key, iv, iv_size, ciphertext, tag);
+  std::string ciphertext;
+  aes_gcm_encrypt(json_string, aad, key, iv, iv_size, ciphertext, tag);
 
   /* BASE 64 encode the ciphertext */
-  ciphertext.assign((std::string)EncodeBase64(ciphertext));
+  ciphertext.assign(EncodeBase64(ciphertext));
 
   /*Send message*/
-  return writer->write_line((std::string)ciphertext);
+  return writer->write_line(ciphertext);
 }
 
-secure_string SecureSocketHandler::recv() {
-  secure_string payload = (secure_string)reader->read_line();
+std::string SecureSocketHandler::recv() {
+  std::string payload = reader->read_line();
 
   /* BASE 64 decode the ciphertext */
-  payload.assign((std::string)DecodeBase64(payload));
+  payload.assign(DecodeBase64(payload));
 
   /* faked values */
-  secure_string aad = "address:port";
+  std::string aad = "address:port";
   const int iv_size = 12;
   byte iv[] = "bbbbbbbbbbbb\0";
 
   byte tag[16 + 1];
 
   // aes decrypt
-  secure_string decryptedtext;
+  std::string decryptedtext;
   aes_gcm_decrypt(payload, payload.length(), aad, tag, key, iv,
                   strlen((char *)iv), decryptedtext);
 

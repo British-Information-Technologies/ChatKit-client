@@ -8,8 +8,8 @@ class InsecureSocketHandler : public SocketHandler {
  public:
   InsecureSocketHandler(int);
 
-  int send(secure_string &);
-  secure_string recv();
+  int send(chat_client_model_message_functionality::Message *);
+  std::string recv();
 };
 }  // namespace networking_utility
 

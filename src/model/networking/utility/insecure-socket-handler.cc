@@ -5,23 +5,28 @@
 #include "base64.h"
 
 using namespace networking_utility;
+using namespace chat_client_model_message_functionality;
 using json = nlohmann::json;
 
 InsecureSocketHandler::InsecureSocketHandler(int sockfd)
     : SocketHandler(sockfd) {}
 
-int InsecureSocketHandler::send(secure_string &plaintext) {
-  if (plaintext.length() <= 0) return 0;
+int InsecureSocketHandler::send(Message* message) {
+  std::string type = message->ToJson()["type"];
 
-  plaintext.assign((std::string)EncodeBase64(plaintext));
+  if (type.compare(INVALID) == 0) return 0;
 
-  return writer->write_line((std::string)plaintext);
+  std::string json_string = message->ToString();
+
+  std::string encoded_plaintext = EncodeBase64(json_string);
+
+  return writer->write_line(encoded_plaintext);
 }
 
-secure_string InsecureSocketHandler::recv() {
-  secure_string payload = (secure_string)reader->read_line();
+std::string InsecureSocketHandler::recv() {
+  std::string payload = reader->read_line();
 
-  payload.assign((std::string)DecodeBase64(payload));
+  payload.assign(DecodeBase64(payload));
 
   return payload;
 }
