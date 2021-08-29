@@ -1,12 +1,18 @@
 #include "server-connection.h"
 
+#include <arpa/inet.h>
 #include <bits/stdc++.h>
+#include <netdb.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
 #include <algorithm>
 #include <nlohmann/json.hpp>
 
+#include "../../message-functionality/client-stream-in-factory.h"
+#include "../../message-functionality/client-stream-out-factory.h"
+#include "../../message-functionality/network-stream-in-factory.h"
+#include "../../message-functionality/network-stream-out-factory.h"
 #include "../utility/aes-gcm.h"
 #include "../utility/elliptic-curve-diffiehellman.h"
 #include "../utility/insecure-socket-handler.h"
@@ -14,12 +20,9 @@
 #include "../utility/sha-3-256.h"
 
 using namespace networking_server;
+using namespace chat_client_model_message_functionality;
 using namespace networking_utility;
 using json = nlohmann::json;
-
-ServerConnection::ServerConnection() { socket_handler = nullptr; }
-
-ServerConnection::~ServerConnection() { delete socket_handler; }
 
 // get sockaddr, IPv4 or IPv6:
 void *ServerConnection::get_in_addr(struct sockaddr *sa) {
@@ -31,8 +34,21 @@ void ServerConnection::set_state(SocketHandler *next_handler) {
   socket_handler = next_handler;
 }
 
-int ServerConnection::create_connection(std::string &ip_address,
-                                        std::string &port) {
+void ServerConnection::set_factory_state(
+    std::shared_ptr<ServerStreamOutFactory> stream_out_factory,
+    std::shared_ptr<ServerStreamInFactory> stream_in_factory) {
+  this->stream_out_factory = stream_out_factory;
+  this->stream_in_factory = stream_in_factory;
+}
+
+ServerConnection::ServerConnection(const std::string &ip_address,
+                                   const std::string &port)
+    : Connection(ip_address, port) {
+  this->stream_out_factory = std::make_shared<NetworkStreamOutFactory>();
+  this->stream_in_factory = std::make_shared<NetworkStreamInFactory>();
+}
+
+int ServerConnection::create_connection() {
   struct addrinfo hints, *servinfo, *p;
   int sockfd, rv;
   char s[INET6_ADDRSTRLEN];
@@ -82,14 +98,14 @@ int ServerConnection::create_connection(std::string &ip_address,
   EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
 
   /*public keys need to be shared with other party at this point*/
-  secure_string serial_public_key =
-      (secure_string)SerializePublicKey(public_key.get());
+  std::string serial_public_key = SerializePublicKey(public_key.get());
 
-  socket_handler->send(serial_public_key);
+  this->send_message(serial_public_key);
 
-  secure_string payload = socket_handler->recv();
+  std::unique_ptr<Message> payload = this->read_message();
 
-  EVP_PKEY_free_ptr peer_public_key = DeserializePublicKey(payload.c_str());
+  EVP_PKEY_free_ptr peer_public_key =
+      DeserializePublicKey(payload->ToString().c_str());
 
   /*Create the shared secret with other users public key and your
     own private key (this has wrong public key as a place holder*/
@@ -99,17 +115,25 @@ int ServerConnection::create_connection(std::string &ip_address,
   HashData(key);
 
   set_state(new SecureSocketHandler(sockfd, key));
+  set_factory_state(std::make_shared<ClientStreamOutFactory>(),
+                    std::make_shared<ClientStreamInFactory>());
 
   return 1;
 }
 
-int ServerConnection::send_message(secure_string &plaintext) {
-  int sent_bytes = socket_handler->send(plaintext);
+int ServerConnection::send_message(std::string &plaintext) {
+  std::unique_ptr<Message> message = stream_out_factory->GetMessage(plaintext);
+
+  int sent_bytes = socket_handler->send(message.get());
+
   return sent_bytes;
 }
 
-secure_string ServerConnection::read_message() {
-  /* Possibly format message into a message object of some kind in the future */
-  secure_string message = socket_handler->recv();
+std::unique_ptr<Message> ServerConnection::read_message() {
+  std::string json_string = socket_handler->recv();
+  std::cout << json_string << std::endl;
+
+  std::unique_ptr<Message> message = stream_in_factory->GetMessage(json_string);
+
   return message;
 }

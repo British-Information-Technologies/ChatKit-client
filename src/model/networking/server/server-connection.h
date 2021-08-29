@@ -1,39 +1,43 @@
 #ifndef CPPCHATCLIENT_MODEL_CLIENTMODEL_H_
 #define CPPCHATCLIENT_MODEL_CLIENTMODEL_H_
 
-#include <arpa/inet.h>
-#include <errno.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include <string>
-
-#include "../utility/buffer-reader.h"
-#include "../utility/derived-data.h"
-#include "../utility/memory-manager.h"
-#include "../utility/socket-handler.h"
+#include "../../message-functionality/server-stream-in-factory.h"
+#include "../../message-functionality/server-stream-out-factory.h"
+#include "../connection.h"
 
 namespace networking_server {
-class ServerConnection {
+class ServerConnection : public networking::Connection {
  private:
-  networking_utility::SocketHandler *socket_handler;
+  std::shared_ptr<
+      chat_client_model_message_functionality::ServerStreamOutFactory>
+      stream_out_factory;
+
+  std::shared_ptr<
+      chat_client_model_message_functionality::ServerStreamInFactory>
+      stream_in_factory;
 
  private:
   void *get_in_addr(struct sockaddr *);
+
   void set_state(networking_utility::SocketHandler *);
 
- public:
-  ServerConnection();
-  ~ServerConnection();
+  void set_factory_state(
+      std::shared_ptr<
+          chat_client_model_message_functionality::ServerStreamOutFactory>
+          stream_out_factory,
+      std::shared_ptr<
+          chat_client_model_message_functionality::ServerStreamInFactory>
+          stream_in_factory);
 
-  int create_connection(std::string &, std::string &);
-  int send_message(networking_utility::secure_string &);
-  networking_utility::secure_string read_message();
+ public:
+  ServerConnection(const std::string &ip_address, const std::string &port);
+
+  int create_connection();
+
+  int send_message(std::string &);
+
+  std::unique_ptr<chat_client_model_message_functionality::Message>
+  read_message();
 };
 }  // namespace networking_server
 
