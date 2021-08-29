@@ -42,9 +42,10 @@ class MainApplication : public Gtk::Application {
       std::shared_ptr<chat_client_model_friend_functionality::FriendNode>);
   void RemoveFriendFromFriendList(const std::string&);
 
-  void AddObserverAddFriendButton(chat_client_controller::Observer&);
-  void AddObserverDeleteFriendButton(chat_client_controller::Observer&);
-  void AddObserverSendButton(chat_client_controller::Observer&);
+  void AddObserverAddFriendButton(chat_client_controller_observers::Observer&);
+  void AddObserverDeleteFriendButton(
+      chat_client_controller_observers::Observer&);
+  void AddObserverSendButton(chat_client_controller_observers::Observer&);
 };
 
 #endif

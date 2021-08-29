@@ -5,7 +5,7 @@
 #include "controller/observers/deletefriend-observer.h"
 
 using namespace Gtk;
-using namespace chat_client_controller;
+using namespace chat_client_controller_observers;
 using namespace std;
 
 MainApplication::MainApplication()
