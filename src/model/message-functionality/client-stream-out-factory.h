@@ -1,21 +1,12 @@
 #ifndef MODEL_MESSAGEFUNCTIONALITY_CLIENTSTREAMOUTFACTORY_
 #define MODEL_MESSAGEFUNCTIONALITY_CLIENTSTREAMOUTFACTORY_
 
-#include <memory>
-
-#include "message.h"
+#include "server-stream-out-factory.h"
 
 namespace chat_client_model_message_functionality {
-class ClientStreamOutFactory {
+class ClientStreamOutFactory : public ServerStreamOutFactory {
  public:
-  std::unique_ptr<Message> GetMessage(const std::string &type);
-
-  std::unique_ptr<Message> GetMessage(const std::string &type,
-                                      const std::string &content);
-
-  std::unique_ptr<Message> GetMessage(const std::string &type,
-                                      const std::string &to,
-                                      const std::string &content);
+  std::unique_ptr<Message> GetMessage(const std::string &plaintext);
 };
 }  // namespace chat_client_model_message_functionality
 

@@ -17,31 +17,26 @@ using json = nlohmann::json;
 #define SENDMESSAGE "SendMessage"
 
 std::unique_ptr<Message> ClientStreamOutFactory::GetMessage(
-    const std::string &type) {
-  if (type.compare(DISCONNECT) == 0) {
-    return std::make_unique<DisconnectCommand>();
-  } else if (type.compare(UPDATE) == 0) {
-    return std::make_unique<UpdateCommand>();
+    const std::string &plaintext) {
+  try {
+    json plaintext_object = json::parse(plaintext);
+    std::string type = plaintext_object["type"];
+
+    if (type.compare(DISCONNECT) == 0) {
+      return std::make_unique<DisconnectCommand>();
+    } else if (type.compare(UPDATE) == 0) {
+      return std::make_unique<UpdateCommand>();
+    } else if (type.compare(SENDGLOBALMESSAGE) == 0) {
+      std::string content = plaintext_object["content"];
+      return std::make_unique<SendGlobalMessageCommand>(content);
+    } else if (type.compare(SENDMESSAGE) == 0) {
+      std::string to = plaintext_object["to"];
+      std::string content = plaintext_object["content"];
+      return std::make_unique<SendMessageCommand>(to, content);
+    }
+
+    return std::make_unique<InvalidCommand>();
+  } catch (const json::exception &e) {
+    return std::make_unique<InvalidCommand>();
   }
-
-  return std::make_unique<InvalidCommand>();
-}
-
-std::unique_ptr<Message> ClientStreamOutFactory::GetMessage(
-    const std::string &type, const std::string &content) {
-  if (type.compare(SENDGLOBALMESSAGE) == 0) {
-    return std::make_unique<SendGlobalMessageCommand>(content);
-  }
-
-  return std::make_unique<InvalidCommand>();
-}
-
-std::unique_ptr<Message> ClientStreamOutFactory::GetMessage(
-    const std::string &type, const std::string &to,
-    const std::string &content) {
-  if (type.compare(SENDMESSAGE) == 0) {
-    return std::make_unique<SendMessageCommand>(to, content);
-  }
-
-  return std::make_unique<InvalidCommand>();
 }

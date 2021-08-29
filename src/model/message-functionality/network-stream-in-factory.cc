@@ -3,6 +3,7 @@
 #include "general/invalid-command.h"
 #include "network-stream-in/connecting-command.h"
 #include "network-stream-in/got-info-command.h"
+#include "network-stream-in/key-command.h"
 #include "network-stream-in/request-command.h"
 
 using namespace chat_client_model_message_functionality;
@@ -13,6 +14,7 @@ using json = nlohmann::json;
 #define CONNECTING "Connecting"
 #define GOTINFO "GotInfo"
 #define REQUEST "Request"
+#define KEY "Key"
 
 std::unique_ptr<Message> NetworkStreamInFactory::GetMessage(
     const std::string &plaintext) {
@@ -29,6 +31,9 @@ std::unique_ptr<Message> NetworkStreamInFactory::GetMessage(
       return std::make_unique<GotInfoCommand>(server_name, server_owner);
     } else if (type.compare(REQUEST) == 0) {
       return std::make_unique<RequestCommand>();
+    } else if (type.compare(KEY) == 0) {
+      std::string key = plaintext_object["key"];
+      return std::make_unique<KeyCommand>(key);
     }
 
     return std::make_unique<InvalidCommand>();
