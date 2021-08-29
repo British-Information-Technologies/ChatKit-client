@@ -4,9 +4,9 @@
 #include "memory-manager.h"
 
 namespace networking_utility {
-secure_string EncodeBase64(secure_string &input_data);
+std::string EncodeBase64(std::string &input_data);
 
-secure_string DecodeBase64(secure_string &encoded_data);
+std::string DecodeBase64(std::string &encoded_data);
 }  // namespace networking_utility
 
 #endif

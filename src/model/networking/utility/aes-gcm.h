@@ -6,11 +6,11 @@
 
 namespace networking_utility {
 
-int aes_gcm_encrypt(secure_string &, secure_string &, DerivedData *, byte *,
-                    int, secure_string &, byte *);
+int aes_gcm_encrypt(std::string &, std::string &, DerivedData *, byte *, int,
+                    std::string &, byte *);
 
-int aes_gcm_decrypt(secure_string &, int, secure_string &, byte *,
-                    DerivedData *, byte *, int, secure_string &);
+int aes_gcm_decrypt(std::string &, int, std::string &, byte *, DerivedData *,
+                    byte *, int, std::string &);
 
 }  // namespace networking_utility
 

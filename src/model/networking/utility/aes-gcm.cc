@@ -10,10 +10,10 @@ using namespace networking_utility;
 using EVP_CIPHER_CTX_free_ptr =
     std::unique_ptr<EVP_CIPHER_CTX, decltype(&::EVP_CIPHER_CTX_free)>;
 
-int networking_utility::aes_gcm_encrypt(secure_string &plaintext,
-                                        secure_string &aad, DerivedData *key,
+int networking_utility::aes_gcm_encrypt(std::string &plaintext,
+                                        std::string &aad, DerivedData *key,
                                         byte *iv, int iv_len,
-                                        secure_string &ciphertext, byte *tag) {
+                                        std::string &ciphertext, byte *tag) {
   int len;
   int ciphertext_len;
 
@@ -68,10 +68,10 @@ int networking_utility::aes_gcm_encrypt(secure_string &plaintext,
   return ciphertext_len;
 }
 
-int networking_utility::aes_gcm_decrypt(secure_string &ciphertext,
-                                        int ciphertext_len, secure_string &aad,
+int networking_utility::aes_gcm_decrypt(std::string &ciphertext,
+                                        int ciphertext_len, std::string &aad,
                                         byte *tag, DerivedData *key, byte *iv,
-                                        int iv_len, secure_string &plaintext) {
+                                        int iv_len, std::string &plaintext) {
   int len;
   int plaintext_len;
   int ret;
