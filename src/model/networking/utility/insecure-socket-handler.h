@@ -9,7 +9,7 @@ class InsecureSocketHandler : public SocketHandler {
   InsecureSocketHandler(int);
 
   int send(chat_client_model_message_functionality::Message *);
-  std::string recv();
+  std::string recv(std::string &payload);
 };
 }  // namespace networking_utility
 

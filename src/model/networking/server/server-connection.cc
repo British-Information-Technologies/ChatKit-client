@@ -43,14 +43,15 @@ void ServerConnection::set_factory_state(
 
 ServerConnection::ServerConnection(const std::string &ip_address,
                                    const std::string &port)
-    : Connection(ip_address, port) {
+    : Connection(ip_address, port), key_pair(GenerateKeyPair()) {
+  this->sockfd = -1;
   this->stream_out_factory = std::make_shared<NetworkStreamOutFactory>();
   this->stream_in_factory = std::make_shared<NetworkStreamInFactory>();
 }
 
 int ServerConnection::create_connection() {
   struct addrinfo hints, *servinfo, *p;
-  int sockfd, rv;
+  int rv;
   char s[INET6_ADDRSTRLEN];
 
   memset(&hints, 0, sizeof hints);
@@ -94,7 +95,6 @@ int ServerConnection::create_connection() {
   set_state(new InsecureSocketHandler(sockfd));
 
   /* Create shared secret */
-  EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
   EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
 
   /*public keys need to be shared with other party at this point*/
@@ -102,10 +102,16 @@ int ServerConnection::create_connection() {
 
   this->send_message(serial_public_key);
 
-  std::unique_ptr<Message> payload = this->read_message();
+  return sockfd;
+}
+
+int ServerConnection::establish_secure_connection(Message *message) {
+  if (sockfd < 0 || key_pair == nullptr) {
+    return -1;
+  }
 
   EVP_PKEY_free_ptr peer_public_key =
-      DeserializePublicKey(payload->ToString().c_str());
+      DeserializePublicKey(message->ToString().c_str());
 
   /*Create the shared secret with other users public key and your
     own private key (this has wrong public key as a place holder*/
@@ -129,8 +135,9 @@ int ServerConnection::send_message(std::string &plaintext) {
   return sent_bytes;
 }
 
-std::unique_ptr<Message> ServerConnection::read_message() {
-  std::string json_string = socket_handler->recv();
+std::unique_ptr<Message> ServerConnection::translate_message(
+    std::string &line) {
+  std::string json_string = socket_handler->recv(line);
   std::cout << json_string << std::endl;
 
   std::unique_ptr<Message> message = stream_in_factory->GetMessage(json_string);

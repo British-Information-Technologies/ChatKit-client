@@ -25,10 +25,13 @@ class Connection {
 
   virtual int create_connection() = 0;
 
+  virtual int establish_secure_connection(
+      chat_client_model_message_functionality::Message *message) = 0;
+
   virtual int send_message(std::string &) = 0;
 
   virtual std::unique_ptr<chat_client_model_message_functionality::Message>
-  read_message() = 0;
+  translate_message(std::string &line) = 0;
 };
 
 }  // namespace networking

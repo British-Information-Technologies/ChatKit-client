@@ -5,11 +5,10 @@
 
 #include <memory>
 
+#include "crypto-types.h"
 #include "derived-data.h"
 
 namespace networking_utility {
-
-using EVP_PKEY_free_ptr = std::unique_ptr<EVP_PKEY, decltype(&::EVP_PKEY_free)>;
 
 EVP_PKEY_free_ptr GenerateKeyPair();
 EVP_PKEY_free_ptr ExtractPublicKey(EVP_PKEY *);

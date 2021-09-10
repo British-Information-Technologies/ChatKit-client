@@ -4,6 +4,7 @@
 #include <string>
 
 using namespace chat_client_controller_observers;
+using namespace chat_client_model_friend_functionality;
 using namespace chat_client_model;
 using namespace std;
 

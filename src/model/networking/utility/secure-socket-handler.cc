@@ -54,9 +54,7 @@ int SecureSocketHandler::send(Message *message) {
   return writer->write_line(ciphertext);
 }
 
-std::string SecureSocketHandler::recv() {
-  std::string payload = reader->read_line();
-
+std::string SecureSocketHandler::recv(std::string &payload) {
   /* BASE 64 decode the ciphertext */
   payload.assign(DecodeBase64(payload));
 

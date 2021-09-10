@@ -23,9 +23,7 @@ int InsecureSocketHandler::send(Message* message) {
   return writer->write_line(encoded_plaintext);
 }
 
-std::string InsecureSocketHandler::recv() {
-  std::string payload = reader->read_line();
-
+std::string InsecureSocketHandler::recv(std::string& payload) {
   payload.assign(DecodeBase64(payload));
 
   return payload;

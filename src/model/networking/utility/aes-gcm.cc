@@ -5,10 +5,9 @@
 #include <openssl/evp.h>
 #include <string.h>
 
-using namespace networking_utility;
+#include "crypto-types.h"
 
-using EVP_CIPHER_CTX_free_ptr =
-    std::unique_ptr<EVP_CIPHER_CTX, decltype(&::EVP_CIPHER_CTX_free)>;
+using namespace networking_utility;
 
 int networking_utility::aes_gcm_encrypt(std::string &plaintext,
                                         std::string &aad, DerivedData *key,

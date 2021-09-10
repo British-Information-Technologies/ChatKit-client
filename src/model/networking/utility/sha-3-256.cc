@@ -6,10 +6,9 @@
 #include <iostream>
 #include <memory>
 
-using namespace networking_utility;
+#include "crypto-types.h"
 
-using EVP_MD_CTX_free_ptr =
-    std::unique_ptr<EVP_MD_CTX, decltype(&::EVP_MD_CTX_free)>;
+using namespace networking_utility;
 
 void networking_utility::HashData(DerivedData *data) {
   const EVP_MD *hashing_algorithm = EVP_sha3_256();

@@ -4,10 +4,15 @@
 #include "../../message-functionality/server-stream-in-factory.h"
 #include "../../message-functionality/server-stream-out-factory.h"
 #include "../connection.h"
+#include "../utility/crypto-types.h"
 
 namespace networking_server {
 class ServerConnection : public networking::Connection {
  private:
+  int sockfd;
+
+  EVP_PKEY_free_ptr key_pair;
+
   std::shared_ptr<
       chat_client_model_message_functionality::ServerStreamOutFactory>
       stream_out_factory;
@@ -34,10 +39,13 @@ class ServerConnection : public networking::Connection {
 
   int create_connection();
 
+  int establish_secure_connection(
+      chat_client_model_message_functionality::Message *message);
+
   int send_message(std::string &);
 
   std::unique_ptr<chat_client_model_message_functionality::Message>
-  read_message();
+  translate_message(std::string &line);
 };
 }  // namespace networking_server
 

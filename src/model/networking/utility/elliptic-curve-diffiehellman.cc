@@ -10,12 +10,6 @@
 using namespace networking_utility;
 using json = nlohmann::json;
 
-using EVP_PKEY_CTX_free_ptr =
-    std::unique_ptr<EVP_PKEY_CTX, decltype(&::EVP_PKEY_CTX_free)>;
-
-using EC_KEY_free_ptr = std::unique_ptr<EC_KEY, decltype(&::EC_KEY_free)>;
-using BIO_free_ptr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
-
 EVP_PKEY_free_ptr networking_utility::GenerateKeyPair() {
   EVP_PKEY_free_ptr pkey(EVP_PKEY_new(), ::EVP_PKEY_free);
   EVP_PKEY_free_ptr params(EVP_PKEY_new(), ::EVP_PKEY_free);

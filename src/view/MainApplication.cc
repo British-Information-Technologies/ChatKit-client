@@ -6,6 +6,7 @@
 
 using namespace Gtk;
 using namespace chat_client_controller_observers;
+using namespace chat_client_model_friend_functionality;
 using namespace std;
 
 MainApplication::MainApplication()

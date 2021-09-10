@@ -10,6 +10,11 @@ class ClientController {
   std::shared_ptr<chat_client_model::ClientModel> model;
   Glib::RefPtr<MainApplication> view;
 
+ private:
+  void *network_manager(void);
+
+  static void *network_manager_helper(void *context);
+
  public:
   ClientController(int, char **);
 
