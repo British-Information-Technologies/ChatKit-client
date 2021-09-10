@@ -1,6 +1,6 @@
 #include "connection.h"
 
-using namespace networking;
+using namespace model_networking;
 
 Connection::Connection(const std::string &ip_address, const std::string &port) {
   socket_handler = nullptr;

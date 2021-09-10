@@ -1,15 +1,15 @@
-#ifndef CPPCHATCLIENT_DERIVED_DATA_H_
-#define CPPCHATCLIENT_DERIVED_DATA_H_
+#ifndef MODEL_NETWORKING_UTILITY_DERIVED_DATA_H_
+#define MODEL_NETWORKING_UTILITY_DERIVED_DATA_H_
 
 #include <cstddef>
 
-namespace networking_utility {
+namespace model_networking_utility {
 
 struct DerivedData {
   unsigned char *secret;
   size_t length;
 };
 
-}  // namespace networking_utility
+}  // namespace model_networking_utility
 
 #endif

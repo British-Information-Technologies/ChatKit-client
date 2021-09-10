@@ -4,7 +4,7 @@
 
 #include <nlohmann/json.hpp>
 
-using namespace chat_client_model_message_functionality_general;
+using namespace model_message_functionality_general;
 using json = nlohmann::json;
 
 TEST(InvalidCommandTest, ToStringTest) {

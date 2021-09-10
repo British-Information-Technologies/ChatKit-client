@@ -1,16 +1,15 @@
-#ifndef MODEL_MESSAGEFUNCTIONALITY_CLIENTSTREAMIN_DISCONNECTEDCOMMAND_
-#define MODEL_MESSAGEFUNCTIONALITY_CLIENTSTREAMIN_DISCONNECTEDCOMMAND_
+#ifndef MODEL_MESSAGE_FUNCTIONALITY_CLIENT_STREAM_IN_DISCONNECTED_COMMAND_H_
+#define MODEL_MESSAGE_FUNCTIONALITY_CLIENT_STREAM_IN_DISCONNECTED_COMMAND_H_
 
 #include "../message.h"
 
-namespace chat_client_model_message_functionality_client_stream_in {
-class DisconnectedCommand
-    : public chat_client_model_message_functionality::Message {
+namespace model_message_functionality_client_stream_in {
+class DisconnectedCommand : public model_message_functionality::Message {
  public:
   std::string ToString();
 
   nlohmann::json ToJson();
 };
-}  // namespace chat_client_model_message_functionality_client_stream_in
+}  // namespace model_message_functionality_client_stream_in
 
 #endif

@@ -2,9 +2,9 @@
 
 #include <openssl/evp.h>
 
-using namespace networking_utility;
+using namespace model_networking_utility;
 
-std::string networking_utility::EncodeBase64(std::string &input_data) {
+std::string model_networking_utility::EncodeBase64(std::string &input_data) {
   unsigned int input_size = input_data.length();
   unsigned int adjustment = ((input_size % 3) ? (3 - (input_size % 3)) : 0);
   unsigned int code_padded_size = ((input_size + adjustment) / 3) * 4;
@@ -20,7 +20,7 @@ std::string networking_utility::EncodeBase64(std::string &input_data) {
   return encoded_data;
 }
 
-std::string networking_utility::DecodeBase64(std::string &encoded_data) {
+std::string model_networking_utility::DecodeBase64(std::string &encoded_data) {
   int encoded_data_len = encoded_data.length();
 
   std::string possible_padding = encoded_data.substr(encoded_data_len - 2, 2);

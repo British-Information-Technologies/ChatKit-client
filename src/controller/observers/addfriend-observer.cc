@@ -3,9 +3,9 @@
 #include <iostream>
 #include <string>
 
-using namespace chat_client_controller_observers;
-using namespace chat_client_model_friend_functionality;
-using namespace chat_client_model;
+using namespace controller_observers;
+using namespace model_friend_functionality;
+using namespace model;
 using namespace std;
 
 AddFriendObserver::AddFriendObserver(shared_ptr<ClientModel> model,

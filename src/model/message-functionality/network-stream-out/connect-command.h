@@ -1,10 +1,10 @@
-#ifndef MODEL_MESSAGEFUNCTIONALITY_NETWORKSTREAMOUT_CONNECTCOMMAND_
-#define MODEL_MESSAGEFUNCTIONALITY_NETWORKSTREAMOUT_CONNECTCOMMAND_
+#ifndef MODEL_MESSAGE_FUNCTIONALITY_NETWORK_STREAM_OUT_CONNECT_COMMAND_H_
+#define MODEL_MESSAGE_FUNCTIONALITY_NETWORK_STREAM_OUT_CONNECT_COMMAND_H_
 
 #include "../message.h"
 
-namespace chat_client_model_message_functionality_network_stream_out {
-class ConnectCommand : public chat_client_model_message_functionality::Message {
+namespace model_message_functionality_network_stream_out {
+class ConnectCommand : public model_message_functionality::Message {
  private:
   std::string uuid;
   std::string username;
@@ -18,6 +18,6 @@ class ConnectCommand : public chat_client_model_message_functionality::Message {
 
   nlohmann::json ToJson();
 };
-}  // namespace chat_client_model_message_functionality_network_stream_out
+}  // namespace model_message_functionality_network_stream_out
 
 #endif

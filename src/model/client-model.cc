@@ -2,9 +2,9 @@
 
 #include "networking/server/server-connection.h"
 
-using namespace chat_client_model;
-using namespace chat_client_model_friend_functionality;
-using namespace networking;
+using namespace model;
+using namespace model_friend_functionality;
+using namespace model_networking;
 using namespace std;
 
 ClientModel::ClientModel() {
@@ -25,7 +25,7 @@ shared_ptr<FriendNode> ClientModel::GetFriend(const string& uuid) const {
 }
 
 std::shared_ptr<
-    std::unordered_map<int, std::shared_ptr<networking::Connection>>>
+    std::unordered_map<int, std::shared_ptr<model_networking::Connection>>>
 ClientModel::load_connections() {
   /* Pesudo code
   nodes = get all connections from friend and server api

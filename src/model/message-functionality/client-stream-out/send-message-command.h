@@ -1,11 +1,10 @@
-#ifndef MODEL_MESSAGEFUNCTIONALITY_CLIENTSTREAMOUT_SENDMESSAGECOMMAND_
-#define MODEL_MESSAGEFUNCTIONALITY_CLIENTSTREAMOUT_SENDMESSAGECOMMAND_
+#ifndef MODEL_MESSAGE_FUNCTIONALITY_CLIENT_STREAM_OUT_SEND_MESSAGE_COMMAND_H_
+#define MODEL_MESSAGE_FUNCTIONALITY_CLIENT_STREAM_OUT_SEND_MESSAGE_COMMAND_H_
 
 #include "../message.h"
 
-namespace chat_client_model_message_functionality_client_stream_out {
-class SendMessageCommand
-    : public chat_client_model_message_functionality::Message {
+namespace model_message_functionality_client_stream_out {
+class SendMessageCommand : public model_message_functionality::Message {
  private:
   std::string to;
   std::string content;
@@ -17,6 +16,6 @@ class SendMessageCommand
 
   nlohmann::json ToJson();
 };
-}  // namespace chat_client_model_message_functionality_client_stream_out
+}  // namespace model_message_functionality_client_stream_out
 
 #endif

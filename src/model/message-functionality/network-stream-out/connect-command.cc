@@ -1,7 +1,7 @@
 #include "connect-command.h"
 
-using namespace chat_client_model_message_functionality;
-using namespace chat_client_model_message_functionality_network_stream_out;
+using namespace model_message_functionality;
+using namespace model_message_functionality_network_stream_out;
 using json = nlohmann::json;
 
 ConnectCommand::ConnectCommand(const std::string &uuid,

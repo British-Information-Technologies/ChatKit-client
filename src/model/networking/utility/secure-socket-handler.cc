@@ -8,8 +8,8 @@
 #include "aes-gcm.h"
 #include "base64.h"
 
-using namespace networking_utility;
-using namespace chat_client_model_message_functionality;
+using namespace model_networking_utility;
+using namespace model_message_functionality;
 using json = nlohmann::json;
 
 SecureSocketHandler::SecureSocketHandler(int sockfd, DerivedData *key)

@@ -5,7 +5,7 @@
 
 #include "utility/socket-handler.h"
 
-namespace networking {
+namespace model_networking {
 
 class Connection {
  protected:
@@ -13,10 +13,10 @@ class Connection {
 
   std::string port;
 
-  networking_utility::SocketHandler *socket_handler;
+  model_networking_utility::SocketHandler *socket_handler;
 
  private:
-  virtual void set_state(networking_utility::SocketHandler *) = 0;
+  virtual void set_state(model_networking_utility::SocketHandler *) = 0;
 
  public:
   Connection(const std::string &ip_address, const std::string &port);
@@ -26,14 +26,14 @@ class Connection {
   virtual int create_connection() = 0;
 
   virtual int establish_secure_connection(
-      chat_client_model_message_functionality::Message *message) = 0;
+      model_message_functionality::Message *message) = 0;
 
   virtual int send_message(std::string &) = 0;
 
-  virtual std::unique_ptr<chat_client_model_message_functionality::Message>
+  virtual std::unique_ptr<model_message_functionality::Message>
   translate_message(std::string &line) = 0;
 };
 
-}  // namespace networking
+}  // namespace model_networking
 
 #endif

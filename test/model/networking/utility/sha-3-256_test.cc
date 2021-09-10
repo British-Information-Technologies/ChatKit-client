@@ -4,7 +4,7 @@
 
 #include "model/networking/utility/elliptic-curve-diffiehellman.h"
 
-using namespace networking_utility;
+using namespace model_networking_utility;
 
 TEST(SHA3Test, HashSharedSecret) {
   EVP_PKEY_free_ptr alice_private_key = GenerateKeyPair();
@@ -45,8 +45,8 @@ TEST(SHA3Test, HashSharedSecret) {
   BN_free(secret_alice_BN);
   BN_free(secret_bob_BN);
 
-  networking_utility::HashData(secret_alice);
-  networking_utility::HashData(secret_bob);
+  model_networking_utility::HashData(secret_alice);
+  model_networking_utility::HashData(secret_bob);
 
   EXPECT_EQ(*secret_alice->secret, *secret_bob->secret);
 

@@ -15,11 +15,11 @@
 #include "callbacks/error-callback.h"
 #include "callbacks/read-callback.h"
 
-using namespace chat_client_model_message_functionality;
+using namespace model_message_functionality;
 using namespace std;
-using namespace chat_client_model;
+using namespace model;
 using namespace controller_networking;
-using namespace networking;
+using namespace model_networking;
 using namespace controller_networking_callbacks;
 
 #define MAX_LINE 16384

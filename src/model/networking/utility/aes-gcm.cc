@@ -7,12 +7,11 @@
 
 #include "crypto-types.h"
 
-using namespace networking_utility;
+using namespace model_networking_utility;
 
-int networking_utility::aes_gcm_encrypt(std::string &plaintext,
-                                        std::string &aad, DerivedData *key,
-                                        byte *iv, int iv_len,
-                                        std::string &ciphertext, byte *tag) {
+int model_networking_utility::aes_gcm_encrypt(
+    std::string &plaintext, std::string &aad, DerivedData *key, byte *iv,
+    int iv_len, std::string &ciphertext, byte *tag) {
   int len;
   int ciphertext_len;
 
@@ -67,10 +66,9 @@ int networking_utility::aes_gcm_encrypt(std::string &plaintext,
   return ciphertext_len;
 }
 
-int networking_utility::aes_gcm_decrypt(std::string &ciphertext,
-                                        int ciphertext_len, std::string &aad,
-                                        byte *tag, DerivedData *key, byte *iv,
-                                        int iv_len, std::string &plaintext) {
+int model_networking_utility::aes_gcm_decrypt(
+    std::string &ciphertext, int ciphertext_len, std::string &aad, byte *tag,
+    DerivedData *key, byte *iv, int iv_len, std::string &plaintext) {
   int len;
   int plaintext_len;
   int ret;

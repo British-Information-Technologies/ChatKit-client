@@ -9,7 +9,7 @@
 namespace model_networking {
 class ConnectionFactory {
  public:
-  std::shared_ptr<networking::Connection> GetConnection(
+  std::shared_ptr<model_networking::Connection> GetConnection(
       const int &type, const std::string &ip_address, const std::string &port);
 };
 }  // namespace model_networking

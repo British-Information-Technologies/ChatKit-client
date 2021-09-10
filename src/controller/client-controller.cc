@@ -11,10 +11,10 @@
 #include "observers/send-message-observer.h"
 #include "view-factory.h"
 
-using namespace chat_client_controller;
+using namespace controller;
 using namespace controller_networking;
-using namespace chat_client_controller_observers;
-using namespace chat_client_model;
+using namespace controller_observers;
+using namespace model;
 using namespace std;
 
 void *ClientController::network_manager(void) {

@@ -1,5 +1,5 @@
-#ifndef CPPCHATCLIENT_CONTROLLER_APPLICATION_H_
-#define CPPCHATCLIENT_CONTROLLER_APPLICATION_H_
+#ifndef VIEW_MAIN_APPLICATION_H_
+#define VIEW_MAIN_APPLICATION_H_
 
 #include "controller/observers/observer.h"
 #include "model/friend-functionality/friend-node.h"
@@ -39,13 +39,12 @@ class MainApplication : public Gtk::Application {
   std::string GetMessageBoxText();
 
   void AddFriendToFriendList(
-      std::shared_ptr<chat_client_model_friend_functionality::FriendNode>);
+      std::shared_ptr<model_friend_functionality::FriendNode>);
   void RemoveFriendFromFriendList(const std::string&);
 
-  void AddObserverAddFriendButton(chat_client_controller_observers::Observer&);
-  void AddObserverDeleteFriendButton(
-      chat_client_controller_observers::Observer&);
-  void AddObserverSendButton(chat_client_controller_observers::Observer&);
+  void AddObserverAddFriendButton(controller_observers::Observer&);
+  void AddObserverDeleteFriendButton(controller_observers::Observer&);
+  void AddObserverSendButton(controller_observers::Observer&);
 };
 
 #endif

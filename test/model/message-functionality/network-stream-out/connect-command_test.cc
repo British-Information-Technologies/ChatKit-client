@@ -4,7 +4,7 @@
 
 #include <nlohmann/json.hpp>
 
-using namespace chat_client_model_message_functionality_network_stream_out;
+using namespace model_message_functionality_network_stream_out;
 using json = nlohmann::json;
 
 TEST(NetworkStreamOutConnectCommandTest, ToStringTest) {

@@ -1,15 +1,15 @@
-#ifndef MODEL_MESSAGEFUNCTIONALITY_NETWORKSTREAMIN_REQUESTCOMMAND_
-#define MODEL_MESSAGEFUNCTIONALITY_NETWORKSTREAMIN_REQUESTCOMMAND_
+#ifndef MODEL_MESSAGE_FUNCTIONALITY_NETWORK_STREAM_IN_REQUEST_COMMAND_H_
+#define MODEL_MESSAGE_FUNCTIONALITY_NETWORK_STREAM_IN_REQUEST_COMMAND_H_
 
 #include "../message.h"
 
-namespace chat_client_model_message_functionality_network_stream_in {
-class RequestCommand : public chat_client_model_message_functionality::Message {
+namespace model_message_functionality_network_stream_in {
+class RequestCommand : public model_message_functionality::Message {
  public:
   std::string ToString();
 
   nlohmann::json ToJson();
 };
-}  // namespace chat_client_model_message_functionality_network_stream_in
+}  // namespace model_message_functionality_network_stream_in
 
 #endif

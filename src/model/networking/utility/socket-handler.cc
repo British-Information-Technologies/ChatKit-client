@@ -1,6 +1,6 @@
 #include "socket-handler.h"
 
-using namespace networking_utility;
+using namespace model_networking_utility;
 
 SocketHandler::SocketHandler(int sockfd) {
   this->writer = new BufferWriter(sockfd);

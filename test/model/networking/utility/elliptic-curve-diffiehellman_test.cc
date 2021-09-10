@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <openssl/pem.h>
 
-using namespace networking_utility;
+using namespace model_networking_utility;
 
 TEST(EllipticCurveDiffieHellmanTest, CreateKeyPair) {
   EVP_PKEY_free_ptr alice_private_key = GenerateKeyPair();

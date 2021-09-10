@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-using namespace chat_client_model_friend_functionality;
+using namespace model_friend_functionality;
 
 class FriendNodeTest : public ::testing::Test {
  public:

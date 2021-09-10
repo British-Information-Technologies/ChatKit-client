@@ -2,7 +2,7 @@
 
 #include <string>
 
-using namespace chat_client_model_friend_functionality;
+using namespace model_friend_functionality;
 using namespace std;
 
 FriendNode::FriendNode(const string& name, const string& uuid) {

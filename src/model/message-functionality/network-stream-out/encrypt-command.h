@@ -1,10 +1,10 @@
-#ifndef MODEL_MESSAGEFUNCTIONALITY_NETWORKSTREAMOUT_ENCRYPTCOMMAND_H_
-#define MODEL_MESSAGEFUNCTIONALITY_NETWORKSTREAMOUT_ENCRYPTCOMMAND_H_
+#ifndef MODEL_MESSAGE_FUNCTIONALITY_NETWORK_STREAM_OUT_ENCRYPT_COMMAND_H_
+#define MODEL_MESSAGE_FUNCTIONALITY_NETWORK_STREAM_OUT_ENCRYPT_COMMAND_H_
 
 #include "../message.h"
 
-namespace chat_client_model_message_functionality_network_stream_out {
-class EncryptCommand : public chat_client_model_message_functionality::Message {
+namespace model_message_functionality_network_stream_out {
+class EncryptCommand : public model_message_functionality::Message {
  private:
   std::string key;
 
@@ -15,6 +15,6 @@ class EncryptCommand : public chat_client_model_message_functionality::Message {
 
   nlohmann::json ToJson();
 };
-}  // namespace chat_client_model_message_functionality_network_stream_out
+}  // namespace model_message_functionality_network_stream_out
 
 #endif

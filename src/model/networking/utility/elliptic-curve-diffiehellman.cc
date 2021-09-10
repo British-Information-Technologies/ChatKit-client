@@ -7,10 +7,10 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 
-using namespace networking_utility;
+using namespace model_networking_utility;
 using json = nlohmann::json;
 
-EVP_PKEY_free_ptr networking_utility::GenerateKeyPair() {
+EVP_PKEY_free_ptr model_networking_utility::GenerateKeyPair() {
   EVP_PKEY_free_ptr pkey(EVP_PKEY_new(), ::EVP_PKEY_free);
   EVP_PKEY_free_ptr params(EVP_PKEY_new(), ::EVP_PKEY_free);
 
@@ -44,7 +44,7 @@ EVP_PKEY_free_ptr networking_utility::GenerateKeyPair() {
   return pkey;
 }
 
-std::string networking_utility::SerializePublicKey(EVP_PKEY *public_key) {
+std::string model_networking_utility::SerializePublicKey(EVP_PKEY *public_key) {
   BIO_free_ptr bio_public(BIO_new(BIO_s_mem()), ::BIO_free);
 
   int ret = PEM_write_bio_PUBKEY(bio_public.get(), public_key);
@@ -62,7 +62,8 @@ std::string networking_utility::SerializePublicKey(EVP_PKEY *public_key) {
   return json_public_key.dump();
 }
 
-EVP_PKEY_free_ptr networking_utility::DeserializePublicKey(const char *buffer) {
+EVP_PKEY_free_ptr model_networking_utility::DeserializePublicKey(
+    const char *buffer) {
   json json_object = json::parse(buffer);
   std::string public_key = json_object["key"];
 
@@ -75,7 +76,8 @@ EVP_PKEY_free_ptr networking_utility::DeserializePublicKey(const char *buffer) {
 }
 
 /* Extract a public key from a provided key pair */
-EVP_PKEY_free_ptr networking_utility::ExtractPublicKey(EVP_PKEY *private_key) {
+EVP_PKEY_free_ptr model_networking_utility::ExtractPublicKey(
+    EVP_PKEY *private_key) {
   EC_KEY_free_ptr ec_key(EVP_PKEY_get1_EC_KEY(private_key), ::EC_KEY_free);
   const EC_POINT *ec_point = EC_KEY_get0_public_key(ec_key.get());
 
@@ -94,8 +96,8 @@ EVP_PKEY_free_ptr networking_utility::ExtractPublicKey(EVP_PKEY *private_key) {
 
   Never use a derived secret directly. Typically it is passed through
   some hash function to produce a key. */
-DerivedData *networking_utility::DeriveSharedSecret(EVP_PKEY *public_key,
-                                                    EVP_PKEY *private_key) {
+DerivedData *model_networking_utility::DeriveSharedSecret(
+    EVP_PKEY *public_key, EVP_PKEY *private_key) {
   DerivedData *derived_key = (DerivedData *)malloc(sizeof(DerivedData));
 
   /* Create the context for the shared secret derivation */

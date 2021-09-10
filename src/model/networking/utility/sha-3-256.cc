@@ -8,9 +8,9 @@
 
 #include "crypto-types.h"
 
-using namespace networking_utility;
+using namespace model_networking_utility;
 
-void networking_utility::HashData(DerivedData *data) {
+void model_networking_utility::HashData(DerivedData *data) {
   const EVP_MD *hashing_algorithm = EVP_sha3_256();
   EVP_MD_CTX_free_ptr mdctx(EVP_MD_CTX_create(), ::EVP_MD_CTX_free);
 

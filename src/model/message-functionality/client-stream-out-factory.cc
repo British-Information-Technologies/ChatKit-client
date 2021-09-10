@@ -6,9 +6,9 @@
 #include "client-stream-out/update-command.h"
 #include "general/invalid-command.h"
 
-using namespace chat_client_model_message_functionality;
-using namespace chat_client_model_message_functionality_client_stream_out;
-using namespace chat_client_model_message_functionality_general;
+using namespace model_message_functionality;
+using namespace model_message_functionality_client_stream_out;
+using namespace model_message_functionality_general;
 using json = nlohmann::json;
 
 #define DISCONNECT "Disconnect"

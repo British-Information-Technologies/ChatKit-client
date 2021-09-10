@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <openssl/evp.h>
 
-using namespace networking_utility;
+using namespace model_networking_utility;
 
 class AESGCMTest : public ::testing::Test {
  public:

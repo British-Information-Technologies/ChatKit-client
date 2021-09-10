@@ -1,5 +1,5 @@
-#ifndef TEMPORARY_CLIENT_H_
-#define TEMPORARY_CLIENT_H_
+#ifndef TEST_MODEL_TEMPORARY_CLIENT_H_
+#define TEST_MODEL_TEMPORARY_CLIENT_H_
 
 #include <sys/socket.h>
 

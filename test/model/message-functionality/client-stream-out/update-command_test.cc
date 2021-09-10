@@ -1,10 +1,10 @@
+#include "model/message-functionality/client-stream-out/update-command.h"
+
 #include <gtest/gtest.h>
 
 #include <nlohmann/json.hpp>
 
-#include "model/message-functionality/client-stream-out/update-command.h"
-
-using namespace chat_client_model_message_functionality_client_stream_out;
+using namespace model_message_functionality_client_stream_out;
 using json = nlohmann::json;
 
 TEST(UpdateCommandTest, ToStringTest) {

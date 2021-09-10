@@ -3,14 +3,12 @@
 
 #include "connection-factory.h"
 
-using namespace networking;
 using namespace model_networking;
 using namespace std;
 
 NetworkSender::~NetworkSender() { connections->clear(); }
 
-std::shared_ptr<
-    std::unordered_map<int, std::shared_ptr<networking::Connection>>>
+std::shared_ptr<std::unordered_map<int, std::shared_ptr<Connection>>>
 NetworkSender::get_connections() {
   return connections;
 }

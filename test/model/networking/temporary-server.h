@@ -1,5 +1,5 @@
-#ifndef TEMPORARY_SERVER_H_
-#define TEMPORARY_SERVER_H_
+#ifndef TEST_MODEL_TEMPORARY_SERVER_H_
+#define TEST_MODEL_TEMPORARY_SERVER_H_
 
 #include <arpa/inet.h>
 #include <sys/socket.h>

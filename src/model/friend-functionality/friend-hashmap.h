@@ -1,5 +1,5 @@
-#ifndef CPPCHATCLIENT_MODEL_FRIENDFUNCTIONALITY_FRIENDHASHMAP_
-#define CPPCHATCLIENT_MODEL_FRIENDFUNCTIONALITY_FRIENDHASHMAP_
+#ifndef MODEL_FRIEND_FUNCTIONALITY_FRIEND_HASHMAP_H_
+#define MODEL_FRIEND_FUNCTIONALITY_FRIEND_HASHMAP_H_
 
 #include <map>
 #include <memory>
@@ -8,7 +8,7 @@
 #include "friend-list.h"
 #include "friend-node.h"
 
-namespace chat_client_model_friend_functionality {
+namespace model_friend_functionality {
 class FriendHashmap : public FriendList {
  private:
   std::map<const std::string, std::shared_ptr<FriendNode>> friend_map;
@@ -20,6 +20,6 @@ class FriendHashmap : public FriendList {
 
   std::shared_ptr<FriendNode> GetFriend(const std::string&) const;
 };
-}  // namespace chat_client_model_friend_functionality
+}  // namespace model_friend_functionality
 
 #endif

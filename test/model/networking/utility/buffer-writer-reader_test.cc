@@ -10,7 +10,7 @@
 #define IP "localhost"
 #define PORT "3490"
 
-using namespace networking_utility;
+using namespace model_networking_utility;
 
 class BufferWriterTest : public ::testing::Test {
  protected:

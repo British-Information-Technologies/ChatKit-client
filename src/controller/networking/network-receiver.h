@@ -1,5 +1,5 @@
-#ifndef CONTROLLER_NETWORK_RECEIVER_H_
-#define CONTROLLER_NETWORK_RECEIVER_H_
+#ifndef CONTROLLER_NETWORKING_RECEIVER_H_
+#define CONTROLLER_NETWORKING_RECEIVER_H_
 
 #include <string>
 #include <unordered_map>
@@ -12,21 +12,20 @@ namespace controller_networking {
 
 class NetworkReceiver {
  private:
-  std::shared_ptr<chat_client_model::ClientModel> model;
+  std::shared_ptr<model::ClientModel> model;
 
   Glib::RefPtr<MainApplication> view;
 
   std::shared_ptr<
-      std::unordered_map<int, std::shared_ptr<networking::Connection>>>
+      std::unordered_map<int, std::shared_ptr<model_networking::Connection>>>
       connections;
 
  public:
-  NetworkReceiver(
-      std::shared_ptr<chat_client_model::ClientModel> model,
-      Glib::RefPtr<MainApplication> view,
-      std::shared_ptr<
-          std::unordered_map<int, std::shared_ptr<networking::Connection>>>
-          connections);
+  NetworkReceiver(std::shared_ptr<model::ClientModel> model,
+                  Glib::RefPtr<MainApplication> view,
+                  std::shared_ptr<std::unordered_map<
+                      int, std::shared_ptr<model_networking::Connection>>>
+                      connections);
 
   ~NetworkReceiver();
 

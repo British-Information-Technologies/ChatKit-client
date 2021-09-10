@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 
-using namespace chat_client_controller_observers;
-using namespace chat_client_model;
+using namespace controller_observers;
+using namespace model;
 using namespace std;
 
 SendMessageObserver::SendMessageObserver(shared_ptr<ClientModel> model,

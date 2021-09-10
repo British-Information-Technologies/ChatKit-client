@@ -2,7 +2,7 @@
 
 #include <sys/socket.h>
 
-using namespace networking_utility;
+using namespace model_networking_utility;
 
 BufferReader::BufferReader(int sockfd) {
   this->sockfd = sockfd;

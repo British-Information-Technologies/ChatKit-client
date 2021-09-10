@@ -6,8 +6,8 @@
 
 #include "model/friend-functionality/friend-node.h"
 
-using namespace chat_client_model;
-using namespace chat_client_model_friend_functionality;
+using namespace model;
+using namespace model_friend_functionality;
 
 class FriendClientModelTest : public ::testing::Test {
  public:

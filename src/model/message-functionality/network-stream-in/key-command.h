@@ -1,10 +1,10 @@
-#ifndef MODEL_MESSAGEFUNCTIONALITY_NETWORKSTREAMIN_KEYCOMMAND_H_
-#define MODEL_MESSAGEFUNCTIONALITY_NETWORKSTREAMIN_KEYCOMMAND_H_
+#ifndef MODEL_MESSAGE_FUNCTIONALITY_NETWORK_STREAM_IN_KEY_COMMAND_H_
+#define MODEL_MESSAGE_FUNCTIONALITY_NETWORK_STREAM_IN_KEY_COMMAND_H_
 
 #include "../message.h"
 
-namespace chat_client_model_message_functionality_network_stream_in {
-class KeyCommand : public chat_client_model_message_functionality::Message {
+namespace model_message_functionality_network_stream_in {
+class KeyCommand : public model_message_functionality::Message {
  private:
   std::string key;
 
@@ -15,6 +15,6 @@ class KeyCommand : public chat_client_model_message_functionality::Message {
 
   nlohmann::json ToJson();
 };
-}  // namespace chat_client_model_message_functionality_network_stream_in
+}  // namespace model_message_functionality_network_stream_in
 
 #endif

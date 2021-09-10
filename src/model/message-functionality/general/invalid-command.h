@@ -1,16 +1,16 @@
-#ifndef MODEL_MESSAGEFUNCTIONALITY_GENERAL_INVALIDCOMMAND_
-#define MODEL_MESSAGEFUNCTIONALITY_GENERAL_INVALIDCOMMAND_
+#ifndef MODEL_MESSAGE_FUNCTIONALITY_GENERAL_INVALID_COMMAND_H_
+#define MODEL_MESSAGE_FUNCTIONALITY_GENERAL_INVALID_COMMAND_H_
 
 #include "../message.h"
 
-namespace chat_client_model_message_functionality_general {
-class InvalidCommand : public chat_client_model_message_functionality::Message {
+namespace model_message_functionality_general {
+class InvalidCommand : public model_message_functionality::Message {
  public:
   std::string ToString();
 
   nlohmann::json ToJson();
 };
 
-}  // namespace chat_client_model_message_functionality_general
+}  // namespace model_message_functionality_general
 
 #endif

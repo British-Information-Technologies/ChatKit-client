@@ -1,9 +1,9 @@
-#ifndef CPPCHATCLIENT_BUFFER_READER_H_
-#define CPPCHATCLIENT_BUFFER_READER_H_
+#ifndef MODEL_NETWORKING_UTILITY_BUFFER_READER_H_
+#define MODEL_NETWORKING_UTILITY_BUFFER_READER_H_
 
 #include <string>
 
-namespace networking_utility {
+namespace model_networking_utility {
 class BufferReader {
  private:
   int sockfd;
@@ -20,6 +20,6 @@ class BufferReader {
 
   std::string read_line();
 };
-}  // namespace networking_utility
+}  // namespace model_networking_utility
 
 #endif

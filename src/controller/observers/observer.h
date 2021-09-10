@@ -1,11 +1,11 @@
-#ifndef CPPCHATCLIENT_CONTROLLER_OBSERVER_H_
-#define CPPCHATCLIENT_CONTROLLER_OBSERVER_H_
+#ifndef CONTROLLER_OBSERVERS_OBSERVER_H_
+#define CONTROLLER_OBSERVERS_OBSERVER_H_
 
 #include <gtkmm-4.0/gtkmm.h>
 
 class MainApplication;
 
-namespace chat_client_controller_observers {
+namespace controller_observers {
 class Observer {
  protected:
   Glib::RefPtr<MainApplication> view;
@@ -13,6 +13,6 @@ class Observer {
  public:
   virtual void Execute() = 0;
 };
-}  // namespace chat_client_controller_observers
+}  // namespace controller_observers
 
 #endif

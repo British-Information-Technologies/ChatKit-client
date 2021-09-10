@@ -7,9 +7,9 @@
 #include "../../../model/message-functionality/message.h"
 #include "../../../model/networking/connection.h"
 
-using namespace chat_client_model_message_functionality;
+using namespace model_message_functionality;
 using namespace controller_networking_callbacks;
-using namespace networking;
+using namespace model_networking;
 using namespace std;
 
 #define MAX_LINE 16384

@@ -6,19 +6,19 @@
 
 #include "connection.h"
 
-namespace networking {
+namespace model_networking {
 
 class NetworkSender {
  private:
   std::shared_ptr<
-      std::unordered_map<int, std::shared_ptr<networking::Connection>>>
+      std::unordered_map<int, std::shared_ptr<model_networking::Connection>>>
       connections;
 
  public:
   ~NetworkSender();
 
   std::shared_ptr<
-      std::unordered_map<int, std::shared_ptr<networking::Connection>>>
+      std::unordered_map<int, std::shared_ptr<model_networking::Connection>>>
   get_connections();
 
   void try_create_connection(const std::string &ip_address,
@@ -27,6 +27,6 @@ class NetworkSender {
   int send_message(const int &id, std::string &message);
 };
 
-}  // namespace networking
+}  // namespace model_networking
 
 #endif

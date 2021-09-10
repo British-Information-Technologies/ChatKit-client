@@ -1,5 +1,5 @@
-#ifndef CPPCHATCLIENT_MEMORY_MANAGER_H_
-#define CPPCHATCLIENT_MEMORY_MANAGER_H_
+#ifndef MODEL_NETWORKING_UTILITY_MEMORY_MANAGER_H_
+#define MODEL_NETWORKING_UTILITY_MEMORY_MANAGER_H_
 
 #include <openssl/crypto.h>
 
@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace networking_utility {
+namespace model_networking_utility {
 
 template <typename T>
 struct zallocator {
@@ -60,6 +60,6 @@ typedef unsigned char byte;
 typedef std::basic_string<char, std::char_traits<char>, zallocator<char> >
     secure_string;
 
-}  // namespace networking_utility
+}  // namespace model_networking_utility
 
 #endif

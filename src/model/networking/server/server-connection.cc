@@ -19,9 +19,9 @@
 #include "../utility/secure-socket-handler.h"
 #include "../utility/sha-3-256.h"
 
-using namespace networking_server;
-using namespace chat_client_model_message_functionality;
-using namespace networking_utility;
+using namespace model_networking_server;
+using namespace model_message_functionality;
+using namespace model_networking_utility;
 using json = nlohmann::json;
 
 // get sockaddr, IPv4 or IPv6:
