@@ -11,9 +11,9 @@ class ClientController {
   Glib::RefPtr<MainApplication> view;
 
  private:
-  void *network_manager(void);
+  void *NetworkManager(void);
 
-  static void *network_manager_helper(void *context);
+  static void *NetworkManagerHelper(void *context);
 
  public:
   ClientController(int, char **);

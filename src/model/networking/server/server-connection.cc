@@ -25,16 +25,16 @@ using namespace model_networking_utility;
 using json = nlohmann::json;
 
 // get sockaddr, IPv4 or IPv6:
-void *ServerConnection::get_in_addr(struct sockaddr *sa) {
+void *ServerConnection::GetInAddr(struct sockaddr *sa) {
   return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
 
-void ServerConnection::set_state(SocketHandler *next_handler) {
+void ServerConnection::SetState(SocketHandler *next_handler) {
   delete socket_handler;
   socket_handler = next_handler;
 }
 
-void ServerConnection::set_factory_state(
+void ServerConnection::SetFactoryState(
     std::shared_ptr<ServerStreamOutFactory> stream_out_factory,
     std::shared_ptr<ServerStreamInFactory> stream_in_factory) {
   this->stream_out_factory = stream_out_factory;
@@ -49,7 +49,7 @@ ServerConnection::ServerConnection(const std::string &ip_address,
   this->stream_in_factory = std::make_shared<NetworkStreamInFactory>();
 }
 
-int ServerConnection::create_connection() {
+int ServerConnection::CreateConnection() {
   struct addrinfo hints, *servinfo, *p;
   int rv;
   char s[INET6_ADDRSTRLEN];
@@ -86,13 +86,13 @@ int ServerConnection::create_connection() {
     return 0;
   }
 
-  inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr), s,
+  inet_ntop(p->ai_family, GetInAddr((struct sockaddr *)p->ai_addr), s,
             sizeof s);
   printf("client: connecting to %s\n", s);
 
   freeaddrinfo(servinfo);  // all done with this structure
 
-  set_state(new InsecureSocketHandler(sockfd));
+  SetState(new InsecureSocketHandler(sockfd));
 
   /* Create shared secret */
   EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
@@ -100,12 +100,12 @@ int ServerConnection::create_connection() {
   /*public keys need to be shared with other party at this point*/
   std::string serial_public_key = SerializePublicKey(public_key.get());
 
-  this->send_message(serial_public_key);
+  this->SendMessage(serial_public_key);
 
   return sockfd;
 }
 
-int ServerConnection::establish_secure_connection(Message *message) {
+int ServerConnection::EstablishSecureConnection(Message *message) {
   if (sockfd < 0 || key_pair == nullptr) {
     return -1;
   }
@@ -120,24 +120,23 @@ int ServerConnection::establish_secure_connection(Message *message) {
   /*Hash the secret to create the key*/
   HashData(key);
 
-  set_state(new SecureSocketHandler(sockfd, key));
-  set_factory_state(std::make_shared<ClientStreamOutFactory>(),
-                    std::make_shared<ClientStreamInFactory>());
+  SetState(new SecureSocketHandler(sockfd, key));
+  SetFactoryState(std::make_shared<ClientStreamOutFactory>(),
+                  std::make_shared<ClientStreamInFactory>());
 
   return 1;
 }
 
-int ServerConnection::send_message(std::string &plaintext) {
+int ServerConnection::SendMessage(std::string &plaintext) {
   std::unique_ptr<Message> message = stream_out_factory->GetMessage(plaintext);
 
-  int sent_bytes = socket_handler->send(message.get());
+  int sent_bytes = socket_handler->Send(message.get());
 
   return sent_bytes;
 }
 
-std::unique_ptr<Message> ServerConnection::translate_message(
-    std::string &line) {
-  std::string json_string = socket_handler->recv(line);
+std::unique_ptr<Message> ServerConnection::TranslateMessage(std::string &line) {
+  std::string json_string = socket_handler->Recv(line);
   std::cout << json_string << std::endl;
 
   std::unique_ptr<Message> message = stream_in_factory->GetMessage(json_string);

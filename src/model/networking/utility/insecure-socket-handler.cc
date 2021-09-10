@@ -11,7 +11,7 @@ using json = nlohmann::json;
 InsecureSocketHandler::InsecureSocketHandler(int sockfd)
     : SocketHandler(sockfd) {}
 
-int InsecureSocketHandler::send(Message* message) {
+int InsecureSocketHandler::Send(Message* message) {
   std::string type = message->ToJson()["type"];
 
   if (type.compare(INVALID) == 0) return 0;
@@ -20,10 +20,10 @@ int InsecureSocketHandler::send(Message* message) {
 
   std::string encoded_plaintext = EncodeBase64(json_string);
 
-  return writer->write_line(encoded_plaintext);
+  return writer->WriteLine(encoded_plaintext);
 }
 
-std::string InsecureSocketHandler::recv(std::string& payload) {
+std::string InsecureSocketHandler::Recv(std::string& payload) {
   payload.assign(DecodeBase64(payload));
 
   return payload;

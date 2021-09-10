@@ -1,9 +1,9 @@
 #ifndef MODEL_FRIEND_FUNCTIONALITY_FRIEND_API_H_
 #define MODEL_FRIEND_FUNCTIONALITY_FRIEND_API_H_
 
+#include <memory>
 #include <string>
 
-#include "friend-hashmap.h"
 #include "friend-list.h"
 
 namespace model_friend_functionality {
@@ -14,7 +14,10 @@ class FriendAPI {
   virtual std::shared_ptr<FriendNode> GetFriend(const std::string &) const = 0;
 
  protected:
-  FriendList *friend_list = new FriendHashmap();
+  std::unique_ptr<FriendList> friend_list;
+
+ public:
+  FriendAPI();
 };
 }  // namespace model_friend_functionality
 

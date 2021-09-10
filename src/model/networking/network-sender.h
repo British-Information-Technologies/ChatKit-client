@@ -19,12 +19,12 @@ class NetworkSender {
 
   std::shared_ptr<
       std::unordered_map<int, std::shared_ptr<model_networking::Connection>>>
-  get_connections();
+  GetConnections();
 
-  void try_create_connection(const std::string &ip_address,
-                             const std::string &port);
+  void TryCreateConnection(const std::string &ip_address,
+                           const std::string &port);
 
-  int send_message(const int &id, std::string &message);
+  int SendMessage(const int &id, std::string &message);
 };
 
 }  // namespace model_networking

@@ -20,11 +20,11 @@ class ServerConnection : public model_networking::Connection {
       stream_in_factory;
 
  private:
-  void *get_in_addr(struct sockaddr *);
+  void *GetInAddr(struct sockaddr *);
 
-  void set_state(model_networking_utility::SocketHandler *);
+  void SetState(model_networking_utility::SocketHandler *);
 
-  void set_factory_state(
+  void SetFactoryState(
       std::shared_ptr<model_message_functionality::ServerStreamOutFactory>
           stream_out_factory,
       std::shared_ptr<model_message_functionality::ServerStreamInFactory>
@@ -33,14 +33,13 @@ class ServerConnection : public model_networking::Connection {
  public:
   ServerConnection(const std::string &ip_address, const std::string &port);
 
-  int create_connection();
+  int CreateConnection();
 
-  int establish_secure_connection(
-      model_message_functionality::Message *message);
+  int EstablishSecureConnection(model_message_functionality::Message *message);
 
-  int send_message(std::string &);
+  int SendMessage(std::string &);
 
-  std::unique_ptr<model_message_functionality::Message> translate_message(
+  std::unique_ptr<model_message_functionality::Message> TranslateMessage(
       std::string &line);
 };
 }  // namespace model_networking_server

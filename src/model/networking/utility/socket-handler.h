@@ -17,8 +17,8 @@ class SocketHandler {
   SocketHandler(int);
   ~SocketHandler();
 
-  virtual int send(model_message_functionality::Message *) = 0;
-  virtual std::string recv(std::string &payload) = 0;
+  virtual int Send(model_message_functionality::Message *) = 0;
+  virtual std::string Recv(std::string &payload) = 0;
 };
 }  // namespace model_networking_utility
 

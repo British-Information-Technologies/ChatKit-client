@@ -25,15 +25,15 @@ class ClientModel {
   std::shared_ptr<model_friend_functionality::FriendNode> GetFriend(
       const std::string &) const;
 
-  void start_receiver();
+  void StartReceiver();
 
-  void stop_receiver();
+  void StopReceiver();
 
   std::shared_ptr<
       std::unordered_map<int, std::shared_ptr<model_networking::Connection>>>
-  load_connections();
+  LoadConnections();
 
-  int send_message(const int &, std::string &);
+  int SendMessage(const int &, std::string &);
 };
 }  // namespace model
 

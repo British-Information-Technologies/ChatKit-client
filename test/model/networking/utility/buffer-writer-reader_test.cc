@@ -44,11 +44,11 @@ TEST_F(BufferWriterTest, SendAndReadManyMessagesTest) {
   std::string message = "success";
 
   for (int i = 0; i < 250; ++i) {
-    client_writer->write_line(message);
+    client_writer->WriteLine(message);
   }
 
   for (int i = 0; i < 250; ++i) {
-    std::string result = server_reader->read_line();
+    std::string result = server_reader->ReadLine();
     EXPECT_EQ(message, result);
   }
 }

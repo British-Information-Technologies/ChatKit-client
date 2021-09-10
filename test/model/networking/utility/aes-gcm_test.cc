@@ -30,7 +30,7 @@ TEST_F(AESGCMTest, SingleEncryptMatchKeyLength) {
   tag[16] = '\0';
 
   int ciphertext_len =
-      aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
+      AesGcmEncrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
   BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
@@ -58,7 +58,7 @@ TEST_F(AESGCMTest, EncryptDecryptMatchKeyLength) {
   tag[16] = '\0';
 
   int ciphertext_len =
-      aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
+      AesGcmEncrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
   BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
@@ -74,9 +74,8 @@ TEST_F(AESGCMTest, EncryptDecryptMatchKeyLength) {
 
   std::cout << "encrypted: " << ciphertext << std::endl;
 
-  int decryptedtext_len =
-      aes_gcm_decrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,
-                      iv_len, decryptedtext);
+  int decryptedtext_len = AesGcmDecrypt(ciphertext, ciphertext_len, additional,
+                                        tag, &key, iv, iv_len, decryptedtext);
 
   std::cout << "decrypted: " << decryptedtext << std::endl;
   std::cout << "plaintext: " << plaintext << std::endl;
@@ -93,7 +92,7 @@ TEST_F(AESGCMTest, EncryptShortKeyLength) {
   tag[16] = '\0';
 
   int ciphertext_len =
-      aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
+      AesGcmEncrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
   BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
@@ -116,7 +115,7 @@ TEST_F(AESGCMTest, EncryptDecryptShortKeyLength) {
   tag[16] = '\0';
 
   int ciphertext_len =
-      aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
+      AesGcmEncrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
   BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
@@ -132,9 +131,8 @@ TEST_F(AESGCMTest, EncryptDecryptShortKeyLength) {
 
   std::cout << "encrypted: " << ciphertext << std::endl;
 
-  int decryptedtext_len =
-      aes_gcm_decrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,
-                      iv_len, decryptedtext);
+  int decryptedtext_len = AesGcmDecrypt(ciphertext, ciphertext_len, additional,
+                                        tag, &key, iv, iv_len, decryptedtext);
 
   std::cout << "decrypted: " << decryptedtext << std::endl;
   std::cout << "plaintext: " << plaintext << std::endl;
@@ -153,7 +151,7 @@ TEST_F(AESGCMTest, EncryptLongKeyLength) {
   tag[16] = '\0';
 
   int ciphertext_len =
-      aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
+      AesGcmEncrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
   BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
@@ -178,7 +176,7 @@ TEST_F(AESGCMTest, EncryptDecryptLongKeyLength) {
   tag[16] = '\0';
 
   int ciphertext_len =
-      aes_gcm_encrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
+      AesGcmEncrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
   std::cout << "Ciphertext: ";
   BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
@@ -194,9 +192,8 @@ TEST_F(AESGCMTest, EncryptDecryptLongKeyLength) {
 
   std::cout << "encrypted: " << ciphertext << std::endl;
 
-  int decryptedtext_len =
-      aes_gcm_decrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,
-                      iv_len, decryptedtext);
+  int decryptedtext_len = AesGcmDecrypt(ciphertext, ciphertext_len, additional,
+                                        tag, &key, iv, iv_len, decryptedtext);
 
   std::cout << "decrypted: " << decryptedtext << std::endl;
   std::cout << "plaintext: " << plaintext << std::endl;
@@ -214,8 +211,8 @@ TEST_F(AESGCMTest, EncryptDecryptManyMessages) {
   tag[16] = '\0';
 
   for (int i = 0; i < 250; ++i) {
-    int ciphertext_len = aes_gcm_encrypt(plaintext, additional, &key, iv,
-                                         iv_len, ciphertext, tag);
+    int ciphertext_len =
+        AesGcmEncrypt(plaintext, additional, &key, iv, iv_len, ciphertext, tag);
 
     std::cout << "Ciphertext: ";
     BIO_dump_fp(stdout, (const char *)&ciphertext[0], ciphertext.size());
@@ -232,8 +229,8 @@ TEST_F(AESGCMTest, EncryptDecryptManyMessages) {
     std::cout << "encrypted: " << ciphertext << std::endl;
 
     int decryptedtext_len =
-        aes_gcm_decrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,
-                        iv_len, decryptedtext);
+        AesGcmDecrypt(ciphertext, ciphertext_len, additional, tag, &key, iv,
+                      iv_len, decryptedtext);
 
     std::cout << "decrypted: " << decryptedtext << std::endl;
     std::cout << "plaintext: " << plaintext << std::endl;

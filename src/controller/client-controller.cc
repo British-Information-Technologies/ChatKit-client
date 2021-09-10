@@ -17,8 +17,8 @@ using namespace controller_observers;
 using namespace model;
 using namespace std;
 
-void *ClientController::network_manager(void) {
-  auto connections = model->load_connections();
+void *ClientController::NetworkManager(void) {
+  auto connections = model->LoadConnections();
 
   NetworkReceiver network_receiver(model, view, connections);
   network_receiver.listen();
@@ -26,8 +26,8 @@ void *ClientController::network_manager(void) {
   return 0;
 }
 
-void *ClientController::network_manager_helper(void *context) {
-  return ((ClientController *)context)->network_manager();
+void *ClientController::NetworkManagerHelper(void *context) {
+  return ((ClientController *)context)->NetworkManager();
 }
 
 ClientController::ClientController(int argc, char **argv) {

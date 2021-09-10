@@ -13,7 +13,7 @@ BufferReader::BufferReader(int sockfd) {
 
 BufferReader::~BufferReader() { delete[] input_buffer; }
 
-std::string BufferReader::read_line() {
+std::string BufferReader::ReadLine() {
   std::string payload;
 
   while (1) {

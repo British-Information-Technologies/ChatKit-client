@@ -27,7 +27,7 @@ void controller_networking_callbacks::ReadCallback(struct bufferevent *bev,
 
   while ((tmp_line = evbuffer_readln(input, &n, EVBUFFER_EOL_CRLF))) {
     string line = tmp_line;
-    unique_ptr<Message> message = connection->translate_message(line);
+    unique_ptr<Message> message = connection->TranslateMessage(line);
 
     evbuffer_add(output, tmp_line, n);
     evbuffer_add(output, "\n", 1);

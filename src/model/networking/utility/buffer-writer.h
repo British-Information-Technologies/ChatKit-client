@@ -11,7 +11,7 @@ class BufferWriter {
  public:
   BufferWriter(int);
 
-  int write_line(std::string);
+  int WriteLine(std::string);
 };
 }  // namespace model_networking_utility
 

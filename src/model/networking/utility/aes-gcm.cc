@@ -9,9 +9,11 @@
 
 using namespace model_networking_utility;
 
-int model_networking_utility::aes_gcm_encrypt(
-    std::string &plaintext, std::string &aad, DerivedData *key, byte *iv,
-    int iv_len, std::string &ciphertext, byte *tag) {
+int model_networking_utility::AesGcmEncrypt(std::string &plaintext,
+                                            std::string &aad, DerivedData *key,
+                                            byte *iv, int iv_len,
+                                            std::string &ciphertext,
+                                            byte *tag) {
   int len;
   int ciphertext_len;
 
@@ -66,7 +68,7 @@ int model_networking_utility::aes_gcm_encrypt(
   return ciphertext_len;
 }
 
-int model_networking_utility::aes_gcm_decrypt(
+int model_networking_utility::AesGcmDecrypt(
     std::string &ciphertext, int ciphertext_len, std::string &aad, byte *tag,
     DerivedData *key, byte *iv, int iv_len, std::string &plaintext) {
   int len;

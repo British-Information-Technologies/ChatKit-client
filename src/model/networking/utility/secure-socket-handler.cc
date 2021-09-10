@@ -19,7 +19,7 @@ SecureSocketHandler::SecureSocketHandler(int sockfd, DerivedData *key)
 
 SecureSocketHandler::~SecureSocketHandler() { delete key; }
 
-int SecureSocketHandler::send(Message *message) {
+int SecureSocketHandler::Send(Message *message) {
   std::string type = message->ToJson()["type"];
   if (type.compare(INVALID) == 0) return 0;
 
@@ -45,16 +45,16 @@ int SecureSocketHandler::send(Message *message) {
   std::string json_string = message->ToString();
 
   std::string ciphertext;
-  aes_gcm_encrypt(json_string, aad, key, iv, iv_size, ciphertext, tag);
+  AesGcmEncrypt(json_string, aad, key, iv, iv_size, ciphertext, tag);
 
   /* BASE 64 encode the ciphertext */
   ciphertext.assign(EncodeBase64(ciphertext));
 
   /*Send message*/
-  return writer->write_line(ciphertext);
+  return writer->WriteLine(ciphertext);
 }
 
-std::string SecureSocketHandler::recv(std::string &payload) {
+std::string SecureSocketHandler::Recv(std::string &payload) {
   /* BASE 64 decode the ciphertext */
   payload.assign(DecodeBase64(payload));
 
@@ -67,8 +67,8 @@ std::string SecureSocketHandler::recv(std::string &payload) {
 
   // aes decrypt
   std::string decryptedtext;
-  aes_gcm_decrypt(payload, payload.length(), aad, tag, key, iv,
-                  strlen((char *)iv), decryptedtext);
+  AesGcmDecrypt(payload, payload.length(), aad, tag, key, iv,
+                strlen((char *)iv), decryptedtext);
 
   return decryptedtext;
 }

@@ -18,7 +18,7 @@ class BufferReader {
 
   ~BufferReader();
 
-  std::string read_line();
+  std::string ReadLine();
 };
 }  // namespace model_networking_utility
 

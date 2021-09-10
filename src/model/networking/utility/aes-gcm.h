@@ -6,11 +6,11 @@
 
 namespace model_networking_utility {
 
-int aes_gcm_encrypt(std::string &, std::string &, DerivedData *, byte *, int,
-                    std::string &, byte *);
+int AesGcmEncrypt(std::string &, std::string &, DerivedData *, byte *, int,
+                  std::string &, byte *);
 
-int aes_gcm_decrypt(std::string &, int, std::string &, byte *, DerivedData *,
-                    byte *, int, std::string &);
+int AesGcmDecrypt(std::string &, int, std::string &, byte *, DerivedData *,
+                  byte *, int, std::string &);
 
 }  // namespace model_networking_utility
 

@@ -9,16 +9,16 @@ using namespace std;
 NetworkSender::~NetworkSender() { connections->clear(); }
 
 std::shared_ptr<std::unordered_map<int, std::shared_ptr<Connection>>>
-NetworkSender::get_connections() {
+NetworkSender::GetConnections() {
   return connections;
 }
 
-void NetworkSender::try_create_connection(const std::string &ip_address,
-                                          const std::string &port) {
+void NetworkSender::TryCreateConnection(const std::string &ip_address,
+                                        const std::string &port) {
   ConnectionFactory factory;
   auto new_connection = factory.GetConnection(0, ip_address, port);
 
-  int sockfd = new_connection->create_connection();
+  int sockfd = new_connection->CreateConnection();
   if (sockfd < 0) {
     return;
   }
@@ -28,11 +28,11 @@ void NetworkSender::try_create_connection(const std::string &ip_address,
   connections->insert(connection_pair);
 }
 
-int NetworkSender::send_message(const int &id, string &message) {
+int NetworkSender::SendMessage(const int &id, string &message) {
   if (connections->contains(id)) {
     shared_ptr<Connection> connection = connections->at(id);
 
-    int sent_bytes = connection->send_message(message);
+    int sent_bytes = connection->SendMessage(message);
 
     return sent_bytes;
   }
