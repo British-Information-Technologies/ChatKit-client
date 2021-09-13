@@ -35,6 +35,8 @@ class ServerConnection : public model_networking::Connection {
 
   int CreateConnection();
 
+  int SendPublicKey();
+
   int EstablishSecureConnection(model_message_functionality::Message *message);
 
   int SendMessage(std::string &);

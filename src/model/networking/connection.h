@@ -25,6 +25,8 @@ class Connection {
 
   virtual int CreateConnection() = 0;
 
+  virtual int SendPublicKey() = 0;
+
   virtual int EstablishSecureConnection(
       model_message_functionality::Message *message) = 0;
 

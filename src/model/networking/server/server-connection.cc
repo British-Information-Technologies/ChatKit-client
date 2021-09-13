@@ -62,7 +62,7 @@ int ServerConnection::CreateConnection() {
   if ((rv = getaddrinfo(ip_address.c_str(), port.c_str(), &hints, &servinfo)) !=
       0) {
     fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
-    return 0;
+    return -1;
   }
 
   // loop through all the results and connect to the first we can
@@ -83,7 +83,7 @@ int ServerConnection::CreateConnection() {
 
   if (p == NULL) {
     fprintf(stderr, "client: failed to connect\n");
-    return 0;
+    return -1;
   }
 
   inet_ntop(p->ai_family, GetInAddr((struct sockaddr *)p->ai_addr), s,
@@ -94,15 +94,16 @@ int ServerConnection::CreateConnection() {
 
   SetState(new InsecureSocketHandler(sockfd));
 
-  /* Create shared secret */
+  return sockfd;
+}
+
+int ServerConnection::SendPublicKey() {
   EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
 
   /*public keys need to be shared with other party at this point*/
   std::string serial_public_key = SerializePublicKey(public_key.get());
 
   this->SendMessage(serial_public_key);
-
-  return sockfd;
 }
 
 int ServerConnection::EstablishSecureConnection(Message *message) {
