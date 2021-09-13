@@ -1,13 +1,13 @@
-// #include "model/networking/server/server-connection.h"
+#include "model/networking/server/server-connection.h"
 
-// #include <arpa/inet.h>
+#include <arpa/inet.h>
 // #include <errno.h>
-// #include <gtest/gtest.h>
-// #include <netdb.h>
+#include <gtest/gtest.h>
+#include <netdb.h>
 // #include <netinet/in.h>
-// #include <openssl/err.h>
-// #include <openssl/rand.h>
-// #include <pthread.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
+#include <pthread.h>
 // #include <signal.h>
 // #include <stdio.h>
 // #include <stdlib.h>
@@ -17,158 +17,158 @@
 // #include <sys/wait.h>
 // #include <unistd.h>
 
-// #include <nlohmann/json.hpp>
+#include <nlohmann/json.hpp>
 
-// #include
-// "model/message-functionality/client-stream-out/send-message-command.h"
-// #include "model/message-functionality/message.h"
-// #include "model/message-functionality/network-stream-in/key-command.h"
-// #include "model/networking/utility/aes-gcm.h"
-// #include "model/networking/utility/elliptic-curve-diffiehellman.h"
-// #include "model/networking/utility/insecure-socket-handler.h"
-// #include "model/networking/utility/memory-manager.h"
-// #include "model/networking/utility/secure-socket-handler.h"
-// #include "model/networking/utility/sha-3-256.h"
-// #include "model/networking/utility/socket-handler.h"
+#include "model/message-functionality/client-stream-out/send-message-command.h"
+#include "model/message-functionality/message.h"
+#include "model/message-functionality/network-stream-in/key-command.h"
+#include "model/networking/utility/aes-gcm.h"
+#include "model/networking/utility/elliptic-curve-diffiehellman.h"
+#include "model/networking/utility/insecure-socket-handler.h"
+#include "model/networking/utility/secure-socket-handler.h"
+#include "model/networking/utility/sha-3-256.h"
+#include "model/networking/utility/socket-handler.h"
 
-// using namespace networking_utility;
-// using namespace chat_client_model_message_functionality;
-// using namespace chat_client_model_message_functionality_client_stream_out;
-// using namespace chat_client_model_message_functionality_network_stream_in;
-// using json = nlohmann::json;
+using namespace model_networking_utility;
+using namespace model_message_functionality;
+using namespace model_message_functionality_client_stream_out;
+using namespace model_message_functionality_network_stream_in;
 
-// #define BACKLOG 1  // how many pending connections queue will hold
+using json = nlohmann::json;
 
-// class ServerConnectionTest : public ::testing::Test {
-//  protected:
-//   std::string server_ip = "localhost";
-//   std::string server_port = "3490";
-//   DerivedData *key;
-//   SocketHandler *socket_handler;
+#define BACKLOG 1  // how many pending connections queue will hold
 
-//   pthread_t listener_id;
-//   int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
-//   socklen_t sin_size;
-//   struct sockaddr_storage their_addr;  // connector's address information
-//   char s[INET6_ADDRSTRLEN];
+class ServerConnectionTest : public ::testing::Test {
+ protected:
+  std::string server_ip = "localhost";
+  std::string server_port = "3490";
+  DerivedData *key = nullptr;
+  SocketHandler *socket_handler = nullptr;
 
-//   void SetUp() override {
-//     struct addrinfo hints, *servinfo, *p;
-//     int yes = 1;
-//     int rv;
+  pthread_t listener_id;
+  int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
+  socklen_t sin_size;
+  struct sockaddr_storage their_addr;  // connector's address information
+  char s[INET6_ADDRSTRLEN];
 
-//     memset(&hints, 0, sizeof hints);
-//     hints.ai_family = AF_UNSPEC;
-//     hints.ai_socktype = SOCK_STREAM;
-//     hints.ai_flags = AI_PASSIVE;  // use my IP
+  void SetUp() override {
+    struct addrinfo hints, *servinfo, *p;
+    int yes = 1;
+    int rv;
 
-//     // if ((rv = getaddrinfo(NULL, server_port.c_str(), &hints, &servinfo))
-//     !=
-//     // 0) {
-//     if ((rv = getaddrinfo(server_ip.c_str(), server_port.c_str(), &hints,
-//                           &servinfo)) != 0) {
-//       fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
-//       GTEST_FAIL();
-//       exit(1);
-//     }
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;  // use my IP
 
-//     // loop through all the results and bind to the first we can
-//     // for (p = servinfo; p != NULL; p = p->ai_next) {
-//     if ((sockfd = socket(servinfo->ai_family, servinfo->ai_socktype,
-//                          servinfo->ai_protocol)) == -1) {
-//       perror("server: socket");
-//       GTEST_FAIL();
-//       exit(1);
-//       // continue;
-//     }
+    // if ((rv = getaddrinfo(NULL, server_port.c_str(), &hints, &servinfo))
+    // !=
+    // 0) {
+    if ((rv = getaddrinfo(server_ip.c_str(), server_port.c_str(), &hints,
+                          &servinfo)) != 0) {
+      fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+      GTEST_FAIL();
+      exit(1);
+    }
 
-//     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) ==
-//     -1) {
-//       perror("setsockopt");
-//       GTEST_FAIL();
-//       exit(1);
-//     }
+    // loop through all the results and bind to the first we can
+    // for (p = servinfo; p != NULL; p = p->ai_next) {
+    if ((sockfd = socket(servinfo->ai_family, servinfo->ai_socktype,
+                         servinfo->ai_protocol)) == -1) {
+      perror("server: socket");
+      GTEST_FAIL();
+      exit(1);
+      // continue;
+    }
 
-//     if (bind(sockfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
-//       close(sockfd);
-//       perror("server: bind");
-//       GTEST_FAIL();
-//       exit(1);
-//       // continue;
-//     }
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
+      perror("setsockopt");
+      GTEST_FAIL();
+      exit(1);
+    }
 
-//     // break;
-//     // }
+    if (bind(sockfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
+      close(sockfd);
+      perror("server: bind");
+      GTEST_FAIL();
+      exit(1);
+      // continue;
+    }
 
-//     freeaddrinfo(servinfo);  // all done with this structure
+    // break;
+    // }
 
-//     if (p == NULL) {
-//       fprintf(stderr, "server: failed to bind\n");
-//       GTEST_FAIL();
-//       exit(1);
-//     }
+    freeaddrinfo(servinfo);  // all done with this structure
 
-//     if (listen(sockfd, BACKLOG) == -1) {
-//       perror("listen");
-//       GTEST_FAIL();
-//       exit(1);
-//     }
+    if (p == NULL) {
+      fprintf(stderr, "server: failed to bind\n");
+      GTEST_FAIL();
+      exit(1);
+    }
 
-//     /* Listen on a thread so test can still occur */
-//     pthread_create(&listener_id, NULL,
-//                    &ServerConnectionTest::ListenForConnectionWrapper, this);
-//   }
+    if (listen(sockfd, BACKLOG) == -1) {
+      perror("listen");
+      GTEST_FAIL();
+      exit(1);
+    }
 
-//   void TearDown() override {
-//     pthread_join(listener_id, NULL);
+    /* Listen on a thread so test can still occur */
+    pthread_create(&listener_id, NULL,
+                   &ServerConnectionTest::ListenForConnectionWrapper, this);
+  }
 
-//     free(key->secret);
-//     free(key);
-//     free(socket_handler);
+  void TearDown() override {
+    pthread_join(listener_id, NULL);
+    if (key != nullptr) {
+      free(key->secret);
+      free(key);
+    }
 
-//     close(sockfd);
-//     close(new_fd);
-//   }
+    if (socket_handler != nullptr) {
+      free(socket_handler);
+    }
 
-//   void set_state(SocketHandler *next_handler) {
-//     delete socket_handler;
-//     socket_handler = next_handler;
-//   }
+    close(sockfd);
+    close(new_fd);
+  }
 
-//   static void *ListenForConnectionWrapper(void *context) {
-//     return ((ServerConnectionTest *)context)->ListenForConnection();
-//   }
+  void set_state(SocketHandler *next_handler) {
+    delete socket_handler;
+    socket_handler = next_handler;
+  }
 
-//   void *ListenForConnection(void) {
-//     printf("server: waiting for connection...\n");
+  static void *ListenForConnectionWrapper(void *context) {
+    return ((ServerConnectionTest *)context)->ListenForConnection();
+  }
 
-//     sin_size = sizeof their_addr;
-//     new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
-//     if (new_fd == -1) {
-//       perror("accept");
-//       exit(1);
-//     }
+  void *ListenForConnection(void) {
+    printf("server: waiting for connection...\n");
 
-//     inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr
-//     *)&their_addr),
-//               s, sizeof s);
-//     printf("server: got connection from %s\n", s);
+    sin_size = sizeof their_addr;
+    new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
+    if (new_fd == -1) {
+      perror("accept");
+      exit(1);
+    }
 
-//     Exchange();
+    inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr),
+              s, sizeof s);
+    printf("server: got connection from %s\n", s);
 
-//     return 0;
-//   }
+    return 0;
+  }
 
-//   // get sockaddr, IPv4 or IPv6:
-//   void *get_in_addr(struct sockaddr *sa) {
-//     if (sa->sa_family == AF_INET) {
-//       return &(((struct sockaddr_in *)sa)->sin_addr);
-//     }
+  // get sockaddr, IPv4 or IPv6:
+  void *get_in_addr(struct sockaddr *sa) {
+    if (sa->sa_family == AF_INET) {
+      return &(((struct sockaddr_in *)sa)->sin_addr);
+    }
 
-//     return &(((struct sockaddr_in6 *)sa)->sin6_addr);
-//   }
+    return &(((struct sockaddr_in6 *)sa)->sin6_addr);
+  }
+};
 
-//   void Exchange() {
+// void Exchange() {
 //     set_state(new InsecureSocketHandler(new_fd));
 
 //     EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
@@ -195,13 +195,12 @@
 
 //     set_state(new SecureSocketHandler(new_fd, key));
 //   }
-// };
 
-// /* TESTS */
-// TEST_F(ServerConnectionTest, CreateConnectionTest) {
-//   networking_server::ServerConnection server(server_ip, server_port);
-//   EXPECT_TRUE(server.create_connection());
-// }
+/* TESTS */
+TEST_F(ServerConnectionTest, CreateConnectionTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  EXPECT_NE(server.CreateConnection(), -1);
+}
 
 // TEST_F(ServerConnectionTest, SendShortMessageTest) {
 //   networking_server::ServerConnection server(server_ip, server_port);
