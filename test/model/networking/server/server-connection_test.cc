@@ -1,38 +1,28 @@
 #include "model/networking/server/server-connection.h"
 
 #include <arpa/inet.h>
-// #include <errno.h>
 #include <gtest/gtest.h>
 #include <netdb.h>
-// #include <netinet/in.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
 #include <pthread.h>
-// #include <signal.h>
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include <sys/socket.h>
-// #include <sys/types.h>
-// #include <sys/wait.h>
-// #include <unistd.h>
 
 #include <nlohmann/json.hpp>
 
 #include "model/message-functionality/client-stream-out/send-message-command.h"
-#include "model/message-functionality/message.h"
-#include "model/message-functionality/network-stream-in/key-command.h"
-#include "model/networking/utility/aes-gcm.h"
+#include "model/message-functionality/general/invalid-command.h"
+#include "model/message-functionality/network-stream-in/got-info-command.h"
+#include "model/message-functionality/network-stream-out-factory.h"
+#include "model/message-functionality/network-stream-out/info-command.h"
+#include "model/networking/utility/base64.h"
 #include "model/networking/utility/elliptic-curve-diffiehellman.h"
-#include "model/networking/utility/insecure-socket-handler.h"
-#include "model/networking/utility/secure-socket-handler.h"
-#include "model/networking/utility/sha-3-256.h"
-#include "model/networking/utility/socket-handler.h"
 
 using namespace model_networking_utility;
 using namespace model_message_functionality;
 using namespace model_message_functionality_client_stream_out;
+using namespace model_message_functionality_network_stream_out;
 using namespace model_message_functionality_network_stream_in;
+using namespace model_message_functionality_general;
 
 using json = nlohmann::json;
 
@@ -61,9 +51,6 @@ class ServerConnectionTest : public ::testing::Test {
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;  // use my IP
 
-    // if ((rv = getaddrinfo(NULL, server_port.c_str(), &hints, &servinfo))
-    // !=
-    // 0) {
     if ((rv = getaddrinfo(server_ip.c_str(), server_port.c_str(), &hints,
                           &servinfo)) != 0) {
       fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
@@ -72,13 +59,11 @@ class ServerConnectionTest : public ::testing::Test {
     }
 
     // loop through all the results and bind to the first we can
-    // for (p = servinfo; p != NULL; p = p->ai_next) {
     if ((sockfd = socket(servinfo->ai_family, servinfo->ai_socktype,
                          servinfo->ai_protocol)) == -1) {
       perror("server: socket");
       GTEST_FAIL();
       exit(1);
-      // continue;
     }
 
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
@@ -92,11 +77,7 @@ class ServerConnectionTest : public ::testing::Test {
       perror("server: bind");
       GTEST_FAIL();
       exit(1);
-      // continue;
     }
-
-    // break;
-    // }
 
     freeaddrinfo(servinfo);  // all done with this structure
 
@@ -168,310 +149,239 @@ class ServerConnectionTest : public ::testing::Test {
   }
 };
 
-// void Exchange() {
-//     set_state(new InsecureSocketHandler(new_fd));
-
-//     EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
-//     EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
-
-//     /*public keys need to be shared with other party at this point*/
-//     std::string serial_public_key = SerializePublicKey(public_key.get());
-//     json serial_public_key_json = json::parse(serial_public_key);
-
-//     KeyCommand key_command(serial_public_key_json["key"]);
-
-//     socket_handler->send(&key_command);
-
-//     std::string result = socket_handler->recv();
-
-//     EVP_PKEY_free_ptr peer_public_key = DeserializePublicKey(result.c_str());
-
-//     /*Create the shared secret with other users public key and your
-//       own private key (this has wrong public key as a place holder*/
-//     key = DeriveSharedSecret(peer_public_key.get(), key_pair.get());
-
-//     /*Hash the secret to create the key*/
-//     HashData(key);
-
-//     set_state(new SecureSocketHandler(new_fd, key));
-//   }
-
 /* TESTS */
 TEST_F(ServerConnectionTest, CreateConnectionTest) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   EXPECT_NE(server.CreateConnection(), -1);
 }
 
-// TEST_F(ServerConnectionTest, SendShortMessageTest) {
-//   networking_server::ServerConnection server(server_ip, server_port);
-//   server.create_connection();
-//   pthread_join(listener_id, NULL);
+TEST_F(ServerConnectionTest, SendMessageNoKeyTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
 
-//   std::string to = "mitch";
-//   std::string plaintext = "this is a test";
-//   SendMessageCommand message(to, plaintext);
+  InfoCommand message;
 
-//   plaintext = message.ToString();
-//   EXPECT_GT(server.send_message(plaintext),
-//             0);  // There should be more than 0 bytes sent.
+  std::string plaintext = message.ToString();
 
-//   std::string result = socket_handler->recv();
+  int sent_bytes = server.SendMessage(plaintext);
+  EXPECT_GT(sent_bytes, 0);
+}
 
-//   EXPECT_GT(result.length(),
-//             0);  // There should be more than 0 bytes read.
+TEST_F(ServerConnectionTest, SendWrongMessageNoKeyTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
 
-//   std::cout << "server read: " << result << std::endl;
+  std::string to = "mitch";
+  std::string content = "test test test";
+  SendMessageCommand message(to, content);
 
-//   EXPECT_EQ(plaintext, result);
+  std::string plaintext = message.ToString();
 
-//   EXPECT_EQ(plaintext.length(), result.length());
-// }
+  int sent_bytes = server.SendMessage(plaintext);
+  EXPECT_EQ(sent_bytes, 0);
+}
 
-// TEST_F(ServerConnectionTest, SendLongMessageTest) {
-//   networking_server::ServerConnection server(server_ip, server_port);
-//   server.create_connection();
-//   pthread_join(listener_id, NULL);
+TEST_F(ServerConnectionTest, SendInvalidMessageTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
 
-//   std::string plaintext =
-//       "this is a very very very very very very very longgggggggg test! But a
-//       " "dsasadasdasdsa sdadasdklaskflkslfkalfkla";
+  std::string plaintext =
+      "this is a very very very very very very very longgggggggg test!";
 
-//   EXPECT_GT(server.send_message(plaintext),
-//             0);  // There should be more than 0 bytes sent.
+  EXPECT_EQ(server.SendMessage(plaintext), 0);
+}
 
-//   std::string result = socket_handler->recv();
+TEST_F(ServerConnectionTest, SendEmptyMessageTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
 
-//   EXPECT_GT(result.length(),
-//             0);  // There should be more than 0 bytes read.
+  std::string plaintext = "";
 
-//   std::cout << "server read: " << result << std::endl;
+  EXPECT_EQ(server.SendMessage(plaintext), 0);
+}
 
-//   EXPECT_EQ(plaintext, result);
+TEST_F(ServerConnectionTest, SendPublicKeyTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
 
-//   EXPECT_EQ(plaintext.length(), result.length());
-// }
+  int sent_bytes = server.SendPublicKey();
 
-// TEST_F(ServerConnectionTest, SendEmptyMessageTest) {
-//   networking_server::ServerConnection server(server_ip, server_port);
-//   server.create_connection();
-//   pthread_join(listener_id, NULL);
+  EXPECT_GT(sent_bytes, 0);
+}
 
-//   std::string plaintext = "";
+TEST_F(ServerConnectionTest, EstablishSecureConnectionTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
 
-//   // No message should be sent, so 0 zero bytes should be returned
-//   EXPECT_EQ(server.send_message(plaintext), 0);
-// }
+  EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
+  EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
 
-// TEST_F(ServerConnectionTest, ReadShortMessageTest) {
-//   networking_server::ServerConnection server(server_ip, server_port);
-//   server.create_connection();
-//   pthread_join(listener_id, NULL);
+  std::string key_string = SerializePublicKey(key_pair.get());
 
-//   std::string plaintext = "this is a test";
-//   std::string to = "mitch";
-//   SendMessageCommand message(to, plaintext);
+  NetworkStreamOutFactory factory;
+  std::unique_ptr<Message> message = factory.GetMessage(key_string);
 
-//   int sent_bytes = socket_handler->send(&message);
+  int res = server.EstablishSecureConnection(message.get());
 
-//   EXPECT_NE(sent_bytes, plaintext.length());
+  EXPECT_EQ(res, 1);
+}
 
-//   std::unique_ptr<Message> result = server.read_message();
+TEST_F(ServerConnectionTest, FailEstablishSecureConnectionTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
 
-//   std::cout << "server read: " << result->ToString() << std::endl;
+  EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
+  EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
 
-//   EXPECT_EQ(result->ToString().length(), plaintext.length());
+  std::string key_string = SerializePublicKey(key_pair.get());
 
-//   EXPECT_EQ(result, plaintext);
-// }
+  NetworkStreamOutFactory factory;
+  std::unique_ptr<Message> message = factory.GetMessage(key_string);
 
-// TEST_F(ServerConnectionTest, ReadLongMessageTest) {
-//   networking_server::ServerConnection server(server_ip, server_port);
-//   server.create_connection();
-//   pthread_join(listener_id, NULL);
+  int res = server.EstablishSecureConnection(message.get());
 
-//   std::string plaintext =
-//       "this is a test for a very long message, however, its not longer than "
-//       "the buffer which will be important!";
-//   std::string to = "mitch";
-//   SendMessageCommand message(to, plaintext);
+  EXPECT_EQ(res, -1);
 
-//   int sent_bytes = socket_handler->send(&message);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
+}
 
-//   EXPECT_NE(sent_bytes, plaintext.length());
+TEST_F(ServerConnectionTest, TranslateMessageNoKeyTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
 
-//   std::unique_ptr<Message> result = server.read_message();
+  std::string name = "test";
+  std::string owner = "mitch";
+  GotInfoCommand message(name, owner);
+  std::string serial_message = message.ToString();
 
-//   std::cout << "server read: " << result->ToString() << std::endl;
+  std::string encoded_message = EncodeBase64(serial_message);
 
-//   EXPECT_EQ(result->ToString().length(), plaintext.length());
+  std::unique_ptr<Message> result = server.TranslateMessage(encoded_message);
 
-//   EXPECT_EQ(result, plaintext);
-// }
+  EXPECT_EQ(result->ToString().length(), message.ToString().length());
 
-// TEST_F(ServerConnectionTest, ReadBufferSizeMessageTest) {
-//   networking_server::ServerConnection server(server_ip, server_port);
-//   server.create_connection();
-//   pthread_join(listener_id, NULL);
+  EXPECT_EQ(result->ToString(), message.ToString());
+}
 
-//   std::string plaintext =
-//       "this message is the same length as the buffer, but one char is missing
-//       " "for the new line character. but I must say this is still very short,
-//       " "I'm going to start copy and pasting to reach a size of 1023 chars
-//       now: " "this message is the same length as the buffer, but one char is
-//       missing " "for the new line character. but I must say this is still
-//       very short, " "I'm going to start copy and pasting to reach a size of
-//       1023 chars now: " "this message is the same length as the buffer, but
-//       one char is missing " "for the new line character. but I must say this
-//       is still very short, " "I'm going to start copy and pasting to reach a
-//       size of 1023 chars now: " "this message is the same length as the
-//       buffer, but one char is missing " "for the new line character. but I
-//       must say this is still very short, " "I'm going to start copy and
-//       pasting to reach a size of 1023 chars now: " "this message is the same
-//       length as the buffer, but one char is missing " "for the new line
-//       character. but I must say this is still very short, " "I'm going to
-//       start copy and pasting to ";
-//   std::string to = "mitch";
-//   SendMessageCommand message(to, plaintext);
+TEST_F(ServerConnectionTest, InvalidTranslateMessageNoKeyTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
 
-//   int sent_bytes = socket_handler->send(&message);
+  InfoCommand message;
+  std::string serial_message = message.ToString();
 
-//   EXPECT_NE(sent_bytes, plaintext.length());
+  std::string encoded_message = EncodeBase64(serial_message);
 
-//   std::unique_ptr<Message> result = server.read_message();
+  std::unique_ptr<Message> result = server.TranslateMessage(encoded_message);
 
-//   std::cout << "server read: " << result->ToString() << std::endl;
+  EXPECT_NE(result->ToString(), message.ToString());
 
-//   EXPECT_EQ(result->ToString().length(), plaintext.length());
+  InvalidCommand invalid;
+  EXPECT_EQ(result->ToString(), invalid.ToString());
+}
 
-//   EXPECT_EQ(result, plaintext);
-// }
+TEST_F(ServerConnectionTest, InvalidTranslateMessageNoKeyNoBase64Test) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
 
-// TEST_F(ServerConnectionTest, ReadMultipleSmallMessageTest) {
-//   networking_server::ServerConnection server(server_ip, server_port);
-//   server.create_connection();
-//   pthread_join(listener_id, NULL);
+  InfoCommand message;
+  std::string serial_message = message.ToString();
 
-//   std::string plaintext_first = "first";
-//   std::string to_first = "mitch";
-//   SendMessageCommand message_first(to_first, plaintext_first);
-
-//   std::string plaintext_second = "second";
-//   std::string to_second = "mitch";
-//   SendMessageCommand message_second(to_second, plaintext_second);
-
-//   std::string ciphertext_first;
-//   std::string ciphertext_second;
-
-//   int sent_bytes_first = socket_handler->send(&message_first);
-
-//   EXPECT_NE(sent_bytes_first, plaintext_first.length());
-
-//   std::unique_ptr<Message> result_first = server.read_message();
-
-//   std::cout << "server read: " << result_first->ToString() << std::endl;
-
-//   EXPECT_EQ(result_first->ToString().length(), plaintext_first.length());
-
-//   EXPECT_EQ(result_first, plaintext_first);
+  std::unique_ptr<Message> result = server.TranslateMessage(serial_message);
 
-//   int sent_bytes_second = socket_handler->send(&message_second);
-
-//   EXPECT_NE(sent_bytes_second, plaintext_second.length());
-
-//   std::unique_ptr<Message> result_second = server.read_message();
-
-//   std::cout << "server read: " << result_second->ToString() << std::endl;
-
-//   EXPECT_EQ(result_second->ToString().length(), plaintext_second.length());
-
-//   EXPECT_EQ(result_second, plaintext_second);
-// }
-
-// TEST_F(ServerConnectionTest, ReadManySmallMessageTest) {
-//   networking_server::ServerConnection server(server_ip, server_port);
-//   server.create_connection();
-//   pthread_join(listener_id, NULL);
-
-//   std::string plaintext = "first";
-//   std::string to = "mitch";
-//   SendMessageCommand message(to, plaintext);
-
-//   int sent_items = 0;
-//   int read_items = 0;
-
-//   for (int i = 0; i < 250; ++i) {
-//     int sent_bytes = socket_handler->send(&message);
-//     EXPECT_NE(sent_bytes, plaintext.length());
-
-//     ++sent_items;
-//   }
-
-//   for (int i = 0; i < 250; ++i) {
-//     std::unique_ptr<Message> result = server.read_message();
-//     std::cout << "server read: " << result->ToString() << std::endl;
-
-//     EXPECT_EQ(result->ToString().length(), plaintext.length());
-//     EXPECT_EQ(result, plaintext);
-
-//     ++read_items;
-//   }
-
-//   std::cout << "sent items = " << sent_items << std::endl;
-//   std::cout << "read items = " << read_items << std::endl;
-//   EXPECT_EQ(sent_items, read_items);
-// }
-
-// TEST_F(ServerConnectionTest, ReadOverflowMessageTest) {
-//   networking_server::ServerConnection server(server_ip, server_port);
-//   server.create_connection();
-//   pthread_join(listener_id, NULL);
-
-//   std::string plaintext =
-//       "this message must be larger than the buffer of 1024 bytes to ensure
-//       the " "read method can successfully retrieve messages beyond this bound
-//       even " "if they overflow out the end! Very very very very very "
-//       "important!"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahsj"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahsj"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahsj"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahsj"
-//       "dshjdhjshdjshdjsdhjshdjhfdsjfdsfkj";
-//   std::string to = "mitch";
-//   SendMessageCommand message(to, plaintext);
-
-//   int sent_bytes = socket_handler->send(&message);
-
-//   EXPECT_NE(sent_bytes, plaintext.length());
-
-//   std::unique_ptr<Message> result = server.read_message();
-
-//   std::cout << "server read: " << result->ToString() << std::endl;
-
-//   EXPECT_EQ(result->ToString().length(), plaintext.length());
-
-//   EXPECT_EQ(result, plaintext);
-// }
+  EXPECT_NE(result->ToString(), message.ToString());
+
+  InvalidCommand invalid;
+  EXPECT_EQ(result->ToString(), invalid.ToString());
+}
+
+TEST_F(ServerConnectionTest, TranslateMessageNoKeyNoBase64Test) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
+
+  std::string name = "test";
+  std::string owner = "mitch";
+  GotInfoCommand message(name, owner);
+  std::string serial_message = message.ToString();
+
+  std::unique_ptr<Message> result = server.TranslateMessage(serial_message);
+
+  EXPECT_NE(result->ToString(), message.ToString());
+
+  InvalidCommand invalid;
+  EXPECT_EQ(result->ToString(), invalid.ToString());
+}
+
+TEST_F(ServerConnectionTest, TranslateMessageKeyNoEncryptTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
+
+  EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
+  EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
+
+  std::string key_string = SerializePublicKey(key_pair.get());
+
+  NetworkStreamOutFactory factory;
+  std::unique_ptr<Message> message = factory.GetMessage(key_string);
+
+  int res = server.EstablishSecureConnection(message.get());
+
+  EXPECT_EQ(res, 1);
+
+  json json_message = {{"type", "UserMessage"},
+                       {"from", "mitch"},
+                       {"content", "hey this is my cool test!"}};
+
+  std::string json_string = json_message.dump();
+
+  std::string encoded_message = EncodeBase64(json_string);
+
+  std::unique_ptr<Message> result = server.TranslateMessage(encoded_message);
+
+  EXPECT_NE(result->ToString(), json_string);
+
+  InvalidCommand invalid;
+  EXPECT_EQ(result->ToString(), invalid.ToString());
+}
+
+TEST_F(ServerConnectionTest, TranslateMessageKeyNoBase64NoEncryptTest) {
+  model_networking_server::ServerConnection server(server_ip, server_port);
+  server.CreateConnection();
+  pthread_join(listener_id, NULL);
+
+  EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
+  EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
+
+  std::string key_string = SerializePublicKey(key_pair.get());
+
+  NetworkStreamOutFactory factory;
+  std::unique_ptr<Message> message = factory.GetMessage(key_string);
+
+  int res = server.EstablishSecureConnection(message.get());
+
+  EXPECT_EQ(res, 1);
+
+  json json_message = {{"type", "UserMessage"},
+                       {"from", "mitch"},
+                       {"content", "hey this is my cool test!"}};
+
+  std::string json_string = json_message.dump();
+
+  std::unique_ptr<Message> result = server.TranslateMessage(json_string);
+
+  EXPECT_NE(result->ToString(), json_string);
+
+  InvalidCommand invalid;
+  EXPECT_EQ(result->ToString(), invalid.ToString());
+}
