@@ -103,7 +103,7 @@ int ServerConnection::SendPublicKey() {
   /*public keys need to be shared with other party at this point*/
   std::string serial_public_key = SerializePublicKey(public_key.get());
 
-  this->SendMessage(serial_public_key);
+  return SendMessage(serial_public_key);
 }
 
 int ServerConnection::EstablishSecureConnection(Message *message) {
