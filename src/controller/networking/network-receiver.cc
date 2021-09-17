@@ -4,7 +4,6 @@
 #include <errno.h>
 #include <event2/buffer.h>
 #include <event2/bufferevent.h>
-#include <event2/event.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,34 +23,53 @@ using namespace controller_networking_callbacks;
 
 #define MAX_LINE 16384
 
-NetworkReceiver::NetworkReceiver(
-    shared_ptr<ClientModel> model, Glib::RefPtr<MainApplication> view,
-    shared_ptr<unordered_map<int, shared_ptr<Connection>>> connection) {
-  this->model = model;
-  this->view = view;
-  this->connections = connections;
-}
+void NetworkReceiver::Listen(
+    unordered_map<int, shared_ptr<Connection>> connections) {
+  event_base *base = base_ptr.get();
 
-NetworkReceiver::~NetworkReceiver() {}
-
-void NetworkReceiver::listen() {
-  struct event_base *base;
   base = event_base_new();
   if (!base) {
     return;
   }
 
-  for (auto connection : *connections.get()) {
+  for (auto connection : connections) {
     int sockfd = connection.first;
 
     struct bufferevent *bev;
     evutil_make_socket_nonblocking(sockfd);
     bev = bufferevent_socket_new(base, sockfd, BEV_OPT_CLOSE_ON_FREE);
     bufferevent_setcb(bev, ReadCallback, NULL, ErrorCallback,
-                      &connection.second);
+                      connection.second.get());
     bufferevent_setwatermark(bev, EV_READ, 0, MAX_LINE);
     bufferevent_enable(bev, EV_READ | EV_WRITE);
   }
 
   event_base_dispatch(base);
+}
+
+int NetworkReceiver::Stop() {
+  event_base *base = base_ptr.get();
+
+  return event_base_loopexit(base, NULL);
+}
+
+void NetworkReceiver::InternalThreadEntry() {
+  auto connections = model->LoadConnections();
+
+  Listen(connections);
+}
+
+NetworkReceiver::NetworkReceiver(shared_ptr<ClientModel> model,
+                                 Glib::RefPtr<MainApplication> view)
+    : base_ptr(event_base_new(), ::event_base_free) {
+  this->model = model;
+  this->view = view;
+}
+
+NetworkReceiver::~NetworkReceiver() {}
+
+void NetworkReceiver::WaitForInternalThreadToExit() {
+  int result = Stop();
+
+  thread_wrapper::Thread::WaitForInternalThreadToExit();
 }

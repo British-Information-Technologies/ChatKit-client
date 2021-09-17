@@ -55,7 +55,8 @@ int ServerConnection::CreateConnection() {
   char s[INET6_ADDRSTRLEN];
 
   memset(&hints, 0, sizeof hints);
-  hints.ai_family = AF_INET6;
+  hints.ai_family =
+      AF_INET;  // add a 6 to make it work with ivp 6 - current uses ivp4
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_protocol = IPPROTO_TCP;
 

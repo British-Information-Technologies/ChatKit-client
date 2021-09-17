@@ -10,15 +10,13 @@ namespace model_networking {
 
 class NetworkSender {
  private:
-  std::shared_ptr<
-      std::unordered_map<int, std::shared_ptr<model_networking::Connection>>>
+  std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
       connections;
 
  public:
   ~NetworkSender();
 
-  std::shared_ptr<
-      std::unordered_map<int, std::shared_ptr<model_networking::Connection>>>
+  std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
   GetConnections();
 
   void TryCreateConnection(const std::string &ip_address,

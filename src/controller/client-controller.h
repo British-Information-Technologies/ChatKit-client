@@ -10,11 +10,6 @@ class ClientController {
   std::shared_ptr<model::ClientModel> model;
   Glib::RefPtr<MainApplication> view;
 
- private:
-  void *NetworkManager(void);
-
-  static void *NetworkManagerHelper(void *context);
-
  public:
   ClientController(int, char **);
 

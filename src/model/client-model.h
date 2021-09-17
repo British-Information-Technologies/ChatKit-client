@@ -29,8 +29,7 @@ class ClientModel {
 
   void StopReceiver();
 
-  std::shared_ptr<
-      std::unordered_map<int, std::shared_ptr<model_networking::Connection>>>
+  std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
   LoadConnections();
 
   int SendMessage(const int &, std::string &);

@@ -6,9 +6,9 @@
 using namespace model_networking;
 using namespace std;
 
-NetworkSender::~NetworkSender() { connections->clear(); }
+NetworkSender::~NetworkSender() { connections.clear(); }
 
-std::shared_ptr<std::unordered_map<int, std::shared_ptr<Connection>>>
+std::unordered_map<int, std::shared_ptr<Connection>>
 NetworkSender::GetConnections() {
   return connections;
 }
@@ -25,12 +25,12 @@ void NetworkSender::TryCreateConnection(const std::string &ip_address,
 
   pair<int, shared_ptr<Connection>> connection_pair(sockfd, new_connection);
 
-  connections->insert(connection_pair);
+  connections.insert(connection_pair);
 }
 
 int NetworkSender::SendMessage(const int &id, string &message) {
-  if (connections->contains(id)) {
-    shared_ptr<Connection> connection = connections->at(id);
+  if (connections.contains(id)) {
+    shared_ptr<Connection> connection = connections.at(id);
 
     int sent_bytes = connection->SendMessage(message);
 

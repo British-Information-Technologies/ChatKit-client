@@ -28,9 +28,9 @@ void controller_networking_callbacks::ReadCallback(struct bufferevent *bev,
   while ((tmp_line = evbuffer_readln(input, &n, EVBUFFER_EOL_CRLF))) {
     string line = tmp_line;
     unique_ptr<Message> message = connection->TranslateMessage(line);
-
-    evbuffer_add(output, tmp_line, n);
-    evbuffer_add(output, "\n", 1);
+    std::cout << message->ToString() << std::endl;
+    // evbuffer_add(output, tmp_line, n);
+    // evbuffer_add(output, "\n", 1);
     free(tmp_line);
   }
 
@@ -41,8 +41,8 @@ void controller_networking_callbacks::ReadCallback(struct bufferevent *bev,
     while (evbuffer_get_length(input)) {
       int n = evbuffer_remove(input, buf, sizeof(buf));
       // for (i = 0; i < n; ++i) buf[i] = rot13_char(buf[i]);
-      evbuffer_add(output, buf, n);
+      // evbuffer_add(output, buf, n);
     }
-    evbuffer_add(output, "\n", 1);
+    // evbuffer_add(output, "\n", 1);
   }
 }

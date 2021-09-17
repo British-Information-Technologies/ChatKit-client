@@ -24,8 +24,7 @@ shared_ptr<FriendNode> ClientModel::GetFriend(const string& uuid) const {
   return friend_api->GetFriend(uuid);
 }
 
-std::shared_ptr<
-    std::unordered_map<int, std::shared_ptr<model_networking::Connection>>>
+std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
 ClientModel::LoadConnections() {
   /* Pesudo code
   nodes = get all connections from friend and server api

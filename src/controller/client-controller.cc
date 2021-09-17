@@ -1,9 +1,10 @@
 #include "client-controller.h"
 
+#include <pthread.h>
+
 #include <iostream>
 #include <memory>
 #include <string>
-#include <thread>
 
 #include "networking/network-receiver.h"
 #include "observers/addfriend-observer.h"
@@ -17,19 +18,6 @@ using namespace controller_observers;
 using namespace model;
 using namespace std;
 
-void *ClientController::NetworkManager(void) {
-  auto connections = model->LoadConnections();
-
-  NetworkReceiver network_receiver(model, view, connections);
-  network_receiver.listen();
-
-  return 0;
-}
-
-void *ClientController::NetworkManagerHelper(void *context) {
-  return ((ClientController *)context)->NetworkManager();
-}
-
 ClientController::ClientController(int argc, char **argv) {
   model = make_shared<ClientModel>();
 
@@ -41,6 +29,9 @@ void ClientController::Body() {
   // setup the gui
   view->register_application();
 
+  NetworkReceiver network_receiver(model, view);
+  network_receiver.StartInternalThread();
+
   // add observers to buttons
   AddFriendObserver add_friend_observer(model, view);
   DeleteFriendObserver delete_friend_observer(model, view);
@@ -48,4 +39,6 @@ void ClientController::Body() {
 
   // enter main loop
   view->run();
+
+  network_receiver.WaitForInternalThreadToExit();
 }
