@@ -6,6 +6,7 @@
 
 #include "../../../model/message-functionality/message.h"
 #include "../../../model/networking/connection.h"
+#include "callback-collection.h"
 
 using namespace model_message_functionality;
 using namespace controller_networking_callbacks;
@@ -16,7 +17,7 @@ using namespace std;
 
 void controller_networking_callbacks::ReadCallback(struct bufferevent *bev,
                                                    void *ctx) {
-  Connection *connection = (Connection *)ctx;
+  struct CallbackCollection *items = (CallbackCollection *)ctx;
   struct evbuffer *input, *output;
   char *tmp_line;
   size_t n;
@@ -27,10 +28,26 @@ void controller_networking_callbacks::ReadCallback(struct bufferevent *bev,
 
   while ((tmp_line = evbuffer_readln(input, &n, EVBUFFER_EOL_CRLF))) {
     string line = tmp_line;
-    unique_ptr<Message> message = connection->TranslateMessage(line);
-    std::cout << message->ToString() << std::endl;
-    // evbuffer_add(output, tmp_line, n);
-    // evbuffer_add(output, "\n", 1);
+    unique_ptr<Message> message = items->connection->TranslateMessage(line);
+
+    string type = message->ToJson()["type"];
+
+    if (type.compare("UserMessage") == 0) {
+      string from = message->ToJson()["from"];
+      string content = message->ToJson()["content"];
+
+      auto friend_node = items->model->GetFriend(from);
+
+      // TODO: add message to friend node history
+
+      // TODO: Create chatbox stacks with user uuid in id of stack.
+      // At the moment just fake this, should pass from as the 2nd parameter.
+      items->view->AddMessageToChatBox(content, "message");
+
+    } else {
+      std::cout << message->ToString() << std::endl;
+    }
+
     free(tmp_line);
   }
 
