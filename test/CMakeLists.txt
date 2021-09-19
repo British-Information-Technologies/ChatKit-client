@@ -6,6 +6,7 @@ set(BINARY ${CMAKE_PROJECT_NAME}_test)
 
 set(SOURCES
     main.cc
+    
     ../src/model/friend-functionality/friend-node.cc
     ../src/model/friend-functionality/friend-hashmap.cc
     ../src/model/friend-functionality/friend-utility.cc
