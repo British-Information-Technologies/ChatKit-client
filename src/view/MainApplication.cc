@@ -58,6 +58,16 @@ std::string MainApplication::GetMessageBoxText() {
   return message_box->get_text();
 }
 
+void MainApplication::AddMessageToChatBox(const std::string &message,
+                                          const std::string &uuid) {
+  Gtk::Stack *chat_box = builder->get_widget<Gtk::Stack>(uuid + "_stack");
+
+  Gtk::Text text;
+  text.set_text(message);
+
+  chat_box->add(text);
+}
+
 void MainApplication::AddFriendToFriendList(
     shared_ptr<FriendNode> friend_node) {
   cout << "added" << endl;

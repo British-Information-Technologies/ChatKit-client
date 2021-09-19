@@ -1,6 +1,8 @@
 #ifndef VIEW_MAIN_APPLICATION_H_
 #define VIEW_MAIN_APPLICATION_H_
 
+#include <gtkmm-4.0/gtkmm.h>
+
 #include "controller/observers/observer.h"
 #include "model/friend-functionality/friend-node.h"
 
@@ -37,6 +39,8 @@ class MainApplication : public Gtk::Application {
   std::string GetInputUuidToAdd();
   std::string GetInputUuidToDelete();
   std::string GetMessageBoxText();
+
+  void AddMessageToChatBox(const std::string&, const std::string&);
 
   void AddFriendToFriendList(
       std::shared_ptr<model_friend_functionality::FriendNode>);
