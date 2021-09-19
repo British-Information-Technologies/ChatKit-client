@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "../../model/message-functionality/message.h"
+#include "callbacks/callback-collection.h"
 #include "callbacks/error-callback.h"
 #include "callbacks/read-callback.h"
 
@@ -35,11 +36,14 @@ void NetworkReceiver::Listen(
   for (auto connection : connections) {
     int sockfd = connection.first;
 
+    struct CallbackCollection items {
+      model, view, connection.second
+    };
+
     struct bufferevent *bev;
     evutil_make_socket_nonblocking(sockfd);
     bev = bufferevent_socket_new(base, sockfd, BEV_OPT_CLOSE_ON_FREE);
-    bufferevent_setcb(bev, ReadCallback, NULL, ErrorCallback,
-                      connection.second.get());
+    bufferevent_setcb(bev, ReadCallback, NULL, ErrorCallback, &items);
     bufferevent_setwatermark(bev, EV_READ, 0, MAX_LINE);
     bufferevent_enable(bev, EV_READ | EV_WRITE);
   }
