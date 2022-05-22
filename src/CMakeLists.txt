@@ -75,17 +75,17 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 
 find_package(OpenSSL REQUIRED)
-find_package(Libevent REQUIRED)
+find_package(Libevent CONFIG REQUIRED PATHS /home/mitchell/Documents/packages/libevent/build)
 
 add_executable(${BINARY}_run ${SOURCES})
 target_link_directories(${BINARY}_run PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_run PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES} OpenSSL::SSL nlohmann_json::nlohmann_json event)
+target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES} OpenSSL::SSL nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads)
 
 add_library(${BINARY}_lib STATIC ${SOURCES})
 target_link_directories(${BINARY}_lib PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_lib PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} OpenSSL::SSL nlohmann_json::nlohmann_json event)
+target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} OpenSSL::SSL nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads)
 
 # Don't want to copy if we're building in the source dir
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
