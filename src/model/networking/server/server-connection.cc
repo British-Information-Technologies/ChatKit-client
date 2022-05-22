@@ -55,8 +55,7 @@ int ServerConnection::CreateConnection() {
   char s[INET6_ADDRSTRLEN];
 
   memset(&hints, 0, sizeof hints);
-  hints.ai_family =
-      AF_INET;  // add a 6 to make it work with ivp 6 - current uses ivp4
+  hints.ai_family = AF_INET6;  // add a 6 to make it work with ivp 6 - remove 6 for ivp 4
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_protocol = IPPROTO_TCP;
 
@@ -116,7 +115,7 @@ int ServerConnection::EstablishSecureConnection(Message *message) {
       DeserializePublicKey(message->ToString().c_str());
 
   /*Create the shared secret with other users public key and your
-    own private key (this has wrong public key as a place holder*/
+    own private key (Replace key_pair with private key)*/
   DerivedData *key = DeriveSharedSecret(peer_public_key.get(), key_pair.get());
 
   /*Hash the secret to create the key*/

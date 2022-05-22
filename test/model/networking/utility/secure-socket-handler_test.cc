@@ -40,7 +40,7 @@ class SecureSocketHandlerTest : public ::testing::Test {
 
     additional = "The five boxing wizards jump quickly.";
 
-    server->setup();
+    server->SetUp();
     int client_sockfd = client->setup();
     pthread_join(server->listener_id, NULL);
 
@@ -49,7 +49,7 @@ class SecureSocketHandlerTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    server->teardown();
+    server->TearDown();
     client->teardown();
 
     free(server);

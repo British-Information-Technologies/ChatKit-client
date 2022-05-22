@@ -9,6 +9,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "../temporary-server.h"
 #include "model/message-functionality/client-stream-out/send-message-command.h"
 #include "model/message-functionality/general/invalid-command.h"
 #include "model/message-functionality/network-stream-in/got-info-command.h"
@@ -32,120 +33,24 @@ class ServerConnectionTest : public ::testing::Test {
  protected:
   std::string server_ip = "localhost";
   std::string server_port = "3490";
-  DerivedData *key = nullptr;
-  SocketHandler *socket_handler = nullptr;
 
-  pthread_t listener_id;
-  int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
-  socklen_t sin_size;
-  struct sockaddr_storage their_addr;  // connector's address information
-  char s[INET6_ADDRSTRLEN];
+  TemporaryServer *listen_server;
 
   void SetUp() override {
-    struct addrinfo hints, *servinfo, *p;
-    int yes = 1;
-    int rv;
+    listen_server = new TemporaryServer(server_ip, server_port);
 
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;  // use my IP
+    int result = listen_server->SetUp();
 
-    if ((rv = getaddrinfo(server_ip.c_str(), server_port.c_str(), &hints,
-                          &servinfo)) != 0) {
-      fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
-      GTEST_FAIL();
+    if (result  != 1) {
+      fprintf(stderr, "server: setup failed\n");
       exit(1);
     }
-
-    // loop through all the results and bind to the first we can
-    if ((sockfd = socket(servinfo->ai_family, servinfo->ai_socktype,
-                         servinfo->ai_protocol)) == -1) {
-      perror("server: socket");
-      GTEST_FAIL();
-      exit(1);
-    }
-
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-      perror("setsockopt");
-      GTEST_FAIL();
-      exit(1);
-    }
-
-    if (bind(sockfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
-      close(sockfd);
-      perror("server: bind");
-      GTEST_FAIL();
-      exit(1);
-    }
-
-    freeaddrinfo(servinfo);  // all done with this structure
-
-    if (p == NULL) {
-      fprintf(stderr, "server: failed to bind\n");
-      GTEST_FAIL();
-      exit(1);
-    }
-
-    if (listen(sockfd, BACKLOG) == -1) {
-      perror("listen");
-      GTEST_FAIL();
-      exit(1);
-    }
-
-    /* Listen on a thread so test can still occur */
-    pthread_create(&listener_id, NULL,
-                   &ServerConnectionTest::ListenForConnectionWrapper, this);
   }
 
   void TearDown() override {
-    pthread_join(listener_id, NULL);
-    if (key != nullptr) {
-      free(key->secret);
-      free(key);
-    }
+    listen_server->TearDown();
 
-    if (socket_handler != nullptr) {
-      free(socket_handler);
-    }
-
-    close(sockfd);
-    close(new_fd);
-  }
-
-  void set_state(SocketHandler *next_handler) {
-    delete socket_handler;
-    socket_handler = next_handler;
-  }
-
-  static void *ListenForConnectionWrapper(void *context) {
-    return ((ServerConnectionTest *)context)->ListenForConnection();
-  }
-
-  void *ListenForConnection(void) {
-    printf("server: waiting for connection...\n");
-
-    sin_size = sizeof their_addr;
-    new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
-    if (new_fd == -1) {
-      perror("accept");
-      exit(1);
-    }
-
-    inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr),
-              s, sizeof s);
-    printf("server: got connection from %s\n", s);
-
-    return 0;
-  }
-
-  // get sockaddr, IPv4 or IPv6:
-  void *get_in_addr(struct sockaddr *sa) {
-    if (sa->sa_family == AF_INET) {
-      return &(((struct sockaddr_in *)sa)->sin_addr);
-    }
-
-    return &(((struct sockaddr_in6 *)sa)->sin6_addr);
+    free(listen_server);
   }
 };
 
@@ -158,20 +63,24 @@ TEST_F(ServerConnectionTest, CreateConnectionTest) {
 TEST_F(ServerConnectionTest, SendMessageNoKeyTest) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   InfoCommand message;
 
   std::string plaintext = message.ToString();
 
   int sent_bytes = server.SendMessage(plaintext);
+
+  std::cout << "message: " << plaintext << std::endl;
+  std::cout << "size: " << sent_bytes << std::endl;
+  
   EXPECT_GT(sent_bytes, 0);
 }
 
 TEST_F(ServerConnectionTest, SendWrongMessageNoKeyTest) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   std::string to = "mitch";
   std::string content = "test test test";
@@ -180,13 +89,17 @@ TEST_F(ServerConnectionTest, SendWrongMessageNoKeyTest) {
   std::string plaintext = message.ToString();
 
   int sent_bytes = server.SendMessage(plaintext);
+
+  std::cout << "message: " << plaintext << std::endl;
+  std::cout << "size: " << sent_bytes << std::endl;
+
   EXPECT_EQ(sent_bytes, 0);
 }
 
 TEST_F(ServerConnectionTest, SendInvalidMessageTest) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   std::string plaintext =
       "this is a very very very very very very very longgggggggg test!";
@@ -197,7 +110,7 @@ TEST_F(ServerConnectionTest, SendInvalidMessageTest) {
 TEST_F(ServerConnectionTest, SendEmptyMessageTest) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   std::string plaintext = "";
 
@@ -207,9 +120,11 @@ TEST_F(ServerConnectionTest, SendEmptyMessageTest) {
 TEST_F(ServerConnectionTest, SendPublicKeyTest) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   int sent_bytes = server.SendPublicKey();
+
+  std::cout << "size:" << sent_bytes << std::endl;
 
   EXPECT_GT(sent_bytes, 0);
 }
@@ -217,7 +132,7 @@ TEST_F(ServerConnectionTest, SendPublicKeyTest) {
 TEST_F(ServerConnectionTest, EstablishSecureConnectionTest) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
   EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
@@ -248,20 +163,24 @@ TEST_F(ServerConnectionTest, FailEstablishSecureConnectionTest) {
   EXPECT_EQ(res, -1);
 
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 }
 
 TEST_F(ServerConnectionTest, TranslateMessageNoKeyTest) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   std::string name = "test";
   std::string owner = "mitch";
   GotInfoCommand message(name, owner);
   std::string serial_message = message.ToString();
 
+  std::cout << "serial message: " << serial_message << std::endl;
+
   std::string encoded_message = EncodeBase64(serial_message);
+  
+  std::cout << "encoded message: " << encoded_message << std::endl;
 
   std::unique_ptr<Message> result = server.TranslateMessage(encoded_message);
 
@@ -273,12 +192,16 @@ TEST_F(ServerConnectionTest, TranslateMessageNoKeyTest) {
 TEST_F(ServerConnectionTest, InvalidTranslateMessageNoKeyTest) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   InfoCommand message;
   std::string serial_message = message.ToString();
 
+  std::cout << "serial message: " << serial_message << std::endl;
+
   std::string encoded_message = EncodeBase64(serial_message);
+
+  std::cout << "encoded message: " << encoded_message << std::endl;
 
   std::unique_ptr<Message> result = server.TranslateMessage(encoded_message);
 
@@ -291,10 +214,12 @@ TEST_F(ServerConnectionTest, InvalidTranslateMessageNoKeyTest) {
 TEST_F(ServerConnectionTest, InvalidTranslateMessageNoKeyNoBase64Test) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   InfoCommand message;
   std::string serial_message = message.ToString();
+
+  std::cout << "serial message: " << serial_message << std::endl;
 
   std::unique_ptr<Message> result = server.TranslateMessage(serial_message);
 
@@ -307,7 +232,7 @@ TEST_F(ServerConnectionTest, InvalidTranslateMessageNoKeyNoBase64Test) {
 TEST_F(ServerConnectionTest, TranslateMessageNoKeyNoBase64Test) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   std::string name = "test";
   std::string owner = "mitch";
@@ -325,7 +250,7 @@ TEST_F(ServerConnectionTest, TranslateMessageNoKeyNoBase64Test) {
 TEST_F(ServerConnectionTest, TranslateMessageKeyNoEncryptTest) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
   EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
@@ -345,9 +270,15 @@ TEST_F(ServerConnectionTest, TranslateMessageKeyNoEncryptTest) {
 
   std::string json_string = json_message.dump();
 
+  std::cout << "serial message: " << json_string << std::endl;
+
   std::string encoded_message = EncodeBase64(json_string);
 
+  std::cout << "encoded message: " << encoded_message << std::endl;
+
   std::unique_ptr<Message> result = server.TranslateMessage(encoded_message);
+
+  std::cout << "result message: " << result->ToString() << std::endl;
 
   EXPECT_NE(result->ToString(), json_string);
 
@@ -358,7 +289,7 @@ TEST_F(ServerConnectionTest, TranslateMessageKeyNoEncryptTest) {
 TEST_F(ServerConnectionTest, TranslateMessageKeyNoBase64NoEncryptTest) {
   model_networking_server::ServerConnection server(server_ip, server_port);
   server.CreateConnection();
-  pthread_join(listener_id, NULL);
+  pthread_join(listen_server->listener_id, NULL);
 
   EVP_PKEY_free_ptr key_pair = GenerateKeyPair();
   EVP_PKEY_free_ptr public_key = ExtractPublicKey(key_pair.get());
@@ -378,7 +309,11 @@ TEST_F(ServerConnectionTest, TranslateMessageKeyNoBase64NoEncryptTest) {
 
   std::string json_string = json_message.dump();
 
+  std::cout << "serial message: " << json_string << std::endl;
+
   std::unique_ptr<Message> result = server.TranslateMessage(json_string);
+
+  std::cout << "result message: " << result->ToString() << std::endl;
 
   EXPECT_NE(result->ToString(), json_string);
 

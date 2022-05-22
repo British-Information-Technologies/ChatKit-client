@@ -77,8 +77,8 @@ EVP_PKEY_free_ptr model_networking_utility::DeserializePublicKey(
 
 /* Extract a public key from a provided key pair */
 EVP_PKEY_free_ptr model_networking_utility::ExtractPublicKey(
-    EVP_PKEY *private_key) {
-  EC_KEY_free_ptr ec_key(EVP_PKEY_get1_EC_KEY(private_key), ::EC_KEY_free);
+    EVP_PKEY *key_pair) {
+  EC_KEY_free_ptr ec_key(EVP_PKEY_get1_EC_KEY(key_pair), ::EC_KEY_free);
   const EC_POINT *ec_point = EC_KEY_get0_public_key(ec_key.get());
 
   EVP_PKEY_free_ptr public_key(EVP_PKEY_new(), ::EVP_PKEY_free);

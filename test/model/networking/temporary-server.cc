@@ -14,44 +14,16 @@
 
 #define BACKLOG 1  // how many pending connections queue will hold
 
-void *TemporaryServer::ListenForConnectionWrapper(void *context) {
-  return ((TemporaryServer *)context)->ListenForConnection();
-}
-
-void *TemporaryServer::ListenForConnection(void) {
-  printf("server: waiting for connection...\n");
-
-  sin_size = sizeof their_addr;
-  new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
-  if (new_fd == -1) {
-    perror("accept");
-    exit(1);
-  }
-
-  inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr),
-            s, sizeof s);
-  printf("server: got connection from %s\n", s);
-
-  return 0;
-}
-
-// get sockaddr, IPv4 or IPv6:
-void *TemporaryServer::get_in_addr(struct sockaddr *sa) {
-  if (sa->sa_family == AF_INET) {
-    return &(((struct sockaddr_in *)sa)->sin_addr);
-  }
-
-  return &(((struct sockaddr_in6 *)sa)->sin6_addr);
-}
+using namespace model_networking_utility;
 
 TemporaryServer::TemporaryServer(std::string ip, std::string port) {
   this->ip = ip;
   this->port = port;
 }
 
-TemporaryServer::~TemporaryServer() { this->teardown(); }
+TemporaryServer::~TemporaryServer() { this->TearDown(); }
 
-int TemporaryServer::setup() {
+int TemporaryServer::SetUp() {
   struct addrinfo hints, *servinfo, *p;
   int yes = 1;
   int rv;
@@ -66,6 +38,7 @@ int TemporaryServer::setup() {
     exit(1);
   }
 
+  // loop through all the results and bind to the first we can
   if ((sockfd = socket(servinfo->ai_family, servinfo->ai_socktype,
                        servinfo->ai_protocol)) == -1) {
     perror("server: socket");
@@ -102,9 +75,54 @@ int TemporaryServer::setup() {
   return 1;
 }
 
-void TemporaryServer::teardown() {
+void TemporaryServer::TearDown() {
   pthread_join(listener_id, NULL);
+  
+  if (key != nullptr) {
+    free(key->secret);
+    free(key);
+  }
+
+  if (socket_handler != nullptr) {
+    free(socket_handler);
+  }
 
   close(sockfd);
   close(new_fd);
+}
+
+void TemporaryServer::SetState(SocketHandler *next_handler) {
+  delete socket_handler;
+  socket_handler = next_handler;
+}
+
+void *TemporaryServer::ListenForConnectionWrapper(void *context) {
+  return ((TemporaryServer *)context)->ListenForConnection();
+}
+
+void *TemporaryServer::ListenForConnection(void) {
+  printf("server: waiting for connection...\n");
+
+  sin_size = sizeof their_addr;
+
+  new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
+  if (new_fd == -1) {
+    perror("accept");
+    exit(1);
+  }
+
+  inet_ntop(their_addr.ss_family, GetInAddr((struct sockaddr *)&their_addr),
+            s, sizeof s);
+  printf("server: got connection from %s\n", s);
+
+  return 0;
+}
+
+// get sockaddr, IPv4 or IPv6:
+void *TemporaryServer::GetInAddr(struct sockaddr *sa) {
+  if (sa->sa_family == AF_INET) {
+    return &(((struct sockaddr_in *)sa)->sin_addr);
+  }
+
+  return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
