@@ -11,6 +11,10 @@ set(SOURCES
     ../src/model/friend-functionality/friend-hashmap.cc
     ../src/model/friend-functionality/friend-utility.cc
 
+    ../src/model/server-functionality/server-node.cc
+    ../src/model/server-functionality/server-hashmap.cc
+    ../src/model/server-functionality/server-utility.cc
+
     ../src/model/message-functionality/client-stream-out/update-command.cc
     ../src/model/message-functionality/client-stream-out/send-message-command.cc
     ../src/model/message-functionality/client-stream-out/send-global-message-command.cc
@@ -56,6 +60,10 @@ set(SOURCES
     model/friend-functionality/friend-hashmap_test.cc
     model/friend-functionality/friend-utility_test.cc
     
+    model/server-functionality/server-node_test.cc
+    model/server-functionality/server-hashmap_test.cc
+    model/server-functionality/server-utility_test.cc
+
     model/message-functionality/client-stream-out/update-command_test.cc
     model/message-functionality/client-stream-out/send-message-command_test.cc
     model/message-functionality/client-stream-out/send-global-message-command_test.cc

@@ -33,6 +33,10 @@ set(SOURCES
     model/friend-functionality/friend-utility.cc
     model/friend-functionality/friend-node.cc
 
+    model/server-functionality/server-hashmap.cc
+    model/server-functionality/server-utility.cc
+    model/server-functionality/server-node.cc
+
     model/message-functionality/client-stream-out/update-command.cc
     model/message-functionality/client-stream-out/send-message-command.cc
     model/message-functionality/client-stream-out/send-global-message-command.cc
