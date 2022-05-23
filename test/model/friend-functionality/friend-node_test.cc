@@ -10,22 +10,22 @@ using namespace model_friend_functionality;
 class FriendNodeTest : public ::testing::Test {
  public:
   FriendNodeTest() {
-    std::string name_one = "mitch";
-    std::string name_two = "micky";
+    name_one = "mitch";
+    name_two = "micky";
 
-    std::string uuid_one = "testtesttest1234567890";
-    std::string uuid_two = "testtest1234567890";
+    uuid_one = "testtesttest1234567890";
+    uuid_two = "testtest1234567890";
 
     friend_one = new FriendNode(uuid_one, name_one);
     friend_two = new FriendNode(uuid_two, name_two);
   }
 
  protected:
-  std::string name_one = "mitch";
-  std::string name_two = "micky";
+  std::string name_one;
+  std::string name_two;
 
-  std::string uuid_one = "testtesttest1234567890";
-  std::string uuid_two = "testtest1234567890";
+  std::string uuid_one;
+  std::string uuid_two;
   
   FriendNode *friend_one;
   FriendNode *friend_two;
