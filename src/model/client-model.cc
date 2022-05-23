@@ -12,15 +12,15 @@ ClientModel::ClientModel() {
   this->network_sender = make_shared<NetworkSender>();
 }
 
-bool ClientModel::AddFriend(const string& uuid) {
-  return friend_api->AddFriend(uuid);
+bool ClientModel::AddFriend(const string &uuid, const string &name) {
+  return friend_api->AddFriend(uuid, name);
 }
 
-bool ClientModel::DeleteFriend(const std::string& uuid) {
+bool ClientModel::DeleteFriend(const std::string &uuid) {
   return friend_api->DeleteFriend(uuid);
 }
 
-shared_ptr<FriendNode> ClientModel::GetFriend(const string& uuid) const {
+shared_ptr<FriendNode> ClientModel::GetFriend(const string &uuid) const {
   return friend_api->GetFriend(uuid);
 }
 

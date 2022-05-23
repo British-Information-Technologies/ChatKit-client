@@ -52,6 +52,8 @@ void MainApplication::on_shutdown() {
 
 std::string MainApplication::GetInputUuidToAdd() { return "filler text"; }
 
+std::string MainApplication::GetInputNameToAdd() {return "filter text"; }
+
 std::string MainApplication::GetInputUuidToDelete() { return "filler text"; }
 
 std::string MainApplication::GetMessageBoxText() {

@@ -30,7 +30,6 @@ set(SOURCES
     model/networking/server/server-connection.cc
 
     model/friend-functionality/friend-hashmap.cc
-    model/friend-functionality/friend-api.cc
     model/friend-functionality/friend-utility.cc
     model/friend-functionality/friend-node.cc
 

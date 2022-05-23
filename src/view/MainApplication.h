@@ -37,6 +37,7 @@ class MainApplication : public Gtk::Application {
   static Glib::RefPtr<MainApplication> create();
 
   std::string GetInputUuidToAdd();
+  std::string GetInputNameToAdd();
   std::string GetInputUuidToDelete();
   std::string GetMessageBoxText();
 

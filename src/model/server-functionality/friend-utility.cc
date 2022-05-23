@@ -8,8 +8,8 @@
 using namespace model_friend_functionality;
 using namespace std;
 
-bool FriendUtility::AddFriend(const string& uuid, const string& name) {
-  FriendNode friend_node(uuid, name);
+bool FriendUtility::AddFriend(const string& uuid) {
+  FriendNode friend_node(uuid, uuid);
   return friend_list->AddFriend(friend_node);
 }
 

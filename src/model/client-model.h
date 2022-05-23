@@ -18,12 +18,12 @@ class ClientModel {
  public:
   ClientModel();
 
-  bool AddFriend(const std::string &);
+  bool AddFriend(const std::string &uuid, const std::string &name);
 
-  bool DeleteFriend(const std::string &);
+  bool DeleteFriend(const std::string &uuid);
 
   std::shared_ptr<model_friend_functionality::FriendNode> GetFriend(
-      const std::string &) const;
+      const std::string &uuid) const;
 
   void StartReceiver();
 

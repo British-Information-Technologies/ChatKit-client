@@ -10,9 +10,9 @@
 namespace model_friend_functionality {
 class FriendUtility : public FriendAPI {
  public:
-  bool AddFriend(const std::string &uuid, const std::string &name);
-  bool DeleteFriend(const std::string &uuid);
-  std::shared_ptr<FriendNode> GetFriend(const std::string &uuid) const;
+  bool AddFriend(const std::string &);
+  bool DeleteFriend(const std::string &);
+  std::shared_ptr<FriendNode> GetFriend(const std::string &) const;
 };
 }  // namespace model_friend_functionality
 

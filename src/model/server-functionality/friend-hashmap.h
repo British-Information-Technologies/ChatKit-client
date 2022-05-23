@@ -14,11 +14,11 @@ class FriendHashmap : public FriendList {
   std::map<const std::string, std::shared_ptr<FriendNode>> friend_map;
 
  public:
-  bool AddFriend(FriendNode &friend_node);
+  bool AddFriend(FriendNode&);
 
-  bool DeleteFriend(const std::string &uuid);
+  bool DeleteFriend(const std::string&);
 
-  std::shared_ptr<FriendNode> GetFriend(const std::string &uuid) const;
+  std::shared_ptr<FriendNode> GetFriend(const std::string&) const;
 };
 }  // namespace model_friend_functionality
 
