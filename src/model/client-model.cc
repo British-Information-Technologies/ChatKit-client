@@ -1,14 +1,19 @@
 #include "client-model.h"
 
 #include "networking/server/server-connection.h"
+#include "friend-functionality/friend-utility.h"
+#include "server-functionality/server-utility.h"
+
 
 using namespace model;
 using namespace model_friend_functionality;
+using namespace model_server_functionality;
 using namespace model_networking;
 using namespace std;
 
 ClientModel::ClientModel() {
   this->friend_api = make_shared<FriendUtility>();
+  this->server_api = make_shared<ServerUtility>();
   this->network_sender = make_shared<NetworkSender>();
 }
 
@@ -22,6 +27,18 @@ bool ClientModel::DeleteFriend(const std::string &uuid) {
 
 shared_ptr<FriendNode> ClientModel::GetFriend(const string &uuid) const {
   return friend_api->GetFriend(uuid);
+}
+
+bool ClientModel::AddServer(const string &uuid, const string &name, const string &owner) {
+  return server_api->AddServer(uuid, name, owner);
+}
+
+bool ClientModel::DeleteServer(const std::string &uuid) {
+  return server_api->DeleteServer(uuid);
+}
+
+shared_ptr<ServerNode> ClientModel::GetServer(const string &uuid) const {
+  return server_api->GetServer(uuid);
 }
 
 std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
