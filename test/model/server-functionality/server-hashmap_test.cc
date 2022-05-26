@@ -21,8 +21,14 @@ class ServerHashmapTest : public ::testing::Test {
     owner_one = "o1";
     owner_two = "o2";
 
-    server_one = new ServerNode(uuid_one, name_one, owner_one);
-    server_two = new ServerNode(uuid_two, name_two, owner_two);
+    ip_one = "localhost-one";
+    ip_two = "localhost-two";
+
+    port_one = "1234";
+    port_two = "5678";
+
+    server_one = new ServerNode(uuid_one, name_one, owner_one, ip_one, port_one);
+    server_two = new ServerNode(uuid_two, name_two, owner_two, ip_two, port_two);
   }
 
  protected:
@@ -34,6 +40,12 @@ class ServerHashmapTest : public ::testing::Test {
 
   std::string owner_one;
   std::string owner_two;
+
+  std::string ip_one = "localhost-one";
+  std::string ip_two = "localhost-two";
+
+  std::string port_one = "1234";
+  std::string port_two = "5678";
 
   ServerNode *server_one;
   ServerNode *server_two;
@@ -53,7 +65,7 @@ TEST_F(ServerHashmapTest, AddServerDoubleTrue) {
 }
 
 TEST_F(ServerHashmapTest, AddServerFalse) {
-  ServerNode server_tmp(uuid_one, name_one, owner_one);
+  ServerNode server_tmp(uuid_one, name_one, owner_one, ip_one, port_one);
   ServerHashmap server_list;
 
   EXPECT_TRUE(server_list.AddServer(*server_one));
@@ -74,7 +86,7 @@ TEST_F(ServerHashmapTest, AddServerManyTrue) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    ServerNode server_node(uuid, name_one, owner_one);
+    ServerNode server_node(uuid, name_one, owner_one, ip_one, port_one);
     EXPECT_TRUE(server_list.AddServer(server_node));
   }
 }
@@ -84,13 +96,13 @@ TEST_F(ServerHashmapTest, AddServerManyFalse) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    ServerNode server_node(uuid, name_one, owner_one);
+    ServerNode server_node(uuid, name_one, owner_one, ip_one, port_one);
     EXPECT_TRUE(server_list.AddServer(server_node));
   }
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    ServerNode server_node(uuid, name_one, owner_one);
+    ServerNode server_node(uuid, name_one, owner_one, ip_one, port_one);
     EXPECT_FALSE(server_list.AddServer(server_node));
   }
 }
@@ -123,7 +135,7 @@ TEST_F(ServerHashmapTest, GetServerMany) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    ServerNode server_node(uuid, name_one, owner_one);
+    ServerNode server_node(uuid, name_one, owner_one, ip_one, port_one);
     EXPECT_TRUE(server_list.AddServer(server_node));
   }
 

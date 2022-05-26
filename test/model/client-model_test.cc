@@ -187,6 +187,12 @@ class ServerClientModelTest : public ::testing::Test {
 
     owner_one = "o1";
     owner_two = "o2";
+
+    ip_one = "localhost-one";
+    ip_two = "localhost-two";
+
+    port_one = "1234";
+    port_two = "5678";
   }
 
  protected:
@@ -198,12 +204,18 @@ class ServerClientModelTest : public ::testing::Test {
 
   std::string owner_one;
   std::string owner_two;
+
+  std::string ip_one;
+  std::string ip_two;
+
+  std::string port_one;
+  std::string port_two;
 };
 
 TEST_F(ServerClientModelTest, AddServerTrue) {
   ClientModel model;
 
-  bool ret = model.AddServer(uuid_one, name_one, owner_one);
+  bool ret = model.AddServer(uuid_one, name_one, owner_one, ip_one, port_one);
 
   EXPECT_TRUE(ret);
 }
@@ -211,24 +223,24 @@ TEST_F(ServerClientModelTest, AddServerTrue) {
 TEST_F(ServerClientModelTest, AddServerDoubleTrue) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one));
-  EXPECT_TRUE(model.AddServer(uuid_two, name_two, owner_two));
+  EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one, ip_one, port_one));
+  EXPECT_TRUE(model.AddServer(uuid_two, name_two, owner_two, ip_two, port_two));
 }
 
 TEST_F(ServerClientModelTest, AddServerFalse) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one));
-  EXPECT_FALSE(model.AddServer(uuid_one, name_one, owner_one));
+  EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one, ip_one, port_one));
+  EXPECT_FALSE(model.AddServer(uuid_one, name_one, owner_one, ip_one, port_one));
 }
 
 TEST_F(ServerClientModelTest, AddServerDoubleFalse) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one));
-  EXPECT_TRUE(model.AddServer(uuid_two, name_two, owner_two));
-  EXPECT_FALSE(model.AddServer(uuid_one, name_one, owner_one));
-  EXPECT_FALSE(model.AddServer(uuid_two, name_two, owner_two));
+  EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one, ip_one, port_one));
+  EXPECT_TRUE(model.AddServer(uuid_two, name_two, owner_two, ip_two, port_two));
+  EXPECT_FALSE(model.AddServer(uuid_one, name_one, owner_one, ip_one, port_one));
+  EXPECT_FALSE(model.AddServer(uuid_two, name_two, owner_two, ip_two, port_two));
 }
 
 TEST_F(ServerClientModelTest, AddServerManyTrue) {
@@ -236,7 +248,7 @@ TEST_F(ServerClientModelTest, AddServerManyTrue) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    EXPECT_TRUE(model.AddServer(uuid, name_one, owner_one));
+    EXPECT_TRUE(model.AddServer(uuid, name_one, owner_one, ip_one, port_one));
   }
 }
 
@@ -245,19 +257,19 @@ TEST_F(ServerClientModelTest, AddServerManyFalse) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    EXPECT_TRUE(model.AddServer(uuid, name_one, owner_one));
+    EXPECT_TRUE(model.AddServer(uuid, name_one, owner_one, ip_one, port_one));
   }
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    EXPECT_FALSE(model.AddServer(uuid, name_one, owner_one));
+    EXPECT_FALSE(model.AddServer(uuid, name_one, owner_one, ip_one, port_one));
   }
 }
 
 TEST_F(ServerClientModelTest, GetServerSingle) {
   ClientModel model;
 
-  model.AddServer(uuid_one, name_one, owner_one);
+  model.AddServer(uuid_one, name_one, owner_one, ip_one, port_one);
   std::shared_ptr<ServerNode> node_one = model.GetServer(uuid_one);
 
   EXPECT_EQ(node_one->GetUuid(), uuid_one);
@@ -266,8 +278,8 @@ TEST_F(ServerClientModelTest, GetServerSingle) {
 TEST_F(ServerClientModelTest, GetServerDouble) {
   ClientModel model;
 
-  model.AddServer(uuid_one, name_one, owner_one);
-  model.AddServer(uuid_two, name_two, owner_two);
+  model.AddServer(uuid_one, name_one, owner_one, ip_one, port_one);
+  model.AddServer(uuid_two, name_two, owner_two, ip_two, port_two);
 
   std::shared_ptr<ServerNode> node_one = model.GetServer(uuid_one);
   std::shared_ptr<ServerNode> node_two = model.GetServer(uuid_two);
@@ -281,7 +293,7 @@ TEST_F(ServerClientModelTest, GetServerMany) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    EXPECT_TRUE(model.AddServer(uuid, name_one, owner_one));
+    EXPECT_TRUE(model.AddServer(uuid, name_one, owner_one, ip_one, port_one));
   }
 
   for (int index = 0; index < 100; index++) {
@@ -304,17 +316,17 @@ TEST_F(ServerClientModelTest, GetServerError) {
 TEST_F(ServerClientModelTest, DeleteServerSingle) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one));
+  EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one, ip_one, port_one));
   EXPECT_TRUE(model.DeleteServer(uuid_one));
 }
 
 TEST_F(ServerClientModelTest, DeleteServerDouble) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one));
+  EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one, ip_one, port_one));
   EXPECT_TRUE(model.DeleteServer(uuid_one));
 
-  EXPECT_TRUE(model.AddServer(uuid_two, name_two, owner_two));
+  EXPECT_TRUE(model.AddServer(uuid_two, name_two, owner_two, ip_two, port_two));
   EXPECT_TRUE(model.DeleteServer(uuid_two));
 }
 
@@ -322,7 +334,7 @@ TEST_F(ServerClientModelTest, DeleteServerMany) {
   ClientModel model;
 
   for (int i = 0; i < 100; ++i) {
-    EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one));
+    EXPECT_TRUE(model.AddServer(uuid_one, name_one, owner_one, ip_one, port_one));
     EXPECT_TRUE(model.DeleteServer(uuid_one));
   }
 }
@@ -336,7 +348,7 @@ TEST_F(ServerClientModelTest, DeleteServerError) {
 TEST_F(ServerClientModelTest, AddDeleteDeleteServerError) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddServer(uuid_one, name_two, owner_one));
+  EXPECT_TRUE(model.AddServer(uuid_one, name_two, owner_one, ip_one, port_one));
   EXPECT_TRUE(model.DeleteServer(uuid_one));
   EXPECT_FALSE(model.DeleteServer(uuid_one));
 }
