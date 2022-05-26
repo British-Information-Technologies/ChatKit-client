@@ -10,7 +10,7 @@
 namespace model_server_functionality {
 class ServerUtility : public ServerAPI {
  public:
-  bool AddServer(const std::string &uuid, const std::string &name, const std::string &owner);
+  bool AddServer(const std::string &uuid, const std::string &name, const std::string &owner, const std::string &ip, const std::string &port);
   bool DeleteServer(const std::string &uuid);
   std::shared_ptr<ServerNode> GetServer(const std::string &uuid) const;
 };

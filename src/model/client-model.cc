@@ -29,8 +29,8 @@ shared_ptr<FriendNode> ClientModel::GetFriend(const string &uuid) const {
   return friend_api->GetFriend(uuid);
 }
 
-bool ClientModel::AddServer(const string &uuid, const string &name, const string &owner) {
-  return server_api->AddServer(uuid, name, owner);
+bool ClientModel::AddServer(const string &uuid, const string &name, const string &owner, const std::string &ip, const std::string &port) {
+  return server_api->AddServer(uuid, name, owner, ip, port);
 }
 
 bool ClientModel::DeleteServer(const std::string &uuid) {
@@ -60,7 +60,13 @@ ClientModel::LoadConnections() {
   std::string server_ip = "localhost";
   std::string server_port = "3490";
 
+
+  // for(auto it = server_api->Begin(); it != server_api->End(); ++it) {
+  //   server_ip = it->second->GetIp();
+  //   server_port = it->second->GetPort();
+
   network_sender->TryCreateConnection(server_ip, server_port);
+  // }
 
   return network_sender->GetConnections();
 }

@@ -8,8 +8,8 @@
 using namespace model_server_functionality;
 using namespace std;
 
-bool ServerUtility::AddServer(const string &uuid, const string &name, const string &owner) {
-  ServerNode server_node(uuid, name, owner);
+bool ServerUtility::AddServer(const string &uuid, const string &name, const string &owner, const std::string &ip, const std::string &port) {
+  ServerNode server_node(uuid, name, owner, ip, port);
   return server_list->AddServer(server_node);
 }
 

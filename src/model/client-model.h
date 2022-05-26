@@ -28,7 +28,7 @@ class ClientModel {
   std::shared_ptr<model_friend_functionality::FriendNode> GetFriend(
       const std::string &uuid) const;
 
-  bool AddServer(const std::string &uuid, const std::string &name, const std::string &owner);
+  bool AddServer(const std::string &uuid, const std::string &name, const std::string &owner, const std::string &ip, const std::string &port);
 
   bool DeleteServer(const std::string &uuid);
 
