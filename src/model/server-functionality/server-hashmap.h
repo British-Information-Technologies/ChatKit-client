@@ -14,6 +14,10 @@ class ServerHashmap : public ServerList {
   std::map<const std::string, std::shared_ptr<ServerNode>> server_map;
 
  public:
+  std::map<const std::string, std::shared_ptr<ServerNode>>::iterator GetBegin();
+
+  std::map<const std::string, std::shared_ptr<ServerNode>>::iterator GetEnd();
+
   bool AddServer(ServerNode &server_node);
 
   bool DeleteServer(const std::string &uuid);

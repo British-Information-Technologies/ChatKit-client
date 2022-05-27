@@ -8,6 +8,14 @@
 using namespace model_server_functionality;
 using namespace std;
 
+std::map<const std::string, std::shared_ptr<ServerNode>>::iterator ServerHashmap::GetBegin() {
+  return server_map.begin();
+}
+
+std::map<const std::string, std::shared_ptr<ServerNode>>::iterator ServerHashmap::GetEnd() {
+  return server_map.end();
+}
+
 bool ServerHashmap::AddServer(ServerNode &server_node) {
   pair<map<const string, shared_ptr<ServerNode>>::iterator, bool> ret;
   string uuid = server_node.GetUuid();

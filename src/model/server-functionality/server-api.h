@@ -12,6 +12,9 @@ class ServerAPI {
  public:
   ServerAPI() { server_list = std::make_unique<ServerHashmap>(); }
 
+  virtual std::map<const std::string, std::shared_ptr<ServerNode>>::iterator Begin() = 0;
+  virtual std::map<const std::string, std::shared_ptr<ServerNode>>::iterator End() = 0;
+  
   virtual bool AddServer(const std::string &uuid, const std::string &name, const std::string &owner, const std::string &ip, const std::string &port) = 0;
   virtual bool DeleteServer(const std::string &uuid) = 0;
   virtual std::shared_ptr<ServerNode> GetServer(const std::string &uuid) const = 0;
