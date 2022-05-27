@@ -187,3 +187,19 @@ TEST_F(ServerUtilityTest, AddDeleteDeleteServerError) {
   EXPECT_TRUE(utility.DeleteServer(uuid_one));
   EXPECT_FALSE(utility.DeleteServer(uuid_one));
 }
+
+TEST_F(ServerUtilityTest, Begin) {
+  ServerUtility utility;
+
+  auto begin = utility.Begin();
+
+  SUCCEED();
+}
+
+TEST_F(ServerUtilityTest, End) {
+  ServerUtility utility;
+
+  auto begin = utility.End();
+
+  SUCCEED();
+}

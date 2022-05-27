@@ -195,3 +195,19 @@ TEST_F(ServerHashmapTest, AddDeleteDeleteServerError) {
   EXPECT_TRUE(server_list.DeleteServer(uuid_one));
   EXPECT_FALSE(server_list.DeleteServer(uuid_one));
 }
+
+TEST_F(ServerHashmapTest, GetBegin) {
+  ServerHashmap server_list;
+
+  auto begin = server_list.GetBegin();
+
+  SUCCEED();
+}
+
+TEST_F(ServerHashmapTest, GetEnd) {
+  ServerHashmap server_list;
+
+  auto end = server_list.GetEnd();
+
+  SUCCEED();
+}
