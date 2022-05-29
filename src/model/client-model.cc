@@ -43,30 +43,12 @@ shared_ptr<ServerNode> ClientModel::GetServer(const string &uuid) const {
 
 std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
 ClientModel::LoadConnections() {
-  /* Pesudo code
-  nodes = get all connections from friend and server api
+  for(auto it = server_api->Begin(); it != server_api->End(); ++it) {
+    string server_ip = it->second->GetIp();
+    string server_port = it->second->GetPort();
 
-  for node in nodes:
-    id = node.getid()
-    ip = node.getip()
-    port = node.getport()
-
-    network_thread.try_create_connection(id, ip, port)
-
-  return network_thread.get_connections()
-  */
-
-  // result above is faked until server api exists
-  std::string server_ip = "localhost";
-  std::string server_port = "3490";
-
-
-  // for(auto it = server_api->Begin(); it != server_api->End(); ++it) {
-  //   server_ip = it->second->GetIp();
-  //   server_port = it->second->GetPort();
-
-  network_sender->TryCreateConnection(server_ip, server_port);
-  // }
+    network_sender->TryCreateConnection(server_ip, server_port);
+  }
 
   return network_sender->GetConnections();
 }
