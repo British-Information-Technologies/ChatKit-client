@@ -6,12 +6,87 @@
 
 #include "model/friend-functionality/friend-node.h"
 #include "model/server-functionality/server-node.h"
+#include "networking/temporary-server.h"
 
 using namespace model;
 using namespace model_friend_functionality;
 using namespace model_server_functionality;
 
-/* TODO: add name to the addFirend method call */
+class ClientModelTest : public ::testing::Test {
+ public:
+  ClientModelTest() {
+    server_uuid = "test1234";
+    server_name = "Test Server";
+    server_name = "mitch";
+    server_ip = "localhost";
+    server_port = "3490";
+  }
+
+ protected:
+  std::string server_uuid;
+  std::string server_name;
+  std::string server_owner;
+  std::string server_ip;
+  std::string server_port;
+};
+
+TEST_F(ClientModelTest, LoadConnectionsEmpty) {
+  ClientModel model;
+
+  auto connections = model.LoadConnections();
+
+  EXPECT_EQ(connections.size(), 0);
+}
+
+TEST_F(ClientModelTest, LoadServerConnectionsSingle) {
+  ClientModel model;
+
+  TemporaryServer listen_server(server_ip, server_port);
+  
+  int result = listen_server.SetUp();
+  
+  EXPECT_EQ(result, 1);
+
+  bool ret = model.AddServer(server_uuid, server_name, server_owner, server_ip, server_port);
+
+  EXPECT_TRUE(ret);
+
+  auto connections = model.LoadConnections();
+
+  EXPECT_EQ(connections.size(), 1);
+
+  listen_server.TearDown();
+}
+
+TEST_F(ClientModelTest, LoadServerConnectionsMany) {
+  ClientModel model;
+
+  std::map<int, std::shared_ptr<TemporaryServer>> tmp;
+
+  for(int i = 0; i < 4; ++i) {
+    int tmp_port = stoi(server_port) + i;
+    std::string port = std::to_string(tmp_port);
+    std::shared_ptr<TemporaryServer> listen_server = std::make_shared<TemporaryServer>(server_ip, port);
+
+    tmp.insert(std::pair<int, std::shared_ptr<TemporaryServer>>(i, listen_server));
+    
+    int result = listen_server->SetUp();
+
+    EXPECT_EQ(result, 1);
+
+    bool ret = model.AddServer(std::to_string(i), server_name, server_owner, server_ip, port);
+
+    EXPECT_TRUE(ret);
+  }
+  
+  auto connections = model.LoadConnections();
+
+  EXPECT_EQ(connections.size(), 4);
+
+  for (auto it = tmp.begin(); it != tmp.end(); ++it) {
+    it->second->TearDown();
+  }
+}
 
 class FriendClientModelTest : public ::testing::Test {
  public:
