@@ -18,8 +18,14 @@ class FriendHashmapTest : public ::testing::Test {
     uuid_one = "test";
     uuid_two = "less";
 
-    friend_one = new FriendNode(uuid_one, name_one);
-    friend_two = new FriendNode(uuid_two, name_two);
+    ip_one = "localhost-one";
+    ip_two = "localhost-two";
+
+    port_one = "1234";
+    port_two = "5678";
+
+    friend_one = new FriendNode(uuid_one, name_one, ip_one, port_one);
+    friend_two = new FriendNode(uuid_two, name_two, ip_two, port_two);
   }
 
  protected:
@@ -28,6 +34,12 @@ class FriendHashmapTest : public ::testing::Test {
 
   std::string uuid_one;
   std::string uuid_two;
+
+  std::string ip_one;
+  std::string ip_two;
+
+  std::string port_one;
+  std::string port_two;
 
   FriendNode *friend_one;
   FriendNode *friend_two;
@@ -47,7 +59,7 @@ TEST_F(FriendHashmapTest, AddFriendDoubleTrue) {
 }
 
 TEST_F(FriendHashmapTest, AddFriendFalse) {
-  FriendNode friend_tmp(uuid_one, name_one);
+  FriendNode friend_tmp(uuid_one, name_one, ip_one, port_one);
   FriendHashmap friend_list;
 
   EXPECT_TRUE(friend_list.AddFriend(*friend_one));
@@ -68,7 +80,7 @@ TEST_F(FriendHashmapTest, AddFriendManyTrue) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(uuid, name_one);
+    FriendNode friend_node(uuid, name_one, ip_one, port_one);
     EXPECT_TRUE(friend_list.AddFriend(friend_node));
   }
 }
@@ -78,13 +90,13 @@ TEST_F(FriendHashmapTest, AddFriendManyFalse) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(uuid, name_one);
+    FriendNode friend_node(uuid, name_one, ip_one, port_one);
     EXPECT_TRUE(friend_list.AddFriend(friend_node));
   }
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(uuid, name_one);
+    FriendNode friend_node(uuid, name_one, ip_one, port_one);
     EXPECT_FALSE(friend_list.AddFriend(friend_node));
   }
 }
@@ -117,7 +129,7 @@ TEST_F(FriendHashmapTest, GetFriendMany) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    FriendNode friend_node(uuid, name_one);
+    FriendNode friend_node(uuid, name_one, ip_one, port_one);
     EXPECT_TRUE(friend_list.AddFriend(friend_node));
   }
 
@@ -176,4 +188,20 @@ TEST_F(FriendHashmapTest, AddDeleteDeleteFriendError) {
   EXPECT_TRUE(friend_list.AddFriend(*friend_one));
   EXPECT_TRUE(friend_list.DeleteFriend(uuid_one));
   EXPECT_FALSE(friend_list.DeleteFriend(uuid_one));
+}
+
+TEST_F(FriendHashmapTest, GetBegin) {
+  FriendHashmap friend_list;
+
+  auto begin = friend_list.GetBegin();
+
+  SUCCEED();
+}
+
+TEST_F(FriendHashmapTest, GetEnd) {
+  FriendHashmap friend_list;
+
+  auto end = friend_list.GetEnd();
+
+  SUCCEED();
 }
