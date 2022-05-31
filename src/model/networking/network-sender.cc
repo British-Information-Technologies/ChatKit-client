@@ -13,10 +13,11 @@ NetworkSender::GetConnections() {
   return connections;
 }
 
-void NetworkSender::TryCreateConnection(const std::string &ip_address,
+void NetworkSender::TryCreateConnection(const int &type,
+                                        const std::string &ip_address,
                                         const std::string &port) {
   ConnectionFactory factory;
-  auto new_connection = factory.GetConnection(0, ip_address, port);
+  auto new_connection = factory.GetConnection(type, ip_address, port);
 
   int sockfd = new_connection->CreateConnection();
   if (sockfd < 0) {

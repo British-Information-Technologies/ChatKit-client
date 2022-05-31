@@ -19,7 +19,8 @@ class NetworkSender {
   std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
   GetConnections();
 
-  void TryCreateConnection(const std::string &ip_address,
+  void TryCreateConnection(const int &type,
+                           const std::string &ip_address,
                            const std::string &port);
 
   int SendMessage(const int &id, std::string &message);
