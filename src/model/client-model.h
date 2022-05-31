@@ -21,7 +21,7 @@ class ClientModel {
  public:
   ClientModel();
 
-  bool AddFriend(const std::string &uuid, const std::string &name);
+  bool AddFriend(const std::string &uuid, const std::string &name, const std::string &ip, const std::string &port);
 
   bool DeleteFriend(const std::string &uuid);
 

@@ -7,6 +7,7 @@
 #include "model/friend-functionality/friend-node.h"
 #include "model/server-functionality/server-node.h"
 #include "networking/temporary-server.h"
+#include "networking/temporary-client.h"
 
 using namespace model;
 using namespace model_friend_functionality;
@@ -17,9 +18,14 @@ class ClientModelTest : public ::testing::Test {
   ClientModelTest() {
     server_uuid = "test1234";
     server_name = "Test Server";
-    server_name = "mitch";
+    server_owner = "mitch";
     server_ip = "localhost";
     server_port = "3490";
+
+    friend_uuid = "test1234";
+    friend_name = "Test Server";
+    friend_ip = "localhost";
+    friend_port = "3490";
   }
 
  protected:
@@ -28,6 +34,11 @@ class ClientModelTest : public ::testing::Test {
   std::string server_owner;
   std::string server_ip;
   std::string server_port;
+
+  std::string friend_uuid;
+  std::string friend_name;
+  std::string friend_ip;
+  std::string friend_port;
 };
 
 TEST_F(ClientModelTest, LoadConnectionsEmpty) {
@@ -88,6 +99,55 @@ TEST_F(ClientModelTest, LoadServerConnectionsMany) {
   }
 }
 
+/* ---- fix temp clinet --- */
+TEST_F(ClientModelTest, LoadClientConnectionsSingle) {
+  ClientModel model;
+
+  TemporaryClient listen_client(friend_ip, friend_port);
+  
+  listen_client.Listen();
+
+  bool ret = model.AddFriend(friend_uuid, friend_name, friend_ip, friend_port);
+
+  EXPECT_TRUE(ret);
+
+  auto connections = model.LoadConnections();
+
+  EXPECT_EQ(connections.size(), 1);
+
+  listen_client.TearDown();
+}
+
+// TEST_F(ClientModelTest, LoadClientConnectionsMany) {
+//   ClientModel model;
+
+//   std::map<int, std::shared_ptr<TemporaryServer>> tmp;
+
+//   for(int i = 0; i < 4; ++i) {
+//     int tmp_port = stoi(server_port) + i;
+//     std::string port = std::to_string(tmp_port);
+//     std::shared_ptr<TemporaryServer> listen_server = std::make_shared<TemporaryServer>(server_ip, port);
+
+//     tmp.insert(std::pair<int, std::shared_ptr<TemporaryServer>>(i, listen_server));
+    
+//     int result = listen_server->SetUp();
+
+//     EXPECT_EQ(result, 1);
+
+//     bool ret = model.AddFriend(std::to_string(i), friend_name, friend_ip, friend_port);
+
+//     EXPECT_TRUE(ret);
+//   }
+  
+//   auto connections = model.LoadConnections();
+
+//   EXPECT_EQ(connections.size(), 4);
+
+//   for (auto it = tmp.begin(); it != tmp.end(); ++it) {
+//     it->second->TearDown();
+//   }
+// }
+
 class FriendClientModelTest : public ::testing::Test {
  public:
   FriendClientModelTest() {
@@ -96,6 +156,12 @@ class FriendClientModelTest : public ::testing::Test {
 
     uuid_one = "test";
     uuid_two = "less";
+
+    ip_one = "localhost-one";
+    ip_two = "localhost-two";
+
+    port_one = "1234";
+    port_two = "5678";
   }
 
  protected:
@@ -104,12 +170,18 @@ class FriendClientModelTest : public ::testing::Test {
 
   std::string uuid_one;
   std::string uuid_two;
+
+  std::string ip_one;
+  std::string ip_two;
+
+  std::string port_one;
+  std::string port_two;
 };
 
 TEST_F(FriendClientModelTest, AddFriendTrue) {
   ClientModel model;
 
-  bool ret = model.AddFriend(uuid_one, name_one);
+  bool ret = model.AddFriend(uuid_one, name_one, ip_one, port_one);
 
   EXPECT_TRUE(ret);
 }
@@ -117,24 +189,24 @@ TEST_F(FriendClientModelTest, AddFriendTrue) {
 TEST_F(FriendClientModelTest, AddFriendDoubleTrue) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddFriend(uuid_one, name_one));
-  EXPECT_TRUE(model.AddFriend(uuid_two, name_two));
+  EXPECT_TRUE(model.AddFriend(uuid_one, name_one, ip_one, port_one));
+  EXPECT_TRUE(model.AddFriend(uuid_two, name_two, ip_two, port_two));
 }
 
 TEST_F(FriendClientModelTest, AddFriendFalse) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddFriend(uuid_one, name_one));
-  EXPECT_FALSE(model.AddFriend(uuid_one, name_one));
+  EXPECT_TRUE(model.AddFriend(uuid_one, name_one, ip_one, port_one));
+  EXPECT_FALSE(model.AddFriend(uuid_one, name_one, ip_two, port_two));
 }
 
 TEST_F(FriendClientModelTest, AddFriendDoubleFalse) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddFriend(uuid_one, name_one));
-  EXPECT_TRUE(model.AddFriend(uuid_two, name_two));
-  EXPECT_FALSE(model.AddFriend(uuid_one, name_one));
-  EXPECT_FALSE(model.AddFriend(uuid_two, name_two));
+  EXPECT_TRUE(model.AddFriend(uuid_one, name_one, ip_one, port_one));
+  EXPECT_TRUE(model.AddFriend(uuid_two, name_two, ip_two, port_two));
+  EXPECT_FALSE(model.AddFriend(uuid_one, name_one, ip_one, port_one));
+  EXPECT_FALSE(model.AddFriend(uuid_two, name_two, ip_two, port_two));
 }
 
 TEST_F(FriendClientModelTest, AddFriendManyTrue) {
@@ -142,7 +214,7 @@ TEST_F(FriendClientModelTest, AddFriendManyTrue) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    EXPECT_TRUE(model.AddFriend(uuid, name_one));
+    EXPECT_TRUE(model.AddFriend(uuid, name_one, ip_one, port_one));
   }
 }
 
@@ -151,19 +223,19 @@ TEST_F(FriendClientModelTest, AddFriendManyFalse) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    EXPECT_TRUE(model.AddFriend(uuid, name_one));
+    EXPECT_TRUE(model.AddFriend(uuid, name_one, ip_one, port_one));
   }
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    EXPECT_FALSE(model.AddFriend(uuid, name_one));
+    EXPECT_FALSE(model.AddFriend(uuid, name_one, ip_one, port_one));
   }
 }
 
 TEST_F(FriendClientModelTest, GetFriendSingle) {
   ClientModel model;
 
-  model.AddFriend(uuid_one, name_one);
+  model.AddFriend(uuid_one, name_one, ip_one, port_one);
   std::shared_ptr<FriendNode> node_one = model.GetFriend(uuid_one);
 
   EXPECT_EQ(node_one->GetUuid(), uuid_one);
@@ -172,8 +244,8 @@ TEST_F(FriendClientModelTest, GetFriendSingle) {
 TEST_F(FriendClientModelTest, GetFriendDouble) {
   ClientModel model;
 
-  model.AddFriend(uuid_one, name_one);
-  model.AddFriend(uuid_two, name_two);
+  model.AddFriend(uuid_one, name_one, ip_one, port_one);
+  model.AddFriend(uuid_two, name_two, ip_two, port_two);
 
   std::shared_ptr<FriendNode> node_one = model.GetFriend(uuid_one);
   std::shared_ptr<FriendNode> node_two = model.GetFriend(uuid_two);
@@ -187,7 +259,7 @@ TEST_F(FriendClientModelTest, GetFriendMany) {
 
   for (int index = 0; index < 100; index++) {
     std::string uuid = std::to_string(index);
-    EXPECT_TRUE(model.AddFriend(uuid, name_one));
+    EXPECT_TRUE(model.AddFriend(uuid, name_one, ip_one, port_one));
   }
 
   for (int index = 0; index < 100; index++) {
@@ -210,17 +282,17 @@ TEST_F(FriendClientModelTest, GetFriendError) {
 TEST_F(FriendClientModelTest, DeleteFriendSingle) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddFriend(uuid_one, name_one));
+  EXPECT_TRUE(model.AddFriend(uuid_one, name_one, ip_one, port_one));
   EXPECT_TRUE(model.DeleteFriend(uuid_one));
 }
 
 TEST_F(FriendClientModelTest, DeleteFriendDouble) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddFriend(uuid_one, name_one));
+  EXPECT_TRUE(model.AddFriend(uuid_one, name_one, ip_one, port_one));
   EXPECT_TRUE(model.DeleteFriend(uuid_one));
 
-  EXPECT_TRUE(model.AddFriend(uuid_two, name_two));
+  EXPECT_TRUE(model.AddFriend(uuid_two, name_two, ip_two, port_two));
   EXPECT_TRUE(model.DeleteFriend(uuid_two));
 }
 
@@ -228,7 +300,7 @@ TEST_F(FriendClientModelTest, DeleteFriendMany) {
   ClientModel model;
 
   for (int i = 0; i < 100; ++i) {
-    EXPECT_TRUE(model.AddFriend(uuid_one, name_one));
+    EXPECT_TRUE(model.AddFriend(uuid_one, name_one, ip_one, port_one));
     EXPECT_TRUE(model.DeleteFriend(uuid_one));
   }
 }
@@ -242,7 +314,7 @@ TEST_F(FriendClientModelTest, DeleteFriendError) {
 TEST_F(FriendClientModelTest, AddDeleteDeleteFriendError) {
   ClientModel model;
 
-  EXPECT_TRUE(model.AddFriend(uuid_one, name_two));
+  EXPECT_TRUE(model.AddFriend(uuid_one, name_two, ip_one, port_one));
   EXPECT_TRUE(model.DeleteFriend(uuid_one));
   EXPECT_FALSE(model.DeleteFriend(uuid_one));
 }

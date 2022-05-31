@@ -20,7 +20,10 @@ void AddFriendObserver::Execute() {
   string uuid = view->GetInputUuidToAdd();
   string name = view->GetInputNameToAdd();
 
-  if (model->AddFriend(uuid, name)) {
+  string ip = "localhost";
+  string port = "1234";
+
+  if (model->AddFriend(uuid, name, ip, port)) {
     shared_ptr<FriendNode> friend_node = model->GetFriend(uuid);
     view->AddFriendToFriendList(friend_node);
     return;

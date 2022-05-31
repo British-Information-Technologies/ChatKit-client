@@ -17,8 +17,8 @@ ClientModel::ClientModel() {
   this->network_sender = make_shared<NetworkSender>();
 }
 
-bool ClientModel::AddFriend(const string &uuid, const string &name) {
-  return friend_api->AddFriend(uuid, name);
+bool ClientModel::AddFriend(const string &uuid, const string &name, const std::string &ip, const std::string &port) {
+  return friend_api->AddFriend(uuid, name, ip, port);
 }
 
 bool ClientModel::DeleteFriend(const std::string &uuid) {
@@ -43,11 +43,22 @@ shared_ptr<ServerNode> ClientModel::GetServer(const string &uuid) const {
 
 std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
 ClientModel::LoadConnections() {
+  int id = 0;
+
   for(auto it = server_api->Begin(); it != server_api->End(); ++it) {
     string server_ip = it->second->GetIp();
     string server_port = it->second->GetPort();
 
-    network_sender->TryCreateConnection(server_ip, server_port);
+    network_sender->TryCreateConnection(id, server_ip, server_port);
+  }
+
+  id = 1;
+
+  for(auto it = friend_api->Begin(); it != friend_api->End(); ++it) {
+    string friend_ip = it->second->GetIp();
+    string friend_port = it->second->GetPort();
+
+    network_sender->TryCreateConnection(id, friend_ip, friend_port);
   }
 
   return network_sender->GetConnections();
