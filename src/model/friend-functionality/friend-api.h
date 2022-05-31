@@ -14,7 +14,11 @@ class FriendAPI {
 
   FriendAPI() { friend_list = std::make_unique<FriendHashmap>(); }
 
-  virtual bool AddFriend(const std::string &uuid, const std::string &name) = 0;
+  virtual std::map<const std::string, std::shared_ptr<FriendNode>>::iterator Begin() = 0;
+
+  virtual std::map<const std::string, std::shared_ptr<FriendNode>>::iterator End() = 0;
+
+  virtual bool AddFriend(const std::string &uuid, const std::string &name, const std::string& ip, const std::string& port) = 0;
  
   virtual bool DeleteFriend(const std::string &uuid) = 0;
  

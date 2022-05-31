@@ -14,6 +14,10 @@ class FriendHashmap : public FriendList {
   std::map<const std::string, std::shared_ptr<FriendNode>> friend_map;
 
  public:
+  std::map<const std::string, std::shared_ptr<FriendNode>>::iterator GetBegin();
+
+  std::map<const std::string, std::shared_ptr<FriendNode>>::iterator GetEnd();
+
   bool AddFriend(FriendNode &friend_node);
 
   bool DeleteFriend(const std::string &uuid);

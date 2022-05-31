@@ -8,6 +8,14 @@
 using namespace model_friend_functionality;
 using namespace std;
 
+map<const string, shared_ptr<FriendNode>>::iterator FriendHashmap::GetBegin() {
+  return friend_map.begin();
+}
+
+map<const string, shared_ptr<FriendNode>>::iterator FriendHashmap::GetEnd() {
+  return friend_map.end();
+}
+
 bool FriendHashmap::AddFriend(FriendNode& friend_node) {
   pair<map<const string, shared_ptr<FriendNode>>::iterator, bool> ret;
   string uuid = friend_node.GetUuid();
