@@ -18,13 +18,13 @@ TemporaryClient::TemporaryClient(std::string ip, std::string port) {
   this->port = port;
 }
 
-TemporaryClient::~TemporaryClient() { this->teardown(); }
+TemporaryClient::~TemporaryClient() { this->TearDown(); }
 
-void *TemporaryClient::get_in_addr(struct sockaddr *sa) {
+void *TemporaryClient::GetInAddr(struct sockaddr *sa) {
   return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
 
-int TemporaryClient::setup() {
+int TemporaryClient::SetUp() {
   struct addrinfo hints, *servinfo, *p;
   int rv;
   char s[INET6_ADDRSTRLEN];
@@ -60,7 +60,7 @@ int TemporaryClient::setup() {
     exit(1);
   }
 
-  inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr), s,
+  inet_ntop(p->ai_family, GetInAddr((struct sockaddr *)p->ai_addr), s,
             sizeof s);
   printf("client: connecting to %s\n", s);
 
@@ -69,4 +69,36 @@ int TemporaryClient::setup() {
   return sockfd;
 }
 
-void TemporaryClient::teardown() { close(sockfd); }
+void TemporaryClient::Listen() {
+   /* Listen on a thread so test can still occur */
+  pthread_create(&listener_id, NULL,
+                 &TemporaryClient::ListenForConnectionWrapper, this);
+}
+
+void *TemporaryClient::ListenForConnectionWrapper(void *context) {
+  return ((TemporaryClient *)context)->ListenForConnection();
+}
+
+void *TemporaryClient::ListenForConnection(void) {
+  printf("listen client: waiting for connection...\n");
+
+  sin_size = sizeof their_addr;
+
+  new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
+  if (new_fd == -1) {
+    perror("accept");
+    exit(1);
+  }
+
+  inet_ntop(their_addr.ss_family, GetInAddr((struct sockaddr *)&their_addr), s, sizeof s);
+  printf("listen client: got connection from %s\n", s);
+
+  return 0;
+}
+
+void TemporaryClient::TearDown() {
+  pthread_join(listener_id, NULL);
+
+  close(sockfd);
+  close(new_fd);
+}

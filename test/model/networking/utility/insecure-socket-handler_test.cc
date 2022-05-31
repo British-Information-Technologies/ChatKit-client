@@ -29,7 +29,7 @@ class InsecureSocketHandlerTest : public ::testing::Test {
     client = new TemporaryClient(IP, PORT);
 
     server->SetUp();
-    int client_sockfd = client->setup();
+    int client_sockfd = client->SetUp();
     pthread_join(server->listener_id, NULL);
 
     client_handler = new InsecureSocketHandler(client_sockfd);
@@ -38,7 +38,7 @@ class InsecureSocketHandlerTest : public ::testing::Test {
 
   void TearDown() override {
     server->TearDown();
-    client->teardown();
+    client->TearDown();
 
     free(server);
     free(client);

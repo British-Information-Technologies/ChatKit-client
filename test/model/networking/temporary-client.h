@@ -1,6 +1,7 @@
 #ifndef TEST_MODEL_TEMPORARY_CLIENT_H_
 #define TEST_MODEL_TEMPORARY_CLIENT_H_
 
+#include <arpa/inet.h>
 #include <sys/socket.h>
 
 #include <string>
@@ -11,16 +12,31 @@ class TemporaryClient {
   std::string port;
   int sockfd;
 
-  void *get_in_addr(struct sockaddr *sa);
+  pthread_t listener_id;
+  int new_fd;
+
+  socklen_t sin_size;
+  struct sockaddr_storage their_addr;  // connector's address information
+  char s[INET6_ADDRSTRLEN];
+
+  private:
+  static void *ListenForConnectionWrapper(void *context);
+
+  void *ListenForConnection(void);
+
+  // get sockaddr, IPv4 or IPv6:
+  void *GetInAddr(struct sockaddr *sa);
 
  public:
   TemporaryClient(std::string ip, std::string port);
 
   ~TemporaryClient();
 
-  int setup();
+  int SetUp();
 
-  void teardown();
+  void Listen();
+
+  void TearDown();
 };
 
 #endif

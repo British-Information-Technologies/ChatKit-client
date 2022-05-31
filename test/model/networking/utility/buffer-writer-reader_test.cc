@@ -24,7 +24,7 @@ class BufferWriterTest : public ::testing::Test {
     client = new TemporaryClient(IP, PORT);
 
     server->SetUp();
-    int client_sockfd = client->setup();
+    int client_sockfd = client->SetUp();
     pthread_join(server->listener_id, NULL);
 
     server_reader = new BufferReader(server->new_fd);
@@ -33,7 +33,7 @@ class BufferWriterTest : public ::testing::Test {
 
   void TearDown() override {
     server->TearDown();
-    client->teardown();
+    client->TearDown();
 
     free(server);
     free(client);
