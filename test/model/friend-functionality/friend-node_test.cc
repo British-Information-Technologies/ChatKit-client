@@ -216,7 +216,7 @@ TEST_F(FriendNodeTest, GetPortConstant) {
   port = "12";
   EXPECT_NE(tmp_friend.GetPort(), port);
 
-  ip = "1234";
+  port = "1234";
   EXPECT_EQ(tmp_friend.GetPort(), port);
 }
 
