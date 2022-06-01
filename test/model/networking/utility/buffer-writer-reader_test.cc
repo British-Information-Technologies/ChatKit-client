@@ -16,6 +16,7 @@ class BufferWriterTest : public ::testing::Test {
  protected:
   TemporaryServer *server;
   TemporaryClient *client;
+
   BufferReader *server_reader;
   BufferWriter *client_writer;
 
