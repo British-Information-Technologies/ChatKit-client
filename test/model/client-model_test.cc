@@ -99,24 +99,24 @@ TEST_F(ClientModelTest, LoadServerConnectionsMany) {
   }
 }
 
-/* ---- fix temp clinet --- */
-TEST_F(ClientModelTest, LoadClientConnectionsSingle) {
-  ClientModel model;
+/* ---- TODO: fix client connections --- */
+// TEST_F(ClientModelTest, LoadClientConnectionsSingle) {
+//   ClientModel model;
 
-  TemporaryClient listen_client(friend_ip, friend_port);
+//   TemporaryClient listen_client(friend_ip, friend_port);
   
-  listen_client.Listen();
+//   listen_client.Listen();
 
-  bool ret = model.AddFriend(friend_uuid, friend_name, friend_ip, friend_port);
+//   bool ret = model.AddFriend(friend_uuid, friend_name, friend_ip, friend_port);
 
-  EXPECT_TRUE(ret);
+//   EXPECT_TRUE(ret);
 
-  auto connections = model.LoadConnections();
+//   auto connections = model.LoadConnections();
 
-  EXPECT_EQ(connections.size(), 1);
+//   EXPECT_EQ(connections.size(), 1);
 
-  listen_client.TearDown();
-}
+//   listen_client.TearDown();
+// }
 
 // TEST_F(ClientModelTest, LoadClientConnectionsMany) {
 //   ClientModel model;
