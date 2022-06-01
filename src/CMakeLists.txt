@@ -1,16 +1,75 @@
 set(BINARY ${CMAKE_PROJECT_NAME})
 
 set(SOURCES
-    main.cc
-	view/MainApplication.cc
     controller/client-controller.cc
     controller/view-factory.cc
-    controller/addfriend-observer.cc
-    controller/deletefriend-observer.cc
-    model/client-model.cc
+    
+    controller/observers/addfriend-observer.cc
+    controller/observers/deletefriend-observer.cc
+    controller/observers/send-message-observer.cc
+
+    controller/networking/network-receiver.cc
+
+    controller/networking/callbacks/read-callback.cc
+    controller/networking/callbacks/error-callback.cc
+
+    model/networking/connection.cc
+    model/networking/connection-factory.cc
+    model/networking/network-sender.cc
+
+    model/networking/utility/elliptic-curve-diffiehellman.cc
+    model/networking/utility/sha-3-256.cc
+    model/networking/utility/aes-gcm.cc
+    model/networking/utility/base64.cc
+    model/networking/utility/buffer-writer.cc
+    model/networking/utility/buffer-reader.cc
+    model/networking/utility/socket-handler.cc
+    model/networking/utility/secure-socket-handler.cc
+    model/networking/utility/insecure-socket-handler.cc
+    
+    model/networking/server/server-connection.cc
+
     model/friend-functionality/friend-hashmap.cc
-    model/friend-functionality/friend-node.cc
     model/friend-functionality/friend-utility.cc
+    model/friend-functionality/friend-node.cc
+
+    model/server-functionality/server-hashmap.cc
+    model/server-functionality/server-utility.cc
+    model/server-functionality/server-node.cc
+
+    model/message-functionality/client-stream-out/update-command.cc
+    model/message-functionality/client-stream-out/send-message-command.cc
+    model/message-functionality/client-stream-out/send-global-message-command.cc
+    model/message-functionality/client-stream-out/disconnect-command.cc
+
+    model/message-functionality/client-stream-in/connect-command.cc
+    model/message-functionality/client-stream-in/user-message-command.cc
+    model/message-functionality/client-stream-in/global-message-command.cc
+    model/message-functionality/client-stream-in/update-command.cc
+    model/message-functionality/client-stream-in/disconnected-command.cc
+    model/message-functionality/client-stream-in/error-command.cc
+
+    model/message-functionality/network-stream-in/request-command.cc
+    model/message-functionality/network-stream-in/got-info-command.cc
+    model/message-functionality/network-stream-in/connecting-command.cc
+    model/message-functionality/network-stream-in/key-command.cc
+
+    model/message-functionality/network-stream-out/connect-command.cc
+    model/message-functionality/network-stream-out/info-command.cc
+    model/message-functionality/network-stream-out/encrypt-command.cc
+
+    model/message-functionality/general/invalid-command.cc
+
+    model/message-functionality/client-stream-in-factory.cc
+    model/message-functionality/client-stream-out-factory.cc
+    model/message-functionality/network-stream-in-factory.cc
+    model/message-functionality/network-stream-out-factory.cc
+
+    model/client-model.cc
+
+    view/MainApplication.cc
+
+    main.cc
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
@@ -18,15 +77,18 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 
+find_package(OpenSSL REQUIRED)
+find_package(Libevent CONFIG REQUIRED PATHS /home/mitchell/Documents/packages/libevent/build)
+
 add_executable(${BINARY}_run ${SOURCES})
 target_link_directories(${BINARY}_run PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_run PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES})
+target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES} OpenSSL::SSL nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads)
 
 add_library(${BINARY}_lib STATIC ${SOURCES})
 target_link_directories(${BINARY}_lib PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_lib PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES})
+target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} OpenSSL::SSL nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads)
 
 # Don't want to copy if we're building in the source dir
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)

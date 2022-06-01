@@ -2,10 +2,11 @@
 
 #include <iostream>
 
-#include "controller/deletefriend-observer.h"
+#include "controller/observers/deletefriend-observer.h"
 
 using namespace Gtk;
-using namespace chat_client_controller;
+using namespace controller_observers;
+using namespace model_friend_functionality;
 using namespace std;
 
 MainApplication::MainApplication()
@@ -29,6 +30,10 @@ void MainApplication::on_startup() {
 
   delete_friend_button =
       builder->get_widget<Gtk::Button>("delete_friend_button");
+
+  send_button = builder->get_widget<Gtk::Button>("send_button");
+
+  message_box = builder->get_widget<Gtk::Entry>("message_box");
 }
 
 void MainApplication::on_activate() {
@@ -47,7 +52,23 @@ void MainApplication::on_shutdown() {
 
 std::string MainApplication::GetInputUuidToAdd() { return "filler text"; }
 
+std::string MainApplication::GetInputNameToAdd() {return "filter text"; }
+
 std::string MainApplication::GetInputUuidToDelete() { return "filler text"; }
+
+std::string MainApplication::GetMessageBoxText() {
+  return message_box->get_text();
+}
+
+void MainApplication::AddMessageToChatBox(const std::string &message,
+                                          const std::string &uuid) {
+  Gtk::Stack *chat_box = builder->get_widget<Gtk::Stack>(uuid + "_stack");
+
+  Gtk::Text text;
+  text.set_text(message);
+
+  chat_box->add(text);
+}
 
 void MainApplication::AddFriendToFriendList(
     shared_ptr<FriendNode> friend_node) {
@@ -65,5 +86,10 @@ void MainApplication::AddObserverAddFriendButton(Observer &observer) {
 
 void MainApplication::AddObserverDeleteFriendButton(Observer &observer) {
   delete_friend_button->signal_clicked().connect(
+      sigc::mem_fun(observer, &Observer::Execute));
+}
+
+void MainApplication::AddObserverSendButton(Observer &observer) {
+  send_button->signal_clicked().connect(
       sigc::mem_fun(observer, &Observer::Execute));
 }

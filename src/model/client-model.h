@@ -1,25 +1,49 @@
-#ifndef CPPCHATCLIENT_MODEL_CLIENTMODEL_
-#define CPPCHATCLIENT_MODEL_CLIENTMODEL_
+#ifndef MODEL_CLIENT_MODEL_H_
+#define MODEL_CLIENT_MODEL_H_
 
 #include <memory>
 #include <string>
 
 #include "friend-functionality/friend-api.h"
 #include "friend-functionality/friend-node.h"
-#include "friend-functionality/friend-utility.h"
+#include "server-functionality/server-api.h"
+#include "server-functionality/server-node.h"
+#include "networking/network-sender.h"
 
-using namespace chat_client_model_friend_functionality;
-
-namespace chat_client_model {
+namespace model {
 class ClientModel {
  private:
-  FriendAPI *friend_api = new FriendUtility();
+  std::shared_ptr<model_friend_functionality::FriendAPI> friend_api;
+  std::shared_ptr<model_server_functionality::ServerAPI> server_api;
+
+  std::shared_ptr<model_networking::NetworkSender> network_sender;
 
  public:
-  bool AddFriend(const std::string &);
-  bool DeleteFriend(const std::string &);
-  std::shared_ptr<FriendNode> GetFriend(const std::string &) const;
+  ClientModel();
+
+  bool AddFriend(const std::string &uuid, const std::string &name, const std::string &ip, const std::string &port);
+
+  bool DeleteFriend(const std::string &uuid);
+
+  std::shared_ptr<model_friend_functionality::FriendNode> GetFriend(
+      const std::string &uuid) const;
+
+  bool AddServer(const std::string &uuid, const std::string &name, const std::string &owner, const std::string &ip, const std::string &port);
+
+  bool DeleteServer(const std::string &uuid);
+
+  std::shared_ptr<model_server_functionality::ServerNode> GetServer(
+      const std::string &uuid) const;
+
+  void StartReceiver();
+
+  void StopReceiver();
+
+  std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
+  LoadConnections();
+
+  int SendMessage(const int &, std::string &);
 };
-}  // namespace chat_client_model
+}  // namespace model
 
 #endif

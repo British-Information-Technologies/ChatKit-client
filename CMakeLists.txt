@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.11)
+
 project(cpp-chat-client VERSION 0.1.0)
 
-set (CMAKE_CXX_STANDARD 20)
-set (CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_C_STANDARD 17)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
@@ -30,11 +31,26 @@ endif()
 
 add_subdirectory(src)
 add_subdirectory(lib/googletest)
-add_subdirectory(lib/json)
 
 option(PACKAGE_TESTS "Build the tests" ON)
 if(PACKAGE_TESTS)
     enable_testing()
     include(GoogleTest)
     add_subdirectory(test)
+endif()
+
+include(FetchContent)
+
+FetchContent_Declare(json
+GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+GIT_PROGRESS TRUE
+GIT_SHALLOW TRUE
+GIT_TAG v3.10.5)
+
+FetchContent_MakeAvailable(json)
+FetchContent_GetProperties(json)
+
+if(NOT json_POPULATED)
+  FetchContent_Populate(json)
+  add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()

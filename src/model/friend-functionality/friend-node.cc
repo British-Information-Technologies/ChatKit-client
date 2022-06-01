@@ -2,14 +2,20 @@
 
 #include <string>
 
-using namespace chat_client_model_friend_functionality;
+using namespace model_friend_functionality;
 using namespace std;
 
-FriendNode::FriendNode(const string& name, const string& uuid) {
-  this->name = name;
+FriendNode::FriendNode(const string &uuid, const string &name, const string &ip, const string &port) {
   this->uuid = uuid;
+  this->name = name;
+  this->ip = ip;
+  this->port = port;
 }
 
 string FriendNode::GetUuid() { return this->uuid; }
 
 string FriendNode::GetName() { return this->name; }
+
+string FriendNode::GetIp() { return this->ip; }
+
+string FriendNode::GetPort() { return this->port; }

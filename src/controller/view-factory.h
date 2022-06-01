@@ -1,15 +1,15 @@
-#ifndef CPPCHATCLIENT_CONTROLLER_VIEWFACTORY_H_
-#define CPPCHATCLIENT_CONTROLLER_VIEWFACTORY_H_
+#ifndef CONTROLLER_VIEW_FACTORY_H_
+#define CONTROLLER_VIEW_FACTORY_H_
 
 #include <memory>
 
 #include "../view/MainApplication.h"
 
-namespace chat_client_controller {
+namespace controller {
 class ViewFactory {
  public:
   Glib::RefPtr<MainApplication> CreateView(int, char **);
 };
-}  // namespace chat_client_controller
+}  // namespace controller
 
 #endif

@@ -88,7 +88,7 @@
             <property name="vexpand">1</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkStack" id="messageStack">
+              <object class="GtkStack" id="message_stack">
                 <property name="visible">1</property>
                 <property name="vexpand">1</property>
                 <property name="can-focus">0</property>
@@ -102,13 +102,13 @@
                 <property name="visible">1</property>
                 <property name="can-focus">0</property>
                 <child>
-                  <object class="GtkEntry" id="messageBox">
+                  <object class="GtkEntry" id="message_box">
                     <property name="visible">1</property>
                     <property name="hexpand">1</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="sendButton">
+                  <object class="GtkButton" id="send_button">
                     <property name="visible">1</property>
                     <property name="label" translatable="yes">Send</property>
                     <property name="receives-default">1</property>

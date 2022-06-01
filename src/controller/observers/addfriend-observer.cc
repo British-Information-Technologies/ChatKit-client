@@ -3,8 +3,9 @@
 #include <iostream>
 #include <string>
 
-using namespace chat_client_controller;
-using namespace chat_client_model;
+using namespace controller_observers;
+using namespace model_friend_functionality;
+using namespace model;
 using namespace std;
 
 AddFriendObserver::AddFriendObserver(shared_ptr<ClientModel> model,
@@ -17,8 +18,12 @@ AddFriendObserver::AddFriendObserver(shared_ptr<ClientModel> model,
 
 void AddFriendObserver::Execute() {
   string uuid = view->GetInputUuidToAdd();
+  string name = view->GetInputNameToAdd();
 
-  if (model->AddFriend(uuid)) {
+  string ip = "localhost";
+  string port = "1234";
+
+  if (model->AddFriend(uuid, name, ip, port)) {
     shared_ptr<FriendNode> friend_node = model->GetFriend(uuid);
     view->AddFriendToFriendList(friend_node);
     return;
