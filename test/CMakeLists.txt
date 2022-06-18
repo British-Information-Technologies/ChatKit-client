@@ -119,13 +119,13 @@ pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 find_package(OpenSSL REQUIRED)
 find_package(Libevent CONFIG REQUIRED PATHS /home/mitchell/Documents/packages/libevent/build)
 
-add_executable(${BINARY}_test ${SOURCES})
-target_link_directories(${BINARY}_test PRIVATE ${GTKMM_LIBRARY_DIRS})
-target_include_directories(${BINARY}_test PRIVATE ${GTKMM_INCLUDE_DIRS})
+add_executable(${BINARY} ${SOURCES})
+target_link_directories(${BINARY} PRIVATE ${GTKMM_LIBRARY_DIRS})
+target_include_directories(${BINARY} PRIVATE ${GTKMM_INCLUDE_DIRS})
 
-add_test(NAME ${BINARY}_test COMMAND ${BINARY}_test)
+add_test(NAME ${BINARY} COMMAND ${BINARY})
 
-target_link_libraries(${BINARY}_test PUBLIC ${CMAKE_PROJECT_NAME}_lib ${GTKMM_LIBRARIES} gtest OpenSSL::SSL nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads)
+target_link_libraries(${BINARY} PUBLIC ${CMAKE_PROJECT_NAME}_lib ${GTKMM_LIBRARIES} gtest OpenSSL::SSL nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads)
 
 # Keeps CACHE clean
 mark_as_advanced(
