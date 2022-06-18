@@ -11,6 +11,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "../../../model/networking/temporary-server.h"
+
 #include "../../../../src/controller/networking/callbacks/read-callback.h"
 #include "../../../../src/controller/networking/callbacks/callback-collection.h"
 #include "../../../../src/model/networking/connection.h"
@@ -33,35 +35,45 @@ class ReadCallbackTest : public ::testing::Test {
 
   std::unique_ptr<struct event_base, decltype(&::event_base_free)> base_ptr;
 
+  TemporaryServer *listen_server;
+
  protected:
   void SetUp() override {
     model = std::make_shared<ClientModel>();
 
     view = MainApplication::create();
 
+    std::string ip_address = "localhost";
+    std::string port = "3547";
+
+    listen_server = new TemporaryServer(ip_address, port);
+
+    int result = listen_server->SetUp();
+
+    if (result  != 1) {
+      fprintf(stderr, "server: setup failed\n");
+      exit(1);
+    }
+
+    std::shared_ptr<model_networking::Connection> connection = std::make_shared<ServerConnection>(ip_address, port);
+
+    int sockfd = connection->CreateConnection();
+    if (sockfd == -1) {
+      fprintf(stderr, "client: connection to server failed\n");
+      exit(1);
+    }
+
+    struct CallbackCollection items {
+        model, view, connection
+    };
+
     event_base *base = base_ptr.get();
 
     base = event_base_new();
     if (!base) {
-        FAIL();
-        return;
+      fprintf(stderr, "client: message listener setup failed\n");
+      exit(1);
     }
-
-    std::string ip_address = "localhost";
-    std::string port = "3547";
-    std::shared_ptr<model_networking::Connection> connection = std::make_shared<ServerConnection>(ip_address, port);
-
-
-    int sockfd = connection->CreateConnection();
-    if (sockfd == -1) {
-        FAIL(); 
-        return;
-    }
-
-    // get users connection object and put in items
-    struct CallbackCollection items {
-        model, view, connection
-    };
 
     struct bufferevent *bev;
     evutil_make_socket_nonblocking(sockfd);
@@ -77,5 +89,9 @@ class ReadCallbackTest : public ::testing::Test {
     event_base *base = base_ptr.get();
 
     event_base_loopexit(base, NULL);
+
+    listen_server->TearDown();
+
+    free(listen_server);
   }
 };
