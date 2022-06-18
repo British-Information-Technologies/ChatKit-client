@@ -56,6 +56,8 @@ set(SOURCES
 
     ../src/model/client-model.cc
 
+    ../src/controller/networking/callbacks/read-callback.cc
+
     model/friend-functionality/friend-node_test.cc
     model/friend-functionality/friend-hashmap_test.cc
     model/friend-functionality/friend-utility_test.cc
@@ -105,6 +107,8 @@ set(SOURCES
     model/networking/server/server-connection_test.cc
 
     model/client-model_test.cc
+
+    controller/networking/callbacks/read-callback_test.cc
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
