@@ -29,9 +29,7 @@ void NetworkReceiver::Listen(
   event_base *base = base_ptr.get();
 
   base = event_base_new();
-  if (!base) {
-    return;
-  }
+  if (!base) return;
 
   for (auto connection : connections) {
     int sockfd = connection.first;
