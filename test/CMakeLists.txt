@@ -107,13 +107,23 @@ set(SOURCES
     model/client-model_test.cc
 )
 
-add_executable(${BINARY} ${SOURCES})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
-add_test(NAME ${BINARY} COMMAND ${BINARY})
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 
-target_link_libraries(${BINARY} PUBLIC ${CMAKE_PROJECT_NAME}_lib gtest nlohmann_json::nlohmann_json)
+find_package(OpenSSL REQUIRED)
+find_package(Libevent CONFIG REQUIRED PATHS /home/mitchell/Documents/packages/libevent/build)
 
-# Keeps CACHE clearer
+add_executable(${BINARY}_test ${SOURCES})
+target_link_directories(${BINARY}_test PRIVATE ${GTKMM_LIBRARY_DIRS})
+target_include_directories(${BINARY}_test PRIVATE ${GTKMM_INCLUDE_DIRS})
+
+add_test(NAME ${BINARY}_test COMMAND ${BINARY}_test)
+
+target_link_libraries(${BINARY}_test PUBLIC ${CMAKE_PROJECT_NAME}_lib ${GTKMM_LIBRARIES} gtest OpenSSL::SSL nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads)
+
+# Keeps CACHE clean
 mark_as_advanced(
     BUILD_GMOCK BUILD_GTEST BUILD_SHARED_LIBS
     gmock_build_tests gtest_build_samples gtest_build_tests
