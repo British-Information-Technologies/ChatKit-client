@@ -3,56 +3,56 @@ set(BINARY ${CMAKE_PROJECT_NAME}_test)
 set(SOURCES
     main.cc
    
-    ../src/controller/networking/network-receiver.cc
+    ${PROJECT_SOURCE_DIR}/src/controller/networking/network-receiver.cc
 
-    ../src/model/friend-functionality/friend-node.cc
-    ../src/model/friend-functionality/friend-hashmap.cc
-    ../src/model/friend-functionality/friend-utility.cc
+    ${PROJECT_SOURCE_DIR}/src/model/friend-functionality/friend-node.cc
+    ${PROJECT_SOURCE_DIR}/src/model/friend-functionality/friend-hashmap.cc
+    ${PROJECT_SOURCE_DIR}/src/model/friend-functionality/friend-utility.cc
 
-    ../src/model/server-functionality/server-node.cc
-    ../src/model/server-functionality/server-hashmap.cc
-    ../src/model/server-functionality/server-utility.cc
+    ${PROJECT_SOURCE_DIR}/src/model/server-functionality/server-node.cc
+    ${PROJECT_SOURCE_DIR}/src/model/server-functionality/server-hashmap.cc
+    ${PROJECT_SOURCE_DIR}/src/model/server-functionality/server-utility.cc
 
-    ../src/model/message-functionality/client-stream-out/update-command.cc
-    ../src/model/message-functionality/client-stream-out/send-message-command.cc
-    ../src/model/message-functionality/client-stream-out/send-global-message-command.cc
-    ../src/model/message-functionality/client-stream-out/disconnect-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-out/update-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-out/send-message-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-out/send-global-message-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-out/disconnect-command.cc
 
-    ../src/model/message-functionality/client-stream-in/connect-command.cc
-    ../src/model/message-functionality/client-stream-in/user-message-command.cc
-    ../src/model/message-functionality/client-stream-in/global-message-command.cc
-    ../src/model/message-functionality/client-stream-in/update-command.cc
-    ../src/model/message-functionality/client-stream-in/disconnected-command.cc
-    ../src/model/message-functionality/client-stream-in/error-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-in/connect-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-in/user-message-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-in/global-message-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-in/update-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-in/disconnected-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-in/error-command.cc
 
-    ../src/model/message-functionality/network-stream-in/request-command.cc
-    ../src/model/message-functionality/network-stream-in/got-info-command.cc
-    ../src/model/message-functionality/network-stream-in/connecting-command.cc
-    ../src/model/message-functionality/network-stream-in/key-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/network-stream-in/request-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/network-stream-in/got-info-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/network-stream-in/connecting-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/network-stream-in/key-command.cc
 
-    ../src/model/message-functionality/network-stream-out/connect-command.cc
-    ../src/model/message-functionality/network-stream-out/info-command.cc
-    ../src/model/message-functionality/network-stream-out/encrypt-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/network-stream-out/connect-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/network-stream-out/info-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/network-stream-out/encrypt-command.cc
 
-    ../src/model/message-functionality/general/invalid-command.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/general/invalid-command.cc
 
-    ../src/model/message-functionality/client-stream-in-factory.cc
-    ../src/model/message-functionality/client-stream-out-factory.cc
-    ../src/model/message-functionality/network-stream-in-factory.cc
-    ../src/model/message-functionality/network-stream-out-factory.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-in-factory.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/client-stream-out-factory.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/network-stream-in-factory.cc
+    ${PROJECT_SOURCE_DIR}/src/model/message-functionality/network-stream-out-factory.cc
 
-    ../src/model/networking/utility/elliptic-curve-diffiehellman.cc
-    ../src/model/networking/utility/sha-3-256.cc
-    ../src/model/networking/utility/aes-gcm.cc
-    ../src/model/networking/utility/socket-handler.cc
-    ../src/model/networking/utility/secure-socket-handler.cc
-    ../src/model/networking/utility/insecure-socket-handler.cc
-    ../src/model/networking/utility/buffer-writer.cc
-    ../src/model/networking/utility/buffer-reader.cc
+    ${PROJECT_SOURCE_DIR}/src/model/networking/utility/elliptic-curve-diffiehellman.cc
+    ${PROJECT_SOURCE_DIR}/src/model/networking/utility/sha-3-256.cc
+    ${PROJECT_SOURCE_DIR}/src/model/networking/utility/aes-gcm.cc
+    ${PROJECT_SOURCE_DIR}/src/model/networking/utility/socket-handler.cc
+    ${PROJECT_SOURCE_DIR}/src/model/networking/utility/secure-socket-handler.cc
+    ${PROJECT_SOURCE_DIR}/src/model/networking/utility/insecure-socket-handler.cc
+    ${PROJECT_SOURCE_DIR}/src/model/networking/utility/buffer-writer.cc
+    ${PROJECT_SOURCE_DIR}/src/model/networking/utility/buffer-reader.cc
     
-    ../src/model/networking/server/server-connection.cc
+    ${PROJECT_SOURCE_DIR}/src/model/networking/server/server-connection.cc
 
-    ../src/model/client-model.cc
+    ${PROJECT_SOURCE_DIR}/src/model/client-model.cc
 
     controller/networking/network-receiver_test.cc
 
