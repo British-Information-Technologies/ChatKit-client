@@ -1,13 +1,9 @@
 set(BINARY ${CMAKE_PROJECT_NAME}_test)
 
-# file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.cc)
-
-# set(SOURCES ${TEST_SOURCES})
-
 set(SOURCES
     main.cc
    
-    # ../src/controller/networking/network-receiver.cc
+    ../src/controller/networking/network-receiver.cc
 
     ../src/model/friend-functionality/friend-node.cc
     ../src/model/friend-functionality/friend-hashmap.cc
@@ -115,7 +111,10 @@ add_executable(${BINARY} ${SOURCES})
 
 add_test(NAME ${BINARY} COMMAND ${BINARY})
 
-target_link_libraries(${BINARY} PUBLIC ${CMAKE_PROJECT_NAME}_lib gtest gmock OpenSSL::SSL nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads)
+
+target_link_directories(${BINARY} PRIVATE ${GTKMM_LIBRARY_DIRS})
+target_include_directories(${BINARY} PRIVATE ${GTKMM_INCLUDE_DIRS})
+target_link_libraries(${BINARY} PRIVATE ${CMAKE_PROJECT_NAME}_lib gtest gmock ${GTKMM_LIBRARIES} OpenSSL::SSL nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads)
 
 # Keeps CACHE clearer
 mark_as_advanced(
