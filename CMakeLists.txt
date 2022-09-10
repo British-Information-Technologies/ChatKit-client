@@ -8,12 +8,10 @@ set(CMAKE_C_STANDARD 17)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 
-include(CPack)
-
-find_package(Git QUIET)
-
 include_directories(src /usr/local/include)
 link_directories(/usr/local/lib)
+
+find_package(Git REQUIRED)
 
 # update git submodules
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
@@ -33,24 +31,9 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 
 find_package(OpenSSL REQUIRED)
-# TODO: fix path as it uses a personal system path, not the same for everyone
-find_package(Libevent CONFIG REQUIRED PATHS /home/mitchell/Documents/packages/libevent/build)
+find_package(Libevent CONFIG REQUIRED)
 
-include(FetchContent)
-
-FetchContent_Declare(json
-GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
-GIT_PROGRESS TRUE
-GIT_SHALLOW TRUE
-GIT_TAG v3.10.5)
-
-FetchContent_MakeAvailable(json)
-FetchContent_GetProperties(json)
-
-if(NOT json_POPULATED)
-  FetchContent_Populate(json)
-  add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
+add_subdirectory(lib/json)
 
 add_subdirectory(src)
 
