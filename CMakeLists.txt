@@ -29,15 +29,12 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     endif()
 endif()
 
-add_subdirectory(src)
-add_subdirectory(lib/googletest)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 
-option(PACKAGE_TESTS "Build the tests" ON)
-if(PACKAGE_TESTS)
-    enable_testing()
-    include(GoogleTest)
-    add_subdirectory(test)
-endif()
+find_package(OpenSSL REQUIRED)
+# TODO: fix path as it uses a personal system path, not the same for everyone
+find_package(Libevent CONFIG REQUIRED PATHS /home/mitchell/Documents/packages/libevent/build)
 
 include(FetchContent)
 
@@ -54,3 +51,8 @@ if(NOT json_POPULATED)
   FetchContent_Populate(json)
   add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
+
+add_subdirectory(src)
+
+add_subdirectory(lib/googletest)
+add_subdirectory(test)
