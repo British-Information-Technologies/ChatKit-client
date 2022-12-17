@@ -5,9 +5,9 @@
 
 #include <memory>
 
-#include "../../../model/client-model.h"
-#include "../../../model/networking/connection.h"
-#include "../../../view/MainApplication.h"
+#include "cpp-chat-client/model/client-model.h"
+#include "cpp-chat-client/model/networking/connection.h"
+#include "cpp-chat-client/view/MainApplication.h"
 
 namespace controller_networking_callbacks {
 

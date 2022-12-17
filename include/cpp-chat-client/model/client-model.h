@@ -4,11 +4,11 @@
 #include <memory>
 #include <string>
 
-#include "friend-functionality/friend-api.h"
-#include "friend-functionality/friend-node.h"
-#include "server-functionality/server-api.h"
-#include "server-functionality/server-node.h"
-#include "networking/network-sender.h"
+#include "src/model/friend-functionality/friend-api.h"
+#include "src/model/friend-functionality/friend-node.h"
+#include "src/model/server-functionality/server-api.h"
+#include "src/model/server-functionality/server-node.h"
+#include "src/model/networking/network-sender.h"
 
 namespace model {
 class ClientModel {

@@ -3,7 +3,7 @@
 
 #include "../../message-functionality/server-stream-in-factory.h"
 #include "../../message-functionality/server-stream-out-factory.h"
-#include "../connection.h"
+#include "cpp-chat-client/model/networking/connection.h"
 #include "../utility/crypto-types.h"
 
 namespace model_networking_server {

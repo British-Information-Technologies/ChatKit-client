@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "../view/MainApplication.h"
+#include "cpp-chat-client/view/MainApplication.h"
 
 namespace controller {
 class ViewFactory {

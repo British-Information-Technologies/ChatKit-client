@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "../../message-functionality/message.h"
+#include "cpp-chat-client/model/message-functionality/message.h"
 #include "buffer-writer.h"
 #include "memory-manager.h"
 

@@ -1,8 +1,8 @@
 #ifndef CONTROLLER_CLIENT_CONTROLLER_H_
 #define CONTROLLER_CLIENT_CONTROLLER_H_
 
-#include "../model/client-model.h"
-#include "../view/MainApplication.h"
+#include "cpp-chat-client/model/client-model.h"
+#include "cpp-chat-client/view/MainApplication.h"
 
 namespace controller {
 class ClientController {

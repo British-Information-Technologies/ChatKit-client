@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "connection.h"
+#include "cpp-chat-client/model/networking/connection.h"
 
 namespace model_networking {
 

@@ -4,8 +4,8 @@
 #include <event2/event.h>
 #include <string.h>
 
-#include "../../../model/message-functionality/message.h"
-#include "../../../model/networking/connection.h"
+#include "cpp-chat-client/model/message-functionality/message.h"
+#include "cpp-chat-client/model/networking/connection.h"
 #include "callback-collection.h"
 
 using namespace model_message_functionality;

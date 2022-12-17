@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "utility/socket-handler.h"
+#include "src/model/networking/utility/socket-handler.h"
 
 namespace model_networking {
 

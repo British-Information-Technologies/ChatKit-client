@@ -35,6 +35,13 @@ find_package(Libevent CONFIG REQUIRED)
 
 add_subdirectory(lib/json)
 
+# Location of project header files
+set(project_build_include_dirs
+    "${PROJECT_SOURCE_DIR}/include"
+    "${PROJECT_SOURCE_DIR}"
+)
+include_directories(${project_build_include_dirs})
+
 add_subdirectory(src)
 
 add_subdirectory(lib/googletest)
