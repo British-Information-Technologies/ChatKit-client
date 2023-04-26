@@ -20,8 +20,6 @@ class ServerConnection : public model_networking::Connection {
       stream_in_factory;
 
  private:
-  void *GetInAddr(struct sockaddr *);
-
   void SetState(model_networking_utility::SocketHandler *);
 
   void SetFactoryState(
@@ -32,8 +30,6 @@ class ServerConnection : public model_networking::Connection {
 
  public:
   ServerConnection(const std::string &ip_address, const std::string &port);
-
-  int CreateConnection();
 
   int SendPublicKey();
 
