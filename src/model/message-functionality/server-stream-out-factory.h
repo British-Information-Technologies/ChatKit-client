@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "message.h"
+#include "cpp-chat-client/model/message-functionality/message.h"
 
 namespace model_message_functionality {
 

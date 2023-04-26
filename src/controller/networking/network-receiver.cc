@@ -10,7 +10,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "../../model/message-functionality/message.h"
+#include "cpp-chat-client/model/message-functionality/message.h"
 #include "callbacks/callback-collection.h"
 #include "callbacks/error-callback.h"
 #include "callbacks/read-callback.h"

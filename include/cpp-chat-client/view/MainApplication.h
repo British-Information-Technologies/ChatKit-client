@@ -3,8 +3,8 @@
 
 #include <gtkmm-4.0/gtkmm.h>
 
-#include "controller/observers/observer.h"
-#include "model/friend-functionality/friend-node.h"
+#include "cpp-chat-client/controller/observers/observer.h"
+#include "src/model/friend-functionality/friend-node.h"
 
 /**
  * Author: @michael-bailey

@@ -6,10 +6,10 @@
 #include <string>
 #include <unordered_map>
 
-#include "../../../include/cpp-chat-client/thread.h"
-#include "../../model/client-model.h"
-#include "../../model/networking/connection.h"
-#include "../../view/MainApplication.h"
+#include "cpp-chat-client/thread.h"
+#include "cpp-chat-client/model/client-model.h"
+#include "cpp-chat-client/model/networking/connection.h"
+#include "cpp-chat-client/view/MainApplication.h"
 
 namespace controller_networking {
 

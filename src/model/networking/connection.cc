@@ -1,4 +1,4 @@
-#include "connection.h"
+#include "cpp-chat-client/model/networking/connection.h"
 
 using namespace model_networking;
 

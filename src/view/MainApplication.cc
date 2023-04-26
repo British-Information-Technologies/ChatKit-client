@@ -1,4 +1,4 @@
-#include "MainApplication.h"
+#include "cpp-chat-client/view/MainApplication.h"
 
 #include <iostream>
 

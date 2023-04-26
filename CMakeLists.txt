@@ -8,12 +8,10 @@ set(CMAKE_C_STANDARD 17)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 
-include(CPack)
-
-find_package(Git QUIET)
-
 include_directories(src /usr/local/include)
 link_directories(/usr/local/lib)
+
+find_package(Git REQUIRED)
 
 # update git submodules
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
@@ -29,28 +27,22 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     endif()
 endif()
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
+
+find_package(OpenSSL REQUIRED)
+find_package(Libevent CONFIG REQUIRED)
+
+add_subdirectory(lib/json)
+
+# Location of project header files
+set(project_build_include_dirs
+    "${PROJECT_SOURCE_DIR}/include"
+    "${PROJECT_SOURCE_DIR}"
+)
+include_directories(${project_build_include_dirs})
+
 add_subdirectory(src)
+
 add_subdirectory(lib/googletest)
-
-option(PACKAGE_TESTS "Build the tests" ON)
-if(PACKAGE_TESTS)
-    enable_testing()
-    include(GoogleTest)
-    add_subdirectory(test)
-endif()
-
-include(FetchContent)
-
-FetchContent_Declare(json
-GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
-GIT_PROGRESS TRUE
-GIT_SHALLOW TRUE
-GIT_TAG v3.10.5)
-
-FetchContent_MakeAvailable(json)
-FetchContent_GetProperties(json)
-
-if(NOT json_POPULATED)
-  FetchContent_Populate(json)
-  add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
+add_subdirectory(test)

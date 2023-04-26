@@ -1,4 +1,4 @@
-#include "model/client-model.h"
+#include "cpp-chat-client/model/client-model.h"
 
 #include <gtest/gtest.h>
 

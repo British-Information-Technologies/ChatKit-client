@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "connection.h"
+#include "cpp-chat-client/model/networking/connection.h"
 
 namespace model_networking {
 class ConnectionFactory {

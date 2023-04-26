@@ -1,4 +1,4 @@
-#include "client-model.h"
+#include "cpp-chat-client/model/client-model.h"
 
 #include "networking/server/server-connection.h"
 #include "friend-functionality/friend-utility.h"
