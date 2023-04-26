@@ -16,6 +16,11 @@ class Connection {
   model_networking_utility::SocketHandler *socket_handler;
 
  private:
+  int sockfd;
+
+ private:
+  void *GetInAddr(struct sockaddr *);
+  
   virtual void SetState(model_networking_utility::SocketHandler *) = 0;
 
  public:
@@ -23,7 +28,7 @@ class Connection {
 
   ~Connection();
 
-  virtual int CreateConnection() = 0;
+  int CreateConnection();
 
   virtual int SendPublicKey() = 0;
 
