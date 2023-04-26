@@ -23,6 +23,11 @@ NetworkSender::GetConnections() {
 void NetworkSender::TryCreateConnection(const int &type,
                                         const std::string &ip_address,
                                         const std::string &port) {
+  if (sodium_init() < 0) {
+    /* panic! library wont initilise */
+    return;
+  }
+
   auto new_connection = connection_factory->GetConnection(type, ip_address, port);
 
   int sockfd = new_connection->CreateConnection();
