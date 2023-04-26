@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "connection.h"
+#include "connection-factory.h"
 
 namespace model_networking {
 
@@ -13,7 +14,10 @@ class NetworkSender {
   std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
       connections;
 
+  std::unique_ptr<ConnectionFactory> connection_factory;
+
  public:
+  NetworkSender();
   ~NetworkSender();
 
   std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
