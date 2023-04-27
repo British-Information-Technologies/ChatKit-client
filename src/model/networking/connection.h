@@ -2,6 +2,7 @@
 #define MODEL_NETWORKING_CONNECTION_H_
 
 #include <string>
+#include <sodium.h>
 
 #include "utility/socket-handler.h"
 
@@ -17,9 +18,17 @@ class Connection {
 
  private:
   int sockfd;
+  unsigned char pk[crypto_box_PUBLICKEYBYTES];
+  unsigned char sk[crypto_box_SECRETKEYBYTES];
+  unsigned char nonce[crypto_box_NONCEBYTES];
+  unsigned char ss[crypto_box_BEFORENMBYTES];
+
+  unsigned char recv_pk[crypto_box_PUBLICKEYBYTES];
 
  private:
   void *GetInAddr(struct sockaddr *);
+
+  int GetRecipientPublicKey();
   
   virtual void SetState(model_networking_utility::SocketHandler *) = 0;
 
@@ -32,8 +41,7 @@ class Connection {
 
   virtual int SendPublicKey() = 0;
 
-  virtual int EstablishSecureConnection(
-      model_message_functionality::Message *message) = 0;
+  int EstablishSecureConnection();
 
   virtual int SendMessage(std::string &) = 0;
 
