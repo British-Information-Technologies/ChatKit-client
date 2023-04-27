@@ -11,15 +11,6 @@ void *Connection::GetInAddr(struct sockaddr *sa) {
   return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
 
-Connection::Connection(const std::string &ip_address, const std::string &port) {
-  this->ip_address = ip_address;
-  this->port = port;
-  this->socket_handler = nullptr;
-  this->sockfd = -1;
-}
-
-Connection::~Connection() { delete socket_handler; }
-
 int Connection::CreateConnection() {
   struct addrinfo hints, *servinfo, *p;
   int rv;
@@ -66,3 +57,12 @@ int Connection::CreateConnection() {
 
   return 0;
 }
+
+Connection::Connection(const std::string &ip_address, const std::string &port) {
+  this->ip_address = ip_address;
+  this->port = port;
+  this->socket_handler = nullptr;
+  this->sockfd = -1;
+}
+
+Connection::~Connection() { delete socket_handler; }
