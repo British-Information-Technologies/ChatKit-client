@@ -11,16 +11,13 @@ namespace model_networking {
 class Connection {
  protected:
   std::string ip_address;
-
   std::string port;
 
   model_networking_utility::SocketHandler *socket_handler;
 
- private:
   int sockfd;
   unsigned char pk[crypto_box_PUBLICKEYBYTES];
   unsigned char sk[crypto_box_SECRETKEYBYTES];
-  unsigned char nonce[crypto_box_NONCEBYTES];
   unsigned char ss[crypto_box_BEFORENMBYTES];
 
   unsigned char recv_pk[crypto_box_PUBLICKEYBYTES];
@@ -28,20 +25,21 @@ class Connection {
  private:
   void *GetInAddr(struct sockaddr *);
 
-  int GetRecipientPublicKey();
+  virtual int GetRecipientPublicKey(unsigned char* nonce) = 0;
   
   virtual void SetState(model_networking_utility::SocketHandler *) = 0;
+
+ protected:
+  int CreateConnection();
 
  public:
   Connection(const std::string &ip_address, const std::string &port);
 
   ~Connection();
 
-  int CreateConnection();
-
   virtual int SendPublicKey() = 0;
 
-  int EstablishSecureConnection();
+  virtual int EstablishSecureConnection() = 0;
 
   virtual int SendMessage(std::string &) = 0;
 
