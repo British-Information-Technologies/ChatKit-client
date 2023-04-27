@@ -1,6 +1,7 @@
 #include <arpa/inet.h>
 #include <bits/stdc++.h>
 #include <netdb.h>
+#include <sodium.h>
 
 #include "connection.h"
 
@@ -11,10 +12,14 @@ void *Connection::GetInAddr(struct sockaddr *sa) {
   return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
 
+int Connection::GetRecipientPublicKey() {
+  return 0;
+}
+
 Connection::Connection(const std::string &ip_address, const std::string &port) {
-  socket_handler = nullptr;
   this->ip_address = ip_address;
   this->port = port;
+  this->socket_handler = nullptr;
   this->sockfd = -1;
 }
 
@@ -64,5 +69,40 @@ int Connection::CreateConnection() {
 
   freeaddrinfo(servinfo);  // all done with this structure
 
+  if (EstablishSecureConnection() != 0) {
+    close(sockfd);
+    return -1;
+  }
+  //SetState(new InsecureSocketHandler(sockfd));
+
   return sockfd;
+}
+
+int Connection::EstablishSecureConnection() {
+  if (sodium_init() < 0) {
+    return -1;
+  }
+
+  // generate keypair
+  if(crypto_box_keypair(pk, sk) != 0) {
+    // keypair generation failed
+    return -1;
+  }
+
+  // generate nonce
+  randombytes_buf(nonce, sizeof nonce);
+
+  // get B's public key -- todo
+  if(GetRecipientPublicKey() != 0) {
+    // failed to retrieve recipient public key
+    return -1;
+  }
+
+  // create shared secret
+  if(crypto_box_beforenm(ss, recv_pk, sk) != 0) {
+    // shared secret creation failed
+    return -1;
+  }
+
+  return 0;
 }
