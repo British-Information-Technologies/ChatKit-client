@@ -4,14 +4,11 @@
 #include "../../message-functionality/server-stream-in-factory.h"
 #include "../../message-functionality/server-stream-out-factory.h"
 #include "../connection.h"
-#include "../utility/crypto-types.h"
 
 namespace model_networking_server {
 class ServerConnection : public model_networking::Connection {
  private:
   int sockfd;
-
-  EVP_PKEY_free_ptr key_pair;
 
   std::shared_ptr<model_message_functionality::ServerStreamOutFactory>
       stream_out_factory;
@@ -28,12 +25,18 @@ class ServerConnection : public model_networking::Connection {
       std::shared_ptr<model_message_functionality::ServerStreamInFactory>
           stream_in_factory);
 
+  int GetRecipientPublicKey(unsigned char* nonce);
+
  public:
   ServerConnection(const std::string &ip_address, const std::string &port);
 
-  int SendPublicKey();
+  int EstablishSecureConnection();
 
-  int EstablishSecureConnection(model_message_functionality::Message *message);
+
+
+
+
+
 
   int SendMessage(std::string &);
 
