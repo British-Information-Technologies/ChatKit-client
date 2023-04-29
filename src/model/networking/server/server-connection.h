@@ -25,7 +25,7 @@ class ServerConnection : public model_networking::Connection {
       std::shared_ptr<model_message_functionality::ServerStreamInFactory>
           stream_in_factory);
 
-  int GetRecipientPublicKey(unsigned char* nonce);
+  int GetRecipientPublicKey(unsigned char* recv_pk);
 
  public:
   ServerConnection(const std::string &ip_address, const std::string &port);
@@ -40,8 +40,7 @@ class ServerConnection : public model_networking::Connection {
 
   int SendMessage(std::string &);
 
-  std::unique_ptr<model_message_functionality::Message> TranslateMessage(
-      std::string &line);
+  std::unique_ptr<model_message_functionality::Message> ReadMessage();
 };
 }  // namespace model_networking_server
 

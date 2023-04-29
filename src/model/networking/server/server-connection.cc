@@ -32,7 +32,12 @@ void ServerConnection::SetFactoryState(
   this->stream_in_factory = stream_in_factory;
 }
 
-int ServerConnection::GetRecipientPublicKey(unsigned char* nonce) {
+int ServerConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
+  // read server PK
+  auto server_pk_msg = ReadMessage();
+
+  // verify PK with CA -- TODO
+
   return 0;
 }
 
@@ -55,18 +60,24 @@ int ServerConnection::EstablishSecureConnection() {
   }
 
   // generate keypair
+  unsigned char pk[crypto_box_PUBLICKEYBYTES];
+  unsigned char sk[crypto_box_SECRETKEYBYTES];
   if(crypto_box_keypair(pk, sk) != 0) {
     // keypair generation failed
     return -1;
   }
 
-  // generate nonce
-  unsigned char nonce[crypto_box_NONCEBYTES];
-  randombytes_buf(nonce, sizeof nonce);
+  // get B's public key
+  unsigned char recv_pk[crypto_box_PUBLICKEYBYTES];
+  if(GetRecipientPublicKey(recv_pk) != 0) {
+    // failed to retrieve recipient public key or CA unable to verify PK
+    return -1;
+  }
 
-  // get B's public key -- todo
-  if(GetRecipientPublicKey(nonce) != 0) {
-    // failed to retrieve recipient public key
+  // send my PK as plaintext to Server
+  std::string str_pk(reinterpret_cast<char const*>(pk), crypto_box_PUBLICKEYBYTES);
+  if(SendMessage(str_pk) != 0) {
+    // failed to send PK
     return -1;
   }
 
@@ -79,31 +90,26 @@ int ServerConnection::EstablishSecureConnection() {
   return 0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 int ServerConnection::SendMessage(std::string &plaintext) {
   std::unique_ptr<Message> message = stream_out_factory->GetMessage(plaintext);
 
-  int sent_bytes = socket_handler->Send(message.get());
-
-  return sent_bytes;
+  return socket_handler->Send(message.get());
 }
 
-std::unique_ptr<Message> ServerConnection::TranslateMessage(std::string &line) {
-  std::string json_string = socket_handler->Recv(line);
-  std::cout << json_string << std::endl;
 
-  std::unique_ptr<Message> message = stream_in_factory->GetMessage(json_string);
+
+
+
+
+
+
+
+
+std::unique_ptr<Message> ServerConnection::ReadMessage() {
+  //std::string json_string = socket_handler->Recv(line);
+  //std::cout << json_string << std::endl;
+
+  std::unique_ptr<Message> message = stream_in_factory->GetMessage("");
 
   return message;
 }
