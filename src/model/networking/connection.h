@@ -16,16 +16,13 @@ class Connection {
   model_networking_utility::SocketHandler *socket_handler;
 
   int sockfd;
-  unsigned char pk[crypto_box_PUBLICKEYBYTES];
-  unsigned char sk[crypto_box_SECRETKEYBYTES];
+  
   unsigned char ss[crypto_box_BEFORENMBYTES];
-
-  unsigned char recv_pk[crypto_box_PUBLICKEYBYTES];
 
  private:
   void *GetInAddr(struct sockaddr *);
 
-  virtual int GetRecipientPublicKey(unsigned char* nonce) = 0;
+  virtual int GetRecipientPublicKey(unsigned char* recv_pk) = 0;
   
   virtual void SetState(model_networking_utility::SocketHandler *) = 0;
 
@@ -43,8 +40,7 @@ class Connection {
 
   virtual int SendMessage(std::string &) = 0;
 
-  virtual std::unique_ptr<model_message_functionality::Message>
-  TranslateMessage(std::string &line) = 0;
+  virtual std::unique_ptr<model_message_functionality::Message> ReadMessage() = 0;
 };
 
 }  // namespace model_networking
