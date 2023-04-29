@@ -6,19 +6,20 @@
 
 #include "../../message-functionality/message.h"
 #include "buffer-writer.h"
-#include "memory-manager.h"
+#include "buffer-reader.h"
 
 namespace model_networking_utility {
 class SocketHandler {
  protected:
   BufferWriter *writer;
+  BufferReader *reader;
 
  public:
   SocketHandler(int);
   ~SocketHandler();
 
   virtual int Send(model_message_functionality::Message *) = 0;
-  virtual std::string Recv(std::string &payload) = 0;
+  virtual std::string Recv() = 0;
 };
 }  // namespace model_networking_utility
 
