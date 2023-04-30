@@ -4,15 +4,7 @@
 #include <string>
 
 namespace model_networking_utility {
-class BufferWriter {
- private:
-  int sockfd;
-
- public:
-  BufferWriter(int);
-
-  int WriteLine(std::string);
-};
+  int WriteBufferLine(int sockfd, std::string message);
 }  // namespace model_networking_utility
 
 #endif
