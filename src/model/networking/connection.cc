@@ -3,8 +3,10 @@
 #include <netdb.h>
 
 #include "connection.h"
+#include "utility/insecure-socket-handler.h"
 
 using namespace model_networking;
+using namespace model_networking_utility;
 
 // get sockaddr, IPv4 or IPv6:
 void *Connection::GetInAddr(struct sockaddr *sa) {
@@ -54,6 +56,8 @@ int Connection::CreateConnection() {
   printf("connection: connecting to %s\n", s);
 
   freeaddrinfo(servinfo);  // all done with this structure
+
+  SetState(new InsecureSocketHandler());
 
   return 0;
 }
