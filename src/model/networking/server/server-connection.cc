@@ -96,20 +96,8 @@ int ServerConnection::SendMessage(std::string &plaintext) {
   return socket_handler->Send(sockfd, message.get());
 }
 
-
-
-
-
-
-
-
-
-
 std::unique_ptr<Message> ServerConnection::ReadMessage() {
-  //std::string json_string = socket_handler->Recv(line);
-  //std::cout << json_string << std::endl;
+  std::string json_string = socket_handler->Recv(sockfd);
 
-  std::unique_ptr<Message> message = stream_in_factory->GetMessage("");
-
-  return message;
+  return stream_in_factory->GetMessage(json_string);
 }
