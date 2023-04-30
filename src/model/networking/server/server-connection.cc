@@ -67,21 +67,21 @@ int ServerConnection::EstablishSecureConnection() {
     return -1;
   }
 
-  // get B's public key
+  // get servers public key
   unsigned char recv_pk[crypto_box_PUBLICKEYBYTES];
   if(GetRecipientPublicKey(recv_pk) != 0) {
-    // failed to retrieve recipient public key or CA unable to verify PK
+    // failed to retrieve server public key or CA unable to verify PK
     return -1;
   }
 
-  // send my PK as plaintext to Server
+  // send our PK as plaintext to server
   std::string str_pk(reinterpret_cast<char const*>(pk), crypto_box_PUBLICKEYBYTES);
   if(SendMessage(str_pk) != 0) {
     // failed to send PK
     return -1;
   }
 
-  // create shared secret
+  // create shared secret with servers PK and our SK
   if(crypto_box_beforenm(ss, recv_pk, sk) != 0) {
     // shared secret creation failed
     return -1;
@@ -93,7 +93,7 @@ int ServerConnection::EstablishSecureConnection() {
 int ServerConnection::SendMessage(std::string &plaintext) {
   std::unique_ptr<Message> message = stream_out_factory->GetMessage(plaintext);
 
-  return socket_handler->Send(message.get());
+  return socket_handler->Send(sockfd, message.get());
 }
 
 

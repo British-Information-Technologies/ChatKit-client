@@ -8,8 +8,6 @@
 namespace model_networking_server {
 class ServerConnection : public model_networking::Connection {
  private:
-  int sockfd;
-
   std::shared_ptr<model_message_functionality::ServerStreamOutFactory>
       stream_out_factory;
 
