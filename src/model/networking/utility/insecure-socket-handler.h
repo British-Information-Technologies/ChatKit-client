@@ -6,10 +6,8 @@
 namespace model_networking_utility {
 class InsecureSocketHandler : public SocketHandler {
  public:
-  InsecureSocketHandler(int);
-
-  int Send(model_message_functionality::Message *);
-  std::string Recv();
+  int Send(int sockfd, model_message_functionality::Message *message);
+  std::string Recv(int sockfd);
 };
 }  // namespace model_networking_utility
 
