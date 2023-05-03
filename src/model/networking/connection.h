@@ -2,7 +2,6 @@
 #define MODEL_NETWORKING_CONNECTION_H_
 
 #include <string>
-#include <sodium.h>
 
 #include "utility/socket-handler.h"
 
@@ -17,8 +16,6 @@ class Connection {
 
   int sockfd;
   
-  unsigned char ss[crypto_box_BEFORENMBYTES];
-
  private:
   void *GetInAddr(struct sockaddr *);
 

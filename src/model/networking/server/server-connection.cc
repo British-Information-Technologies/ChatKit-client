@@ -82,10 +82,13 @@ int ServerConnection::EstablishSecureConnection() {
   }
 
   // create shared secret with servers PK and our SK
+  unsigned char ss[crypto_box_BEFORENMBYTES];
   if(crypto_box_beforenm(ss, recv_pk, sk) != 0) {
     // shared secret creation failed
     return -1;
   }
+
+  SetState(new SecureSocketHandler(ss));
 
   return 0;
 }
@@ -97,7 +100,7 @@ int ServerConnection::SendMessage(std::string &plaintext) {
 }
 
 std::unique_ptr<Message> ServerConnection::ReadMessage() {
-  std::string json_string = socket_handler->Recv(sockfd);
+  std::string plaintext = socket_handler->Recv(sockfd);
 
-  return stream_in_factory->GetMessage(json_string);
+  return stream_in_factory->GetMessage(plaintext);
 }
