@@ -30,12 +30,6 @@ class ServerConnection : public model_networking::Connection {
 
   int EstablishSecureConnection();
 
-
-
-
-
-
-
   int SendMessage(std::string &);
 
   std::unique_ptr<model_message_functionality::Message> ReadMessage();

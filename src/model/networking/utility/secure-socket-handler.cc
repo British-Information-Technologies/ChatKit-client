@@ -1,74 +1,114 @@
 #include "secure-socket-handler.h"
-
-#include <openssl/err.h>
-#include <openssl/rand.h>
+#include "buffer-writer.h"
+#include "buffer-reader.h"
+#include "variants.h"
 
 #include <nlohmann/json.hpp>
-
-#include "aes-gcm.h"
-#include "base64.h"
+#include <sodium.h>
 
 using namespace model_networking_utility;
 using namespace model_message_functionality;
 using json = nlohmann::json;
 
-SecureSocketHandler::SecureSocketHandler(int sockfd, DerivedData *key)
-    : SocketHandler(sockfd) {
-  this->key = key;
+SecureSocketHandler::SecureSocketHandler(unsigned char *ss) {
+  this->ss.reset(ss);
 }
 
-SecureSocketHandler::~SecureSocketHandler() { delete key; }
-
-int SecureSocketHandler::Send(Message *message) {
+int SecureSocketHandler::Send(int sockfd, model_message_functionality::Message *message) {
+  // cannot send invalid messages
   std::string type = message->ToJson()["type"];
   if (type.compare(INVALID) == 0) return 0;
 
-  /*Encrypt the message with the key, aad, and iv (faked values) */
-  std::string aad = "address:port";
+  // create nonce
+  unsigned char nonce[crypto_box_NONCEBYTES];
+  randombytes_buf(nonce, sizeof nonce);  
 
-  const int iv_size = 12;
-  byte iv[iv_size + 1];
-
-  int rc = RAND_bytes(iv, iv_size);
-  unsigned long err = ERR_get_error();
-  if (rc != 1) {
-    /* show error */
-    return 0;
+  // encrypt message with shared secret
+  const unsigned char* message_ptr = reinterpret_cast<const unsigned char*>(message->ToString().c_str());
+  unsigned long long message_len = sizeof message_ptr;
+  
+  unsigned long long ciphertext_len = crypto_box_MACBYTES + message_len;
+  unsigned char ciphertext[ciphertext_len];
+  if(crypto_box_easy_afternm(
+    ciphertext,
+    message_ptr,
+    message_len,
+    nonce,
+    ss.get()
+  ) != 0) {
+    // message encryption failed
+    return -1;
   }
-  iv[iv_size] = '\0';
 
-  const int tag_size = 16;
-  byte tag[tag_size + 1];
-  tag[tag_size] = '\0';
+  // create packet
+  std::string packet = json({
+    {"payload", std::string(reinterpret_cast<char const*>(ciphertext), ciphertext_len)},
+    {"nonce", nonce}
+  }).dump();
 
-  /*Format the message into a json string (serialize)*/
-  std::string json_string = message->ToString();
+  // encode packet with base64
+  const unsigned char* packet_ptr = reinterpret_cast<const unsigned char*>(packet.c_str());
+  unsigned long long packet_len = sizeof packet_ptr;
 
-  std::string ciphertext;
-  AesGcmEncrypt(json_string, aad, key, iv, iv_size, ciphertext, tag);
+  char encoded_packet[sodium_base64_ENCODED_LEN(packet_len, base64_VARIANT)];
+  sodium_bin2base64(
+    encoded_packet,
+    sizeof encoded_packet,
+    packet_ptr,
+    packet_len,
+    base64_VARIANT
+  );
 
-  /* BASE 64 encode the ciphertext */
-  ciphertext.assign(EncodeBase64(ciphertext));
-
-  /*Send message*/
-  return writer->WriteLine(ciphertext);
+  // send encoded packet
+  return WriteBufferLine(sockfd, encoded_packet);
 }
 
-std::string SecureSocketHandler::Recv(std::string &payload) {
-  /* BASE 64 decode the ciphertext */
-  payload.assign(DecodeBase64(payload));
+std::string SecureSocketHandler::Recv(int sockfd) {
+  // read encoded packet
+  std::string encoded_packet = ReadBufferLine(sockfd);
 
-  /* faked values */
-  std::string aad = "address:port";
-  const int iv_size = 12;
-  byte iv[] = "bbbbbbbbbbbb\0";
+  // decode packet with base64
+  const char* encoded_packet_ptr = reinterpret_cast<const char*>(encoded_packet.c_str());
 
-  byte tag[16 + 1];
+  size_t packet_len = encoded_packet.length() / 4 * 3; // base64 encodes 3 bytes as 4 characters
+  unsigned char packet_ptr[packet_len];
+  sodium_base642bin(
+    packet_ptr,
+    packet_len,
+    encoded_packet_ptr,
+    sizeof encoded_packet_ptr,
+    NULL,
+    &packet_len,
+    NULL,
+    base64_VARIANT
+  );
+  
+  // check packet format
+  json packet = json::parse(std::string(reinterpret_cast<char const*>(packet_ptr), packet_len));
+  
+  if (!packet.contains("nonce") || !packet.contains("payload")) {
+    // invalid packet
+    return R"({"type": "Invalid"})";
+  }
 
-  // aes decrypt
-  std::string decryptedtext;
-  AesGcmDecrypt(payload, payload.length(), aad, tag, key, iv,
-                strlen((char *)iv), decryptedtext);
+  // extract nonce from packet
+  const unsigned char* nonce = reinterpret_cast<const unsigned char*>(std::string(packet.at("nonce")).c_str());
 
-  return decryptedtext;
+  // extract ciphertext from packet
+  const unsigned char* ciphertext = reinterpret_cast<const unsigned char*>(std::string(packet.at("payload")).c_str());
+  unsigned long long ciphertext_len = sizeof ciphertext;
+
+  // decrypt ciphertext with shared secret
+  unsigned long long plaintext_len = ciphertext_len - crypto_box_MACBYTES;
+  unsigned char plaintext[plaintext_len];
+  if(crypto_box_open_easy_afternm(
+    plaintext,
+    ciphertext,
+    ciphertext_len,
+    nonce,
+    ss.get()
+  ) != 0) {}
+  
+  // cast to string with length specified to avoid losing data from array conversion
+  return std::string(reinterpret_cast<char const*>(plaintext), plaintext_len);
 }
