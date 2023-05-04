@@ -1,6 +1,7 @@
 #include "insecure-socket-handler.h"
 #include "buffer-writer.h"
 #include "buffer-reader.h"
+#include "variants.h"
 
 #include <nlohmann/json.hpp>
 #include <sodium.h>
@@ -9,47 +10,65 @@ using namespace model_networking_utility;
 using namespace model_message_functionality;
 using json = nlohmann::json;
 
-#define base64_VARIANT sodium_base64_VARIANT_ORIGINAL
-
 int InsecureSocketHandler::Send(int sockfd, Message* message) {
+  // cannot send invalid messages
   std::string type = message->ToJson()["type"];
   if (type.compare(INVALID) == 0) return 0;
+  
+  // create packet
+  std::string packet = json({
+    {"payload", message->ToString()},
+  }).dump();
 
-  // encode message with base64
-  const unsigned char* message_ptr = reinterpret_cast<const unsigned char*>(message->ToString().c_str());
+  // encode packet with base64
+  const unsigned char* packet_ptr = reinterpret_cast<const unsigned char*>(packet.c_str());
+  unsigned long long packet_len = sizeof packet_ptr;
 
-  char encoded_plaintext[sodium_base64_ENCODED_LEN(sizeof message_ptr, base64_VARIANT)];
+  char encoded_packet[sodium_base64_ENCODED_LEN(packet_len, base64_VARIANT)];
   sodium_bin2base64(
-    encoded_plaintext,
-    sizeof encoded_plaintext,
-    message_ptr,
-    sizeof message_ptr,
+    encoded_packet,
+    sizeof encoded_packet,
+    packet_ptr,
+    packet_len,
     base64_VARIANT
   );
 
-  // send plaintext message
+  // send encoded packet
   return WriteBufferLine(sockfd, encoded_plaintext);
 }
 
 std::string InsecureSocketHandler::Recv(int sockfd) {
-  // read base64 encoded message
-  std::string payload = ReadBufferLine(sockfd);
+  // read encoded packet
+  std::string encoded_packet = ReadBufferLine(sockfd);
 
-  // decode message with base64
-  const char* payload_ptr = reinterpret_cast<const char*>(payload.c_str());
+  // decode packet with base64
+  const char* encoded_packet_ptr = reinterpret_cast<const char*>(encoded_packet.c_str());
 
-  size_t plaintext_len = payload.length() / 4 * 3; // base64 encodes 3 bytes as 4 characters
-  unsigned char plaintext[plaintext_len];
+  size_t packet_len = encoded_packet.length() / 4 * 3; // base64 encodes 3 bytes as 4 characters
+  unsigned char packet_ptr[packet_len];
   sodium_base642bin(
-    plaintext,
-    plaintext_len,
-    payload_ptr,
-    sizeof payload_ptr,
+    packet_ptr,
+    packet_len,
+    encoded_packet_ptr,
+    sizeof encoded_packet_ptr,
     NULL,
-    &plaintext_len,
+    &packet_len,
     NULL,
     base64_VARIANT
   );
+  
+  // check packet format
+  json packet = json::parse(std::string(reinterpret_cast<char const*>(packet_ptr), packet_len));
+  
+  if (!packet.contains("payload")) {
+    // invalid packet
+    return R"({"type": "Invalid"})";
+  }
 
-  return reinterpret_cast<char const*>(plaintext);
+  // extract plaintext from packet
+  const unsigned char* plaintext = reinterpret_cast<const unsigned char*>(std::string(packet.at("payload")).c_str());
+  unsigned long long plaintext_len = sizeof plaintext;
+
+  // cast to string with length specified to avoid losing data from array conversion
+  return std::string(reinterpret_cast<char const*>(plaintext), plaintext_len);
 }
