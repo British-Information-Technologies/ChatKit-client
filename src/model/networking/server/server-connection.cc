@@ -33,10 +33,23 @@ void ServerConnection::SetFactoryState(
 }
 
 int ServerConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
-  // read server PK
+  // read potential PK
   auto server_pk_msg = ReadMessage();
+  
+  json server_pk_json = server_pk_msg->ToJson();
+
+  // verify read message is a PK
+  if (!server_pk_json.contains("PublicKey")) {
+    // read message is not a PK message
+    return -1;
+  }
+  
+  // extract PK -- TODO
 
   // verify PK with CA -- TODO
+
+  // put server PK into output buffer for return use
+  *recv_pk = server_pk_json.at("PublicKey");
 
   return 0;
 }
