@@ -5,8 +5,9 @@
 #include <sodium.h>
 
 #include "socket-handler.h"
+#include "../messages/message.h"
 
-namespace model_networking_utility {
+namespace model {
 class SecureSocketHandler : public SocketHandler {
  private:
   //unsigned char *ss;
@@ -15,7 +16,7 @@ class SecureSocketHandler : public SocketHandler {
  public:
   SecureSocketHandler(unsigned char *ss);
 
-  int Send(int sockfd, model_message_functionality::Message *message);
+  int Send(int sockfd, Message *message);
   std::string Recv(int sockfd);
 };
 }  // namespace model_networking_utility

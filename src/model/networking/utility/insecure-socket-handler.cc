@@ -3,21 +3,20 @@
 #include "buffer-reader.h"
 #include "variants.h"
 
+#include "../messages/message.h"
+#include "../messages/stream-in/server/error.h"
+
 #include <nlohmann/json.hpp>
 #include <sodium.h>
 
-using namespace model_networking_utility;
-using namespace model_message_functionality;
+using namespace model;
+
 using json = nlohmann::json;
 
 int InsecureSocketHandler::Send(int sockfd, Message* message) {
-  // cannot send invalid messages
-  std::string type = message->ToJson()["type"];
-  if (type.compare(INVALID) == 0) return 0;
-  
   // create packet
   std::string packet = json({
-    {"payload", message->ToString()},
+    { "payload", message->Serialize() },
   }).dump();
 
   // encode packet with base64
@@ -34,7 +33,7 @@ int InsecureSocketHandler::Send(int sockfd, Message* message) {
   );
 
   // send encoded packet
-  return WriteBufferLine(sockfd, encoded_plaintext);
+  return WriteBufferLine(sockfd, encoded_packet);
 }
 
 std::string InsecureSocketHandler::Recv(int sockfd) {
@@ -61,8 +60,8 @@ std::string InsecureSocketHandler::Recv(int sockfd) {
   json packet = json::parse(std::string(reinterpret_cast<char const*>(packet_ptr), packet_len));
   
   if (!packet.contains("payload")) {
-    // invalid packet
-    return R"({"type": "Invalid"})";
+    // invalid packet - network error
+    return server_stream_in::Error("payload missing").Serialize();
   }
 
   // extract plaintext from packet

@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace model_networking_utility {
+namespace model {
   std::string ReadBufferLine(int sockfd);
 }  // namespace model_networking_utility
 

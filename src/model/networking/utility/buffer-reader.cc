@@ -3,7 +3,7 @@
 #include <sys/socket.h>
 #include <string>
 
-std::string model_networking_utility::ReadBufferLine(int sockfd) {
+std::string model::ReadBufferLine(int sockfd) {
   std::string payload;
   
   const int buffer_size = 1024;

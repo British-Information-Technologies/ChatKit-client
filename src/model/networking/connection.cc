@@ -5,8 +5,7 @@
 #include "connection.h"
 #include "utility/insecure-socket-handler.h"
 
-using namespace model_networking;
-using namespace model_networking_utility;
+using namespace model;
 
 // get sockaddr, IPv4 or IPv6:
 void *Connection::GetInAddr(struct sockaddr *sa) {
