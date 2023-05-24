@@ -1,13 +1,14 @@
+#include <string>
+#include <memory>
+
 #include "connection-factory.h"
 
-#include "server/server-connection.h"
+#include "server-connection.h"
 
-using namespace model_networking;
-using namespace model_networking_server;
+using namespace model;
 
-std::shared_ptr<model_networking::Connection> ConnectionFactory::GetConnection(
-    const int &type, const std::string &ip_address, const std::string &port) {
-      // if(type) return std::make_shared<ClientConnection>(ip_address, port);
-      
-      return std::make_shared<ServerConnection>(ip_address, port);
+std::shared_ptr<Connection> ConnectionFactory::GetConnection(
+  const int &type, const std::string &ip_address, const std::string &port) {
+    // if(type) return std::make_shared<ClientConnection>(ip_address, port); -- fake (todo)
+    return std::make_shared<ServerConnection>(ip_address, port);
 }

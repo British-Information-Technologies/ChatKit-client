@@ -3,14 +3,14 @@
 
 #include <string>
 
-#include "../../message-functionality/message.h"
+#include "../messages/message.h"
 
-namespace model_networking_utility {
-class SocketHandler {
-  public:
-    virtual int Send(int sockfd, model_message_functionality::Message *message) = 0;
-    virtual std::string Recv(int sockfd) = 0;
-};
+namespace model {
+  class SocketHandler {
+    public:
+      virtual int Send(int sockfd, Message *message) = 0;
+      virtual std::string Recv(int sockfd) = 0;
+  };
 }  // namespace model_networking_utility
 
 #endif

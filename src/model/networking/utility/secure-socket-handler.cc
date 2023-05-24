@@ -3,28 +3,27 @@
 #include "buffer-reader.h"
 #include "variants.h"
 
+#include "../messages/message.h"
+#include "../messages/stream-in/server/error.h"
+
 #include <nlohmann/json.hpp>
 #include <sodium.h>
 
-using namespace model_networking_utility;
-using namespace model_message_functionality;
+using namespace model;
+
 using json = nlohmann::json;
 
 SecureSocketHandler::SecureSocketHandler(unsigned char *ss) {
   this->ss.reset(ss);
 }
 
-int SecureSocketHandler::Send(int sockfd, model_message_functionality::Message *message) {
-  // cannot send invalid messages
-  std::string type = message->ToJson()["type"];
-  if (type.compare(INVALID) == 0) return 0;
-
+int SecureSocketHandler::Send(int sockfd, Message *message) {
   // create nonce
   unsigned char nonce[crypto_box_NONCEBYTES];
   randombytes_buf(nonce, sizeof nonce);  
 
   // encrypt message with shared secret
-  const unsigned char* message_ptr = reinterpret_cast<const unsigned char*>(message->ToString().c_str());
+  const unsigned char* message_ptr = reinterpret_cast<const unsigned char*>(message->Serialize().c_str());
   unsigned long long message_len = sizeof message_ptr;
   
   unsigned long long ciphertext_len = crypto_box_MACBYTES + message_len;
@@ -87,8 +86,8 @@ std::string SecureSocketHandler::Recv(int sockfd) {
   json packet = json::parse(std::string(reinterpret_cast<char const*>(packet_ptr), packet_len));
   
   if (!packet.contains("nonce") || !packet.contains("payload")) {
-    // invalid packet
-    return R"({"type": "Invalid"})";
+    // invalid packet - network error
+    return server_stream_in::Error("payload or nonce missing").Serialize();
   }
 
   // extract nonce from packet
@@ -107,7 +106,9 @@ std::string SecureSocketHandler::Recv(int sockfd) {
     ciphertext_len,
     nonce,
     ss.get()
-  ) != 0) {}
+  ) != 0) {
+    return server_stream_in::Error("decryption failed").Serialize();
+  }
   
   // cast to string with length specified to avoid losing data from array conversion
   return std::string(reinterpret_cast<char const*>(plaintext), plaintext_len);
