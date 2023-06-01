@@ -2,18 +2,51 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include <event2/event.h>
+#include <msd/channel.hpp>
 
 #include "network-manager.h"
 #include "connection-factory.h"
+#include "messages/message.h"
 
 using namespace model;
 
 NetworkManager::NetworkManager() {
-  this->connection_factory = std::make_unique<ConnectionFactory>();
+  connection_base = event_base_new();
+  connection_factory = std::make_unique<ConnectionFactory>();
 }
 
 NetworkManager::~NetworkManager() {
+  event_base_loopexit(connection_base, NULL);
+  event_base_free(connection_base);
+
+  this->WaitForInternalThreadToExit();
+  
   connections.clear();
+}
+
+void NetworkManager::Launch() {
+  // todo - might be good as a coroutine
+
+  // start event base loop for connection callbacks
+  this->StartInternalThread();
+
+  // read incoming channel data from connection callbacks
+  for (const auto data: in_chann) { // blocks forever waiting for channel items
+    printf("<data read from in_chann: %s>", data);
+
+    std::unique_ptr<Message> message;
+    if (DeserializeStreamIn(message, data) != 0) {
+      // failed to deserialize data
+      continue;
+    }
+
+    // todo
+  }
+}
+
+void NetworkManager::InternalThreadEntry() {
+  event_base_loop(connection_base, EVLOOP_NO_EXIT_ON_EMPTY);
 }
 
 std::unordered_map<int, std::shared_ptr<Connection>>
@@ -29,27 +62,28 @@ void NetworkManager::TryCreateConnection(const int &type,
     return;
   }
 
-  auto new_connection = connection_factory->GetConnection(type, ip_address, port);
+  auto new_connection = connection_factory->GetConnection(type, connection_base, &in_chann, ip_address, port);
+  
+  // create new connection event for the event base
+  int sockfd = new_connection->EstablishSecureConnection();
 
-  if (new_connection->EstablishSecureConnection() != 0) {
-    // panic! failed to create a secure connection
+  if (sockfd == -1) {
+    // panic! failed to create secure connection
     return;
   }
 
-  // todo -- magic number for faking purposes
-  std::pair<int, std::shared_ptr<Connection>> connection_pair(1, new_connection);
+  // store connection in map
+  std::pair<int, std::shared_ptr<Connection>> connection_pair(sockfd, new_connection);
 
   connections.insert(connection_pair);
 }
 
-int NetworkManager::SendMessage(const int &id, std::string &message) {
-  if (connections.contains(id)) {
-    std::shared_ptr<Connection> connection = connections.at(id);
-
-    int sent_bytes = connection->SendMessage(message);
-
-    return sent_bytes;
+int NetworkManager::SendMessage(const int &id, Message *message) {
+  if (!connections.contains(id)) {
+    return -1;
   }
 
-  return 0;
+  int sent_bytes = connections.at(id)->SendMessage(message);
+
+  return sent_bytes;
 }

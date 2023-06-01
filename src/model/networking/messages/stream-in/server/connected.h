@@ -8,7 +8,7 @@
 namespace server_stream_in {
     const std::string kConnected = "Connected";
     
-    class Connected: public ServerStreamIn {
+    class Connected: public model::ServerStreamIn {
         public:
             Connected();
 

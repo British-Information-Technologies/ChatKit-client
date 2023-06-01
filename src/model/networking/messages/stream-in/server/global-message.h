@@ -8,7 +8,7 @@
 namespace server_stream_in {
     const std::string kGlobalMessage = "GlobalMessage";
     
-    class GlobalMessage: public ServerStreamIn {
+    class GlobalMessage: public model::ServerStreamIn {
         private:
             std::string from;
             std::string content;

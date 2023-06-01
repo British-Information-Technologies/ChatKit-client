@@ -5,9 +5,11 @@
 
 #include "../stream-out.h"
 
-class NetworkStreamOut: public StreamOut {
-    public:
-        virtual std::string Serialize() = 0;
-};
+namespace model {
+    class NetworkStreamOut: public StreamOut {
+        public:
+            virtual std::string Serialize() = 0;
+    };
+}
 
 #endif

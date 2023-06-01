@@ -2,9 +2,12 @@
 #define MODEL_NETWORKING_CONNECTION_H_
 
 #include <string>
+#include <event2/event.h>
+#include <event2/bufferevent.h>
+#include <msd/channel.hpp>
 
 #include "messages/message.h"
-#include "utility/socket-handler.h"
+#include "utility/data-handler.h"
 
 namespace model {
   class Connection {
@@ -12,32 +15,41 @@ namespace model {
       std::string ip_address;
       std::string port;
 
-      SocketHandler *socket_handler;
+      DataHandler *data_handler;
 
-      int sockfd;
+      struct bufferevent *bev;
+
+      msd::channel<std::string> *out_chann;
  
     private:
       void *GetInAddr(struct sockaddr *);
       
-      virtual int GetRecipientPublicKey(unsigned char* recv_pk) = 0;
+      void SetState(DataHandler *);
       
-      virtual void SetState(SocketHandler *) = 0;
+      static void ReadMessageCbHandler(struct bufferevent *bev, void *ptr);
+      void ReadMessageCb();
+      
+      static void WriteMessageCbHandler(struct bufferevent *bev, void *ptr);
+      void WriteMessageCb();
+
+      static void EventCbHandler(struct bufferevent *bev, short events, void *ptr);
+      void EventCb(short events);
+      
+      virtual int GetRecipientPublicKey(unsigned char* recv_pk) = 0;
     
     protected:
       int CreateConnection();
     
     public:
-      Connection(const std::string &ip_address, const std::string &port);
+      Connection(const struct event_base *base, const msd::channel<std::string> *network_manager_chann, const std::string &ip_address, const std::string &port);
 
       ~Connection();
-
+      
       virtual int SendPublicKey() = 0;
 
       virtual int EstablishSecureConnection() = 0;
 
-      virtual int SendMessage(std::string &) = 0;
-
-      virtual std::unique_ptr<Message> ReadMessage() = 0;
+      int SendMessage(Message *message);
   };
 }  // namespace model_networking
 

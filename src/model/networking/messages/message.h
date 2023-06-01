@@ -3,18 +3,20 @@
 
 #include <string>
 
-class Message {
-    protected:
-        std::string type;
+namespace model {
+    class Message {
+        protected:
+            std::string type;
 
-    public:
-        virtual std::string Serialize() = 0;
+        public:
+            virtual std::string Serialize() = 0;
 
-        std::string GetType();
-};
+            std::string GetType();
+    };
 
-int Deserialize(Message* msg, std::string data, int is_stream_in);
-    
-int Deserialize(Message* msg, std::string data);
+    int DeserializeStreamOut(Message* msg, std::string data);
+
+    int DeserializeStreamIn(Message* msg, std::string data);
+}
 
 #endif

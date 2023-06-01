@@ -11,7 +11,7 @@ using json = nlohmann::json;
 namespace server_stream_in {
     const std::string kConnectedClients = "ConnectedClients";
     
-    class ConnectedClients: public ServerStreamIn {
+    class ConnectedClients: public model::ServerStreamIn {
         private:
             json clients;
 

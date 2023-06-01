@@ -5,9 +5,11 @@
 
 #include "../message.h"
 
-class StreamIn: public Message {
-    public:
-        virtual std::string Serialize() = 0;
-};
+namespace model {
+    class StreamIn: public Message {
+        public:
+            virtual std::string Serialize() = 0;
+    };
+}
 
 #endif

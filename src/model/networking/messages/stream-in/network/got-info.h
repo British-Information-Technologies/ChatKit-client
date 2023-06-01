@@ -8,7 +8,7 @@
 namespace network_stream_in {
     const std::string kGotInfo = "GotInfo";
     
-    class GotInfo: public NetworkStreamIn {
+    class GotInfo: public model::NetworkStreamIn {
         private:
             std::string server_name;
             std::string server_owner;

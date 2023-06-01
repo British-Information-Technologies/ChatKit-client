@@ -8,7 +8,7 @@
 namespace server_stream_in {
     const std::string kUserMessage = "UserMessage";
     
-    class UserMessage: public ServerStreamIn {
+    class UserMessage: public model::ServerStreamIn {
         private:
             std::string from;
             std::string content;

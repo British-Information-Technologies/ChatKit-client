@@ -8,7 +8,7 @@
 namespace server_stream_out {
     const std::string kSendMessage = "SendMessage";
     
-    class SendMessage: public ServerStreamOut {
+    class SendMessage: public model::ServerStreamOut {
         private:
             std::string to;
             std::string content;

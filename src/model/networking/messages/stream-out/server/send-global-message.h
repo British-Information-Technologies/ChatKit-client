@@ -8,7 +8,7 @@
 namespace server_stream_out {
     const std::string kSendGlobalMessage = "SendGlobalMessage";
     
-    class SendGlobalMessage: public ServerStreamOut {
+    class SendGlobalMessage: public model::ServerStreamOut {
         private:
             std::string content;
 

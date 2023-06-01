@@ -1,35 +1,23 @@
 #include "buffer-reader.h"
 
-#include <sys/socket.h>
 #include <string>
+#include <event2/bufferevent.h>
+#include <event2/buffer.h>
 
-std::string model::ReadBufferLine(int sockfd) {
+std::string model::ReadBufferLine(bufferevent *bev) {
   std::string payload;
   
   const int buffer_size = 1024;
   char buffer[buffer_size];
   
-  int read_bytes = 0, read_index = 0;
-
-  while (1) {
-    read_bytes = recv(sockfd, buffer, buffer_size, 0);
-
-    // create string from buffer data (if no data read ignore)
-    if (read_bytes > 0) {
-      for (; read_index < read_bytes; ++read_index) {
-        char buffer_char = buffer[read_index];
-
-        if (buffer_char == '\n') {
-          return payload;
-        } else {
-          payload += buffer_char;
-        }
-      }
-
-      read_index = 0;
-      read_bytes = 0;
-    } else if (read_bytes == -1) {
-      // error - needs clean up code TODO
-    }
+  struct evbuffer *input = bufferevent_get_input(bev);
+  
+  // every message recieved is the length of the buffer (padded)
+  int bytes_read;
+  while ((bytes_read = evbuffer_remove(input, buffer, buffer_size)) > 0) {
+    // create string from buffer
+    payload.append(buffer, bytes_read);
   }
+
+  return payload;
 }

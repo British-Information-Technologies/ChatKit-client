@@ -8,7 +8,7 @@
 namespace network_stream_out {
     const std::string kConnect = "Connect";
     
-    class Connect: public NetworkStreamOut {
+    class Connect: public model::NetworkStreamOut {
         private:
             std::string uuid;
             std::string username;

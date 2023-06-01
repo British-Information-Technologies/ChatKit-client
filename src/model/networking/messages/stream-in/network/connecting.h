@@ -8,7 +8,7 @@
 namespace network_stream_in {
     const std::string kConnecting = "Connecting";
 
-    class Connecting: public NetworkStreamIn {
+    class Connecting: public model::NetworkStreamIn {
         public:
             Connecting();
 

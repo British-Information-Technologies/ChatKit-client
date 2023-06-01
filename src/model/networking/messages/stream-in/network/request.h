@@ -8,7 +8,7 @@
 namespace network_stream_in {
     const std::string kRequest = "Request";
     
-    class Request: public NetworkStreamIn {
+    class Request: public model::NetworkStreamIn {
         public:
             Request();
 
