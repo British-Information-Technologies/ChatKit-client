@@ -1,22 +1,19 @@
-#include "insecure-socket-handler.h"
-#include "buffer-writer.h"
-#include "buffer-reader.h"
-#include "variants.h"
-
-#include "../messages/message.h"
-#include "../messages/stream-in/server/error.h"
-
+#include <string>
 #include <nlohmann/json.hpp>
 #include <sodium.h>
+#include <event2/bufferevent.h>
+
+#include "insecure-data-handler.h"
+#include "variants.h"
 
 using namespace model;
 
 using json = nlohmann::json;
 
-int InsecureSocketHandler::Send(int sockfd, Message* message) {
+std::string InsecureDataHandler::FormatSend(std::string &data) {
   // create packet
   std::string packet = json({
-    { "payload", message->Serialize() },
+    { "payload", data },
   }).dump();
 
   // encode packet with base64
@@ -32,24 +29,20 @@ int InsecureSocketHandler::Send(int sockfd, Message* message) {
     base64_VARIANT
   );
 
-  // send encoded packet
-  return WriteBufferLine(sockfd, encoded_packet);
+  return encoded_packet;
 }
 
-std::string InsecureSocketHandler::Recv(int sockfd) {
-  // read encoded packet
-  std::string encoded_packet = ReadBufferLine(sockfd);
-
+std::string InsecureDataHandler::FormatRead(std::string &data) {
   // decode packet with base64
-  const char* encoded_packet_ptr = reinterpret_cast<const char*>(encoded_packet.c_str());
+  const char* data_ptr = reinterpret_cast<const char*>(data.c_str());
 
-  size_t packet_len = encoded_packet.length() / 4 * 3; // base64 encodes 3 bytes as 4 characters
+  size_t packet_len = data.length() / 4 * 3; // base64 encodes 3 bytes as 4 characters
   unsigned char packet_ptr[packet_len];
   sodium_base642bin(
     packet_ptr,
     packet_len,
-    encoded_packet_ptr,
-    sizeof encoded_packet_ptr,
+    data_ptr,
+    sizeof data_ptr,
     NULL,
     &packet_len,
     NULL,
@@ -60,8 +53,8 @@ std::string InsecureSocketHandler::Recv(int sockfd) {
   json packet = json::parse(std::string(reinterpret_cast<char const*>(packet_ptr), packet_len));
   
   if (!packet.contains("payload")) {
-    // invalid packet - network error
-    return server_stream_in::Error("payload missing").Serialize();
+    // invalid packet, payload missing - KISS
+    return "";
   }
 
   // extract plaintext from packet

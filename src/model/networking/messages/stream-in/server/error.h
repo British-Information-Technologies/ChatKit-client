@@ -8,7 +8,7 @@
 namespace server_stream_in {
     const std::string kError = "Error";
 
-    class Error: public ServerStreamIn {
+    class Error: public model::ServerStreamIn {
         private:
             std::string msg;
 

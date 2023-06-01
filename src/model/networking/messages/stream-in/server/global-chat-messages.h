@@ -11,7 +11,7 @@ using json = nlohmann::json;
 namespace server_stream_in {
     const std::string kGlobalChatMessages = "GlobalChatMessages";
     
-    class GlobalChatMessages: public ServerStreamIn {
+    class GlobalChatMessages: public model::ServerStreamIn {
         private:
             json messages;
 

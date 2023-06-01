@@ -27,7 +27,7 @@
 #include "stream-out/network/info.h"
 #include "stream-out/network/connect.h"
 
-using namespace model_networking_messages;
+using namespace model;
 
 using json = nlohmann::json;
 
@@ -35,7 +35,7 @@ std::string Message::GetType() {
     return this->type;
 }
 
-int Deserialize(Message* msg, std::string data, int is_stream_in) {
+int model::DeserializeStreamOut(Message* msg, std::string data) {
     json data_json = json::parse(data);
 
     if (!data_json.contains("type")) {
@@ -44,20 +44,31 @@ int Deserialize(Message* msg, std::string data, int is_stream_in) {
     }
 
     // convert to message object
-    if (is_stream_in  && (isServerStreamInMessage(msg, data_json) || isNetworkStreamInMessage(msg, data_json))) {
-        // stream in message successfully created from data
-        return 0;
-    } else if (isServerStreamOutMessage(msg, data_json) || isNetworkStreamOutMessage(msg, data_json)) {
+    if (isServerStreamOutMessage(msg, data_json) || isNetworkStreamOutMessage(msg, data_json)) {
         // stream out message successfully created from data
         return 0;
     }
 
-    // data is invalid, non-existent message type
+    // data is invalid, non-existent stream out message type
     return -1;
 }
 
-int Deserialize(Message* msg, std::string data) {
-    return Deserialize(msg, data, 1);
+int model::DeserializeStreamIn(Message* msg, std::string data) {
+    json data_json = json::parse(data);
+
+    if (!data_json.contains("type")) {
+        // data is invalid, must have a type
+        return -1;
+    }
+
+    // convert to message object
+    if (isServerStreamInMessage(msg, data_json) || isNetworkStreamInMessage(msg, data_json)) {
+        // stream in message successfully created from data
+        return 0;
+    }
+
+    // data is invalid, non-existent stream in message type
+    return -1;
 }
 
 

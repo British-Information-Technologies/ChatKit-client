@@ -1,28 +1,23 @@
-#include "server-connection.h"
-
 #include <arpa/inet.h>
 #include <bits/stdc++.h>
 #include <netdb.h>
-
+#include <string>
 #include <algorithm>
-#include <nlohmann/json.hpp>
 #include <sodium.h>
+#include <event2/event.h>
+#include <event2/bufferevent.h>
+#include <nlohmann/json.hpp>
+#include <msd/channel.hpp>
+
+#include "server-connection.h"
 
 #include "messages/message.h"
-#include "messages/stream-in/server/error.h"
 
-#include "utility/socket-handler.h"
-#include "utility/insecure-socket-handler.h"
-#include "utility/secure-socket-handler.h"
+#include "utility/secure-data-handler.h"
 
 using namespace model;
 
 using json = nlohmann::json;
-
-void ServerConnection::SetState(SocketHandler *next_handler) {
-  delete socket_handler;
-  socket_handler = next_handler;
-}
 
 int ServerConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
   // read potential PK
@@ -46,13 +41,16 @@ int ServerConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
   return 0;
 }
 
-ServerConnection::ServerConnection(const std::string &ip_address,
+ServerConnection::ServerConnection(struct event_base *base,
+                                   msd::channel<std::string> *network_manager_chann,
+                                   const std::string &ip_address,
                                    const std::string &port)
-    : Connection(ip_address, port) {
+    : Connection(base, network_manager_chann, ip_address, port) {
 }
 
 int ServerConnection::EstablishSecureConnection() {
   if (sodium_init() < 0) {
+    // sodium initialisation failed
     return -1;
   }
   
@@ -91,29 +89,7 @@ int ServerConnection::EstablishSecureConnection() {
     return -1;
   }
 
-  SetState(new SecureSocketHandler(ss));
+  SetState(new SecureDataHandler(ss));
 
-  return 0;
-}
-
-int ServerConnection::SendMessage(std::string &plaintext) {
-  std::unique_ptr<Message> message;
-  if (Deserialize(message, plaintext, 0) != 0) {
-    // failed to deserialize plaintext
-    return -1;
-  }
-
-  return socket_handler->Send(sockfd, message);
-}
-
-std::unique_ptr<Message> ServerConnection::ReadMessage() {
-  std::string plaintext = socket_handler->Recv(sockfd);
-
-  std::unique_ptr<Message> message;
-  if (Deserialize(message, plaintext, 1) != 0) {
-    // failed to deserialize plaintext
-    return std::make_unique(server_stream_in::Error("invalid payload message type"));
-  }
-  
-  return message;
+  return bufferevent_getfd(bev);
 }

@@ -1,11 +1,15 @@
 #include "buffer-writer.h"
 
-#include <sys/socket.h>
 #include <string>
+#include <event2/bufferevent.h>
 
-int model::WriteBufferLine(int sockfd, std::string message) {
+int model::WriteBufferLine(bufferevent *bev, std::string message) {
   message.push_back('\n');
 
-  int sent_bytes = send(sockfd, message.c_str(), message.length(), 0);
-  return sent_bytes;
+  size_t len = message.length();
+  if (bufferevent_write(bev, message.c_str(), len) != 0) {
+    return -1;
+  }
+
+  return len;
 }

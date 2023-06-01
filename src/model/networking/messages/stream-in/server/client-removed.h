@@ -8,7 +8,7 @@
 namespace server_stream_in {
     const std::string kClientRemoved = "ClientRemoved";
     
-    class ClientRemoved: public ServerStreamIn {
+    class ClientRemoved: public model::ServerStreamIn {
         private:
             std::string id;
         

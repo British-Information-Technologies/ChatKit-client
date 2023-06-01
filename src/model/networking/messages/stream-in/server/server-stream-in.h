@@ -5,9 +5,11 @@
 
 #include "../stream-in.h"
 
-class ServerStreamIn: public StreamIn {
-    public:
-        virtual std::string Serialize() = 0;
-};
+namespace model {
+    class ServerStreamIn: public StreamIn {
+        public:
+            virtual std::string Serialize() = 0;
+    };
+}
 
 #endif

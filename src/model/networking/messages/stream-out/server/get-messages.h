@@ -8,7 +8,7 @@
 namespace server_stream_out {
     const std::string kGetMessages = "GetMessages";
 
-    class GetMessages: public ServerStreamOut {
+    class GetMessages: public model::ServerStreamOut {
         public:
             GetMessages();
 

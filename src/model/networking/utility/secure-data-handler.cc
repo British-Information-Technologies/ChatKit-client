@@ -1,42 +1,40 @@
-#include "secure-socket-handler.h"
-#include "buffer-writer.h"
-#include "buffer-reader.h"
-#include "variants.h"
-
-#include "../messages/message.h"
-#include "../messages/stream-in/server/error.h"
-
+#include <memory>
+#include <string>
 #include <nlohmann/json.hpp>
 #include <sodium.h>
+#include <event2/bufferevent.h>
+
+#include "secure-data-handler.h"
+#include "variants.h"
 
 using namespace model;
 
 using json = nlohmann::json;
 
-SecureSocketHandler::SecureSocketHandler(unsigned char *ss) {
+SecureDataHandler::SecureDataHandler(unsigned char *ss) {
   this->ss.reset(ss);
 }
 
-int SecureSocketHandler::Send(int sockfd, Message *message) {
+std::string SecureDataHandler::FormatSend(std::string &data) {
   // create nonce
   unsigned char nonce[crypto_box_NONCEBYTES];
   randombytes_buf(nonce, sizeof nonce);  
 
   // encrypt message with shared secret
-  const unsigned char* message_ptr = reinterpret_cast<const unsigned char*>(message->Serialize().c_str());
-  unsigned long long message_len = sizeof message_ptr;
+  const unsigned char* data_ptr = reinterpret_cast<const unsigned char*>(data.c_str());
+  unsigned long long data_len = sizeof data_ptr;
   
-  unsigned long long ciphertext_len = crypto_box_MACBYTES + message_len;
+  unsigned long long ciphertext_len = crypto_box_MACBYTES + data_len;
   unsigned char ciphertext[ciphertext_len];
   if(crypto_box_easy_afternm(
     ciphertext,
-    message_ptr,
-    message_len,
+    data_ptr,
+    data_len,
     nonce,
     ss.get()
   ) != 0) {
-    // message encryption failed
-    return -1;
+    // message encryption failed - KISS
+    return "";
   }
 
   // create packet
@@ -58,24 +56,20 @@ int SecureSocketHandler::Send(int sockfd, Message *message) {
     base64_VARIANT
   );
 
-  // send encoded packet
-  return WriteBufferLine(sockfd, encoded_packet);
+  return encoded_packet;
 }
 
-std::string SecureSocketHandler::Recv(int sockfd) {
-  // read encoded packet
-  std::string encoded_packet = ReadBufferLine(sockfd);
-
+std::string SecureDataHandler::FormatRead(std::string &data) {
   // decode packet with base64
-  const char* encoded_packet_ptr = reinterpret_cast<const char*>(encoded_packet.c_str());
+  const char* data_ptr = reinterpret_cast<const char*>(data.c_str());
 
-  size_t packet_len = encoded_packet.length() / 4 * 3; // base64 encodes 3 bytes as 4 characters
+  size_t packet_len = data.length() / 4 * 3; // base64 encodes 3 bytes as 4 characters
   unsigned char packet_ptr[packet_len];
   sodium_base642bin(
     packet_ptr,
     packet_len,
-    encoded_packet_ptr,
-    sizeof encoded_packet_ptr,
+    data_ptr,
+    sizeof data_ptr,
     NULL,
     &packet_len,
     NULL,
@@ -87,7 +81,7 @@ std::string SecureSocketHandler::Recv(int sockfd) {
   
   if (!packet.contains("nonce") || !packet.contains("payload")) {
     // invalid packet - network error
-    return server_stream_in::Error("payload or nonce missing").Serialize();
+    return "";
   }
 
   // extract nonce from packet
@@ -107,7 +101,7 @@ std::string SecureSocketHandler::Recv(int sockfd) {
     nonce,
     ss.get()
   ) != 0) {
-    return server_stream_in::Error("decryption failed").Serialize();
+    return "";
   }
   
   // cast to string with length specified to avoid losing data from array conversion

@@ -8,7 +8,7 @@
 namespace server_stream_out {
     const std::string kDisconnect = "Disconnect";
     
-    class Disconnect: public ServerStreamOut {
+    class Disconnect: public model::ServerStreamOut {
         public:
             Disconnect();
 

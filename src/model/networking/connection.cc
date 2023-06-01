@@ -1,9 +1,21 @@
+#include <string>
 #include <arpa/inet.h>
 #include <bits/stdc++.h>
 #include <netdb.h>
+#include <event2/event.h>
+#include <event2/bufferevent.h>
+#include <event2/util.h>
+#include <msd/channel.hpp>
 
 #include "connection.h"
-#include "utility/insecure-socket-handler.h"
+
+#include "utility/data-handler.h"
+#include "utility/insecure-data-handler.h"
+
+#include "messages/message.h"
+
+#include "utility/buffer-reader.h"
+#include "utility/buffer-writer.h"
 
 using namespace model;
 
@@ -12,7 +24,17 @@ void *Connection::GetInAddr(struct sockaddr *sa) {
   return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
 
+void Connection::SetState(DataHandler *next_handler) {
+  delete data_handler;
+  data_handler = next_handler;
+}
+
 int Connection::CreateConnection() {
+  if (!bev) {
+    // panic! failed to create connection - bev is null
+    return -1;
+  }
+  
   struct addrinfo hints, *servinfo, *p;
   int rv;
   char s[INET6_ADDRSTRLEN];
@@ -29,6 +51,7 @@ int Connection::CreateConnection() {
   }
 
   // loop through all the results and connect to the first we can
+  int sockfd;
   for (p = servinfo; p != NULL; p = p->ai_next) {
     if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
       perror("connection: socket creation failed");
@@ -55,17 +78,96 @@ int Connection::CreateConnection() {
   printf("connection: connecting to %s\n", s);
 
   freeaddrinfo(servinfo);  // all done with this structure
+   
+  bufferevent_setfd(bev, sockfd);
 
-  SetState(new InsecureSocketHandler());
+  bufferevent_setcb(bev, ReadMessageCbHandler, WriteMessageCbHandler, EventCbHandler, this);
+  
+  if (bufferevent_enable(bev, EV_READ) != 0) {
+    // panic! failed to enable event socket read
+    return -1;
+  }
+
+  if (bufferevent_enable(bev, EV_WRITE) != 0) {
+    // panic! failed to enable event socket write
+    return -1;
+  }
+
+  SetState(new InsecureDataHandler());
 
   return 0;
 }
 
-Connection::Connection(const std::string &ip_address, const std::string &port) {
+Connection::Connection(const struct event_base *base, const msd::channel<std::string> *network_manager_chann, const std::string &ip_address, const std::string &port) {
   this->ip_address = ip_address;
   this->port = port;
-  this->socket_handler = nullptr;
-  this->sockfd = -1;
+  this->data_handler = nullptr;
+  this->bev = bufferevent_socket_new(base, -1, BEV_OPT_CLOSE_ON_FREE);
+  this->out_chann = network_manager_chann;
 }
 
-Connection::~Connection() { delete socket_handler; }
+Connection::~Connection() {
+  bufferevent_free(bev);
+  delete data_handler;
+}
+
+int Connection::SendMessage(Message *message) {
+  std::string encoded_packet = data_handler->FormatSend(message->Serialize());
+  
+  if (!encoded_packet.length()) {
+    // encoded packet is empty, failed to format message
+    return -1;
+  }
+
+  // send encoded packet
+  return WriteBufferLine(bev, encoded_packet);
+}
+
+void Connection::ReadMessageCbHandler(struct bufferevent *bev, void *ptr) {
+  Connection *conn = static_cast<Connection *>(ptr);
+  conn->ReadMessageCb();
+}
+
+void Connection::ReadMessageCb() {
+  // read encoded packet
+  std::string encoded_packet = ReadBufferLine(bev);
+
+  // decode or decode and decrypt data
+  std::string plaintext = data_handler->FormatRead(encoded_packet);
+
+  if (!plaintext.length()) {
+    // plaintext is empty, failed to format encoded packet
+    return;
+  }
+
+  // send plaintext to network manager
+  plaintext >> (*out_chann);
+}
+
+
+static void Connection::WriteMessageCbHandler(struct bufferevent *bev, void *ptr) {
+  Connection *conn = static_cast<Connection *>(ptr);
+  conn->WriteMessageCb();
+}
+
+void Connection::WriteMessageCb() {
+  printf("<data successfully written to socket>");
+}
+
+void Connection::EventCbHandler(struct bufferevent *bev, short events, void *ptr) {
+  Connection *conn = static_cast<Connection *>(ptr);
+  conn->EventCb(events);
+}
+
+void Connection::EventCb(short events) {
+  if (events && (BEV_EVENT_ERROR || BEV_EVENT_READING || BEV_EVENT_WRITING)) {
+    printf("Buffer Event Error! Terminating Connection!\n");
+
+    int sockfd = bufferevent_getfd(bev);
+
+    // todo - change to proper message
+    "sockfd here" >> (*out_chann);
+
+    bufferevent_free(bev);
+  }
+}

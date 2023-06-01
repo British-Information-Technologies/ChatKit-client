@@ -8,7 +8,7 @@
 namespace server_stream_out {
     const std::string kGetClients = "GetClients";
     
-    class GetClients: public ServerStreamOut {
+    class GetClients: public model::ServerStreamOut {
         public:
             GetClients();
 
