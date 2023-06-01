@@ -14,7 +14,7 @@
 #include "include/cpp-chat-client/thread.h"
 
 namespace model {
-  class NetworkManager: public Thread {
+  class NetworkManager: public include::Thread {
     private:
       struct event_base *connection_base;
       
