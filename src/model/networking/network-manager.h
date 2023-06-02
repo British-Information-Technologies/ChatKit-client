@@ -16,7 +16,7 @@
 namespace model {
   class NetworkManager: public include::Thread {
     private:
-      struct event_base *connection_base;
+      std::shared_ptr<struct event_base> connection_base;
       
       msd::channel<std::string> in_chann;
 

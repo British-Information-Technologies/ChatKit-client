@@ -9,7 +9,6 @@
 namespace model {
 class SecureDataHandler : public DataHandler {
  private:
-  //unsigned char *ss;
   std::unique_ptr<unsigned char> ss;
 
  public:

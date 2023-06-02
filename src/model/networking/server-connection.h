@@ -1,6 +1,7 @@
 #ifndef MODEL_NETWORKING_SERVER_CONNECTION_H_
 #define MODEL_NETWORKING_SERVER_CONNECTION_H_
 
+#include <memory>
 #include <string>
 #include <event2/event.h>
 #include "msd/channel.hpp"
@@ -13,7 +14,7 @@ namespace model {
             int GetRecipientPublicKey(unsigned char* recv_pk);
 
         public:
-            ServerConnection(struct event_base *base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port);
+            ServerConnection(std::shared_ptr<struct event_base> base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port);
             
             int EstablishSecureConnection();
     };

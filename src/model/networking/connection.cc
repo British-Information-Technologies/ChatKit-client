@@ -1,3 +1,4 @@
+#include <memory>
 #include <string>
 #include <arpa/inet.h>
 #include <bits/stdc++.h>
@@ -25,7 +26,7 @@ void *Connection::GetInAddr(struct sockaddr *sa) {
 }
 
 int Connection::CreateConnection() {
-  if (!bev) {
+  if (!bev.get()) {
     // panic! failed to create connection - bev is null
     return -1;
   }
@@ -74,16 +75,16 @@ int Connection::CreateConnection() {
 
   freeaddrinfo(servinfo);  // all done with this structure
    
-  bufferevent_setfd(bev, sockfd);
+  bufferevent_setfd(bev.get(), sockfd);
 
-  bufferevent_setcb(bev, ReadMessageCbHandler, WriteMessageCbHandler, EventCbHandler, this);
+  bufferevent_setcb(bev.get(), ReadMessageCbHandler, WriteMessageCbHandler, EventCbHandler, this);
   
-  if (bufferevent_enable(bev, EV_READ) != 0) {
+  if (bufferevent_enable(bev.get(), EV_READ) != 0) {
     // panic! failed to enable event socket read
     return -1;
   }
 
-  if (bufferevent_enable(bev, EV_WRITE) != 0) {
+  if (bufferevent_enable(bev.get(), EV_WRITE) != 0) {
     // panic! failed to enable event socket write
     return -1;
   }
@@ -94,21 +95,22 @@ int Connection::CreateConnection() {
 }
 
 void Connection::SetState(DataHandler *next_handler) {
-  delete data_handler;
-  data_handler = next_handler;
+  data_handler.reset(next_handler);
 }
 
-Connection::Connection(event_base *base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port):
+Connection::Connection(std::shared_ptr<event_base> base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port):
 out_chann(network_manager_chann) {
   this->ip_address = ip_address;
   this->port = port;
   this->data_handler = nullptr;
-  this->bev = bufferevent_socket_new(base, -1, BEV_OPT_CLOSE_ON_FREE);
+  this->bev.reset(bufferevent_socket_new(base.get(), -1, BEV_OPT_CLOSE_ON_FREE),
+    [](bufferevent *b){
+      bufferevent_free(b);
+    }
+  );
 }
 
 Connection::~Connection() {
-  bufferevent_free(bev);
-  delete data_handler;
 }
 
 int Connection::SendMessage(Message *message) {
@@ -164,11 +166,11 @@ void Connection::EventCb(short events) {
   if (events && (BEV_EVENT_ERROR || BEV_EVENT_READING || BEV_EVENT_WRITING)) {
     printf("Buffer Event Error! Terminating Connection!\n");
 
-    int sockfd = bufferevent_getfd(bev);
+    int sockfd = bufferevent_getfd(bev.get());
 
     // todo - change to proper message
     std::string("sockfd here") >> out_chann;
 
-    bufferevent_free(bev);
+    bufferevent_free(bev.get());
   }
 }
