@@ -31,56 +31,8 @@ using namespace model;
 
 using json = nlohmann::json;
 
-std::string Message::GetType() {
-    return this->type;
-}
-
-int model::DeserializeStreamOut(Message* msg, std::string data) {
-    json data_json = json::parse(data);
-
-    if (!data_json.contains("type")) {
-        // data is invalid, must have a type
-        return -1;
-    }
-
-    // convert to message object
-    if (isServerStreamOutMessage(msg, data_json) || isNetworkStreamOutMessage(msg, data_json)) {
-        // stream out message successfully created from data
-        return 0;
-    }
-
-    // data is invalid, non-existent stream out message type
-    return -1;
-}
-
-int model::DeserializeStreamIn(Message* msg, std::string data) {
-    json data_json = json::parse(data);
-
-    if (!data_json.contains("type")) {
-        // data is invalid, must have a type
-        return -1;
-    }
-
-    // convert to message object
-    if (isServerStreamInMessage(msg, data_json) || isNetworkStreamInMessage(msg, data_json)) {
-        // stream in message successfully created from data
-        return 0;
-    }
-
-    // data is invalid, non-existent stream in message type
-    return -1;
-}
-
-
 // internal linkage - functions are not referenced outside message.cc
 namespace {
-    int isServerStreamInMessage(Message* msg, const json data_json);
-    int isNetworkStreamInMessage(Message* msg, const json data_json);
-
-    int isServerStreamOutMessage(Message* msg, const json data_json);
-    int isNetworkStreamOutMessage(Message* msg, const json data_json);
-
-
     int isServerStreamInMessage(Message* msg, const json data_json) {
         std::string type = data_json.at("type");
         
@@ -143,7 +95,7 @@ namespace {
             msg = new network_stream_in::Connecting();
 
         } else if (type == network_stream_in::kError) {
-            msg = network_stream_in::Error();
+            msg = new network_stream_in::Error();
 
         } else {
             return 0;
@@ -199,3 +151,43 @@ namespace {
         return 1;
     }
 } // namespace
+
+std::string Message::GetType() {
+    return this->type;
+}
+
+int model::DeserializeStreamOut(Message* msg, std::string data) {
+    json data_json = json::parse(data);
+
+    if (!data_json.contains("type")) {
+        // data is invalid, must have a type
+        return -1;
+    }
+
+    // convert to message object
+    if (isServerStreamOutMessage(msg, data_json) || isNetworkStreamOutMessage(msg, data_json)) {
+        // stream out message successfully created from data
+        return 0;
+    }
+
+    // data is invalid, non-existent stream out message type
+    return -1;
+}
+
+int model::DeserializeStreamIn(Message* msg, std::string data) {
+    json data_json = json::parse(data);
+
+    if (!data_json.contains("type")) {
+        // data is invalid, must have a type
+        return -1;
+    }
+
+    // convert to message object
+    if (isServerStreamInMessage(msg, data_json) || isNetworkStreamInMessage(msg, data_json)) {
+        // stream in message successfully created from data
+        return 0;
+    }
+
+    // data is invalid, non-existent stream in message type
+    return -1;
+}

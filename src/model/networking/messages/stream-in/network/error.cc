@@ -1,5 +1,5 @@
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 #include "error.h"
 
@@ -10,5 +10,5 @@ Error::Error() {
 }
 
 std::string Error::Serialize() {
-    return std::format(R"({ "type": {} })", type);
+    return fmt::format("{{ \"type\": {} }}", type);
 }

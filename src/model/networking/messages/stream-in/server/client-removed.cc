@@ -1,7 +1,7 @@
 #include "client-removed.h"
 
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 using namespace server_stream_in;
 
@@ -11,5 +11,5 @@ ClientRemoved::ClientRemoved(std::string id) {
 }
 
 std::string ClientRemoved::Serialize() {
-    return std::format(R"({ "type": {}, "id": {} })", type, id);
+    return fmt::format("{{ \"type\": {}, \"id\": {} }}", type, id);
 }

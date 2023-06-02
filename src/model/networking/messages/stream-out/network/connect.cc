@@ -1,5 +1,5 @@
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 #include "connect.h"
 
@@ -13,5 +13,5 @@ Connect::Connect(std::string uuid, std::string username, std::string address) {
 }
 
 std::string Connect::Serialize() {
-    return std::format(R"({ "type": {}, "uuid": {}, "username": {}, "address": {} })", type, uuid, username, address);
+    return fmt::format("{{ \"type\": {}, \"uuid\": {}, \"username\": {}, \"address\": {} }}", type, uuid, username, address);
 }

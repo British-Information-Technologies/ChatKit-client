@@ -1,5 +1,5 @@
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 #include "get-messages.h"
 
@@ -10,5 +10,5 @@ GetMessages::GetMessages() {
 }
 
 std::string GetMessages::Serialize() {
-    return std::format(R"({ "type": {} })", type);
+    return fmt::format("{{ \"type\": {} }}", type);
 }

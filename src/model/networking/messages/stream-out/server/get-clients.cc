@@ -1,5 +1,5 @@
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 #include "get-clients.h"
 
@@ -10,5 +10,5 @@ GetClients::GetClients() {
 }
 
 std::string GetClients::Serialize() {
-    return std::format(R"({ "type": {} })", type);
+    return fmt::format("{{ \"type\": {} }}", type);
 }

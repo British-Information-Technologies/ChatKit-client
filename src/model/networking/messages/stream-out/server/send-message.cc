@@ -1,5 +1,5 @@
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 #include "send-message.h"
 
@@ -12,5 +12,5 @@ SendMessage::SendMessage(std::string to, std::string content) {
 }
 
 std::string SendMessage::Serialize() {
-    return std::format(R"({ "type": {}, "to": {}, "content": {} })", type, to, content);
+    return fmt::format("{{ \"type\": {}, \"to\": {}, \"content\": {} }}", type, to, content);
 }

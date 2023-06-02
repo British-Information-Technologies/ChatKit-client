@@ -1,7 +1,7 @@
 #include "error.h"
 
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 using namespace server_stream_in;
 
@@ -11,5 +11,5 @@ Error::Error(std::string msg) {
 }
 
 std::string Error::Serialize() {
-    return std::format(R"({ "type": {}, "msg": {} })", type, msg);
+    return fmt::format("{{ \"type\": {}, \"msg\": {} }}", type, msg);
 }

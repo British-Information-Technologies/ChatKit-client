@@ -1,5 +1,5 @@
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 #include "connecting.h"
 
@@ -10,5 +10,5 @@ Connecting::Connecting() {
 }
 
 std::string Connecting::Serialize() {
-    return std::format(R"({ "type": {} })", type);
+    return fmt::format("{{ \"type\": {} }}", type);
 }

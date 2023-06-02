@@ -1,7 +1,7 @@
 #include "global-message.h"
 
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 using namespace server_stream_in;
 
@@ -12,5 +12,5 @@ GlobalMessage::GlobalMessage(std::string from, std::string content) {
 }
 
 std::string GlobalMessage::Serialize() {
-    return std::format(R"({ "type": {}, "from": {}, "content": {} })", type, from, content);
+    return fmt::format("{{ \"type\": {}, \"from\": {}, \"content\": {} }}", type, from, content);
 }

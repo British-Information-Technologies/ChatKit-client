@@ -1,5 +1,5 @@
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 #include "send-global-message.h"
 
@@ -11,5 +11,5 @@ SendGlobalMessage::SendGlobalMessage(std::string content) {
 }
 
 std::string SendGlobalMessage::Serialize() {
-    return std::format(R"({ "type": {}, "content": {} })", type, content);
+    return fmt::format("{{ \"type\": {}, \"content\": {} }}", type, content);
 }

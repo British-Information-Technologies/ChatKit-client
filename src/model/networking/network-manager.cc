@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <memory>
 #include <event2/event.h>
-#include <msd/channel.hpp>
+#include "msd/channel.hpp"
 
 #include "network-manager.h"
 #include "connection-factory.h"
@@ -36,7 +36,7 @@ void NetworkManager::Launch() {
     printf("<data read from in_chann: %s>", data);
 
     std::unique_ptr<Message> message;
-    if (DeserializeStreamIn(message, data) != 0) {
+    if (DeserializeStreamIn(message.get(), data) != 0) {
       // failed to deserialize data
       continue;
     }
@@ -62,7 +62,7 @@ void NetworkManager::TryCreateConnection(const int &type,
     return;
   }
 
-  auto new_connection = connection_factory->GetConnection(type, connection_base, &in_chann, ip_address, port);
+  auto new_connection = connection_factory->GetConnection(type, connection_base, std::ref(in_chann), ip_address, port);
   
   // create new connection event for the event base
   int sockfd = new_connection->EstablishSecureConnection();
@@ -78,12 +78,17 @@ void NetworkManager::TryCreateConnection(const int &type,
   connections.insert(connection_pair);
 }
 
-int NetworkManager::SendMessage(const int &id, Message *message) {
+int NetworkManager::SendMessage(const int &id, std::string &data) {
   if (!connections.contains(id)) {
     return -1;
   }
 
-  int sent_bytes = connections.at(id)->SendMessage(message);
+  std::unique_ptr<Message> message;
+  if (DeserializeStreamOut(message.get(), data) != 0) {
+    return -1;
+  }
+
+  int sent_bytes = connections.at(id)->SendMessage(message.get());
 
   return sent_bytes;
 }

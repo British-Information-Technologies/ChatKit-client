@@ -5,7 +5,7 @@
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 #include <event2/util.h>
-#include <msd/channel.hpp>
+#include "msd/channel.hpp"
 
 #include "connection.h"
 
@@ -22,11 +22,6 @@ using namespace model;
 // get sockaddr, IPv4 or IPv6:
 void *Connection::GetInAddr(struct sockaddr *sa) {
   return &(((struct sockaddr_in6 *)sa)->sin6_addr);
-}
-
-void Connection::SetState(DataHandler *next_handler) {
-  delete data_handler;
-  data_handler = next_handler;
 }
 
 int Connection::CreateConnection() {
@@ -98,12 +93,17 @@ int Connection::CreateConnection() {
   return 0;
 }
 
-Connection::Connection(const struct event_base *base, const msd::channel<std::string> *network_manager_chann, const std::string &ip_address, const std::string &port) {
+void Connection::SetState(DataHandler *next_handler) {
+  delete data_handler;
+  data_handler = next_handler;
+}
+
+Connection::Connection(event_base *base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port):
+out_chann(network_manager_chann) {
   this->ip_address = ip_address;
   this->port = port;
   this->data_handler = nullptr;
   this->bev = bufferevent_socket_new(base, -1, BEV_OPT_CLOSE_ON_FREE);
-  this->out_chann = network_manager_chann;
 }
 
 Connection::~Connection() {
@@ -112,7 +112,8 @@ Connection::~Connection() {
 }
 
 int Connection::SendMessage(Message *message) {
-  std::string encoded_packet = data_handler->FormatSend(message->Serialize());
+  std::string msg_str = message->Serialize();
+  std::string encoded_packet = data_handler->FormatSend(msg_str);
   
   if (!encoded_packet.length()) {
     // encoded packet is empty, failed to format message
@@ -141,11 +142,11 @@ void Connection::ReadMessageCb() {
   }
 
   // send plaintext to network manager
-  plaintext >> (*out_chann);
+  plaintext >> out_chann;
 }
 
 
-static void Connection::WriteMessageCbHandler(struct bufferevent *bev, void *ptr) {
+void Connection::WriteMessageCbHandler(struct bufferevent *bev, void *ptr) {
   Connection *conn = static_cast<Connection *>(ptr);
   conn->WriteMessageCb();
 }
@@ -166,7 +167,7 @@ void Connection::EventCb(short events) {
     int sockfd = bufferevent_getfd(bev);
 
     // todo - change to proper message
-    "sockfd here" >> (*out_chann);
+    std::string("sockfd here") >> out_chann;
 
     bufferevent_free(bev);
   }
