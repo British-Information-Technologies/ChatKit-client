@@ -5,13 +5,13 @@
 #include <unordered_map>
 #include <memory>
 #include <event2/event.h>
-#include <msd/channel.hpp>
+#include "msd/channel.hpp"
 
 #include "connection.h"
 #include "connection-factory.h"
 #include "messages/message.h"
 
-#include "include/cpp-chat-client/thread.h"
+#include "../../../include/cpp-chat-client/thread.h"
 
 namespace model {
   class NetworkManager: public include::Thread {
@@ -31,14 +31,13 @@ namespace model {
 
       void Launch();
 
-      std::unordered_map<int, std::shared_ptr<Connection>>
-      GetConnections();
+      std::unordered_map<int, std::shared_ptr<Connection>> GetConnections();
 
       void TryCreateConnection(const int &type,
                            const std::string &ip_address,
                            const std::string &port);
 
-      int SendMessage(const int &id, Message *message);
+      int SendMessage(const int &id, std::string &data);
 
     protected:
       void InternalThreadEntry();

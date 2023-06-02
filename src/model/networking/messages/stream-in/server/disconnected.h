@@ -14,6 +14,6 @@ namespace server_stream_in {
 
             std::string Serialize();
     };
-};
+}
 
 #endif

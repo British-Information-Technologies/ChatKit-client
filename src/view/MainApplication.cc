@@ -1,13 +1,12 @@
-#include "MainApplication.h"
-
 #include <iostream>
 
-#include "controller/observers/deletefriend-observer.h"
+#include "MainApplication.h"
+
+#include "controller/observers/observer.h"
 
 using namespace Gtk;
 using namespace controller_observers;
 using namespace model_friend_functionality;
-using namespace std;
 
 MainApplication::MainApplication()
     : Application("org.gtkmm.examples.application") {
@@ -71,12 +70,12 @@ void MainApplication::AddMessageToChatBox(const std::string &message,
 }
 
 void MainApplication::AddFriendToFriendList(
-    shared_ptr<FriendNode> friend_node) {
-  cout << "added" << endl;
+    std::shared_ptr<FriendNode> friend_node) {
+  std::cout << "added" << std::endl;
 }
 
 void MainApplication::RemoveFriendFromFriendList(const std::string &uuid) {
-  cout << "removed" << endl;
+  std::cout << "removed" << std::endl;
 }
 
 void MainApplication::AddObserverAddFriendButton(Observer &observer) {

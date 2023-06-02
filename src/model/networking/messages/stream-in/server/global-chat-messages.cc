@@ -2,7 +2,7 @@
 
 #include <nlohmann/json.hpp>
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 using json = nlohmann::json;
 
@@ -14,5 +14,5 @@ GlobalChatMessages::GlobalChatMessages(json messages) {
 }
 
 std::string GlobalChatMessages::Serialize() {
-    return std::format(R"({ "type": {}, "messages": {} })", type, messages.dump());
+    return fmt::format("{{ \"type\": {}, \"messages\": {} }}", type, messages.dump());
 }

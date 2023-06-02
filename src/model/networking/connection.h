@@ -4,7 +4,7 @@
 #include <string>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
-#include <msd/channel.hpp>
+#include "msd/channel.hpp"
 
 #include "messages/message.h"
 #include "utility/data-handler.h"
@@ -19,13 +19,11 @@ namespace model {
 
       struct bufferevent *bev;
 
-      msd::channel<std::string> *out_chann;
+      msd::channel<std::string> &out_chann;
  
     private:
       void *GetInAddr(struct sockaddr *);
-      
-      void SetState(DataHandler *);
-      
+       
       static void ReadMessageCbHandler(struct bufferevent *bev, void *ptr);
       void ReadMessageCb();
       
@@ -39,13 +37,15 @@ namespace model {
     
     protected:
       int CreateConnection();
+      
+      void SetState(DataHandler *);
     
     public:
-      Connection(const struct event_base *base, const msd::channel<std::string> *network_manager_chann, const std::string &ip_address, const std::string &port);
+      Connection(struct event_base *base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port);
 
       ~Connection();
       
-      virtual int SendPublicKey() = 0;
+      // virtual int SendPublicKey() = 0;
 
       virtual int EstablishSecureConnection() = 0;
 

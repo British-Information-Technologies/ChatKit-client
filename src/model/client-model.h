@@ -8,42 +8,43 @@
 #include "friend-functionality/friend-node.h"
 #include "server-functionality/server-api.h"
 #include "server-functionality/server-node.h"
-#include "networking/network-sender.h"
+
+#include "networking/network-manager.h"
+#include "networking/connection.h"
 
 namespace model {
-class ClientModel {
- private:
-  std::shared_ptr<model_friend_functionality::FriendAPI> friend_api;
-  std::shared_ptr<model_server_functionality::ServerAPI> server_api;
+    class ClientModel {
+        private:
+            std::shared_ptr<model_friend_functionality::FriendAPI> friend_api;
+            std::shared_ptr<model_server_functionality::ServerAPI> server_api;
 
-  std::shared_ptr<model_networking::NetworkSender> network_sender;
+            std::shared_ptr<NetworkManager> network_manager;
 
- public:
-  ClientModel();
+        public:
+            ClientModel();
 
-  bool AddFriend(const std::string &uuid, const std::string &name, const std::string &ip, const std::string &port);
+            bool AddFriend(const std::string &uuid, const std::string &name, const std::string &ip, const std::string &port);
 
-  bool DeleteFriend(const std::string &uuid);
+            bool DeleteFriend(const std::string &uuid);
 
-  std::shared_ptr<model_friend_functionality::FriendNode> GetFriend(
-      const std::string &uuid) const;
+            std::shared_ptr<model_friend_functionality::FriendNode> GetFriend(
+                const std::string &uuid) const;
 
-  bool AddServer(const std::string &uuid, const std::string &name, const std::string &owner, const std::string &ip, const std::string &port);
+            bool AddServer(const std::string &uuid, const std::string &name, const std::string &owner, const std::string &ip, const std::string &port);
 
-  bool DeleteServer(const std::string &uuid);
+            bool DeleteServer(const std::string &uuid);
 
-  std::shared_ptr<model_server_functionality::ServerNode> GetServer(
-      const std::string &uuid) const;
+            std::shared_ptr<model_server_functionality::ServerNode> GetServer(
+                const std::string &uuid) const;
 
-  void StartReceiver();
+            void StartReceiver();
 
-  void StopReceiver();
+            void StopReceiver();
 
-  std::unordered_map<int, std::shared_ptr<model_networking::Connection>>
-  LoadConnections();
+            std::unordered_map<int, std::shared_ptr<Connection>> LoadConnections();
 
-  int SendMessage(const int &, std::string &);
-};
+            int SendMessage(const int &, std::string &);
+    };
 }  // namespace model
 
 #endif

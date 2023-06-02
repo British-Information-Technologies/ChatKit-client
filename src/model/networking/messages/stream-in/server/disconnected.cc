@@ -1,7 +1,7 @@
 #include "disconnected.h"
 
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 using namespace server_stream_in;
 
@@ -10,5 +10,5 @@ Disconnected::Disconnected() {
 }
 
 std::string Disconnected::Serialize() {
-    return std::format(R"({ "type": {} })", type);
+    return fmt::format("{{ \"type\": {} }}", type);
 }

@@ -1,25 +1,23 @@
-#include "client-controller.h"
-
-#include <pthread.h>
-
-#include <iostream>
 #include <memory>
 #include <string>
 
-#include "networking/network-receiver.h"
+#include "client-controller.h"
+
+#include "../model/client-model.h"
+#include "../view/MainApplication.h"
+
 #include "observers/addfriend-observer.h"
 #include "observers/deletefriend-observer.h"
 #include "observers/send-message-observer.h"
+
 #include "view-factory.h"
 
 using namespace controller;
-using namespace controller_networking;
 using namespace controller_observers;
 using namespace model;
-using namespace std;
 
 ClientController::ClientController(int argc, char **argv) {
-  model = make_shared<ClientModel>();
+  model = std::make_shared<ClientModel>();
 
   ViewFactory factory;
   view = factory.CreateView(argc, argv);
@@ -29,9 +27,6 @@ void ClientController::Body() {
   // setup the gui
   view->register_application();
 
-  NetworkReceiver network_receiver(model, view);
-  network_receiver.StartInternalThread();
-
   // add observers to buttons
   AddFriendObserver add_friend_observer(model, view);
   DeleteFriendObserver delete_friend_observer(model, view);
@@ -39,6 +34,4 @@ void ClientController::Body() {
 
   // enter main loop
   view->run();
-
-  network_receiver.WaitForInternalThreadToExit();
 }

@@ -1,7 +1,7 @@
 #include "client-connected.h"
 
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 using namespace server_stream_in;
 
@@ -12,5 +12,5 @@ ClientConnected::ClientConnected(std::string id, std::string username) {
 }
 
 std::string ClientConnected::Serialize() {
-    return std::format(R"({ "type": {}, "id": {}, "username": {} })", type, id, username);
+    return fmt::format("{{ \"type\": {}, \"id\": {}, \"username\": {} }}", type, id, username);
 }

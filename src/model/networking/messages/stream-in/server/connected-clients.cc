@@ -2,7 +2,7 @@
 
 #include <nlohmann/json.hpp>
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 using json = nlohmann::json;
 
@@ -14,5 +14,5 @@ ConnectedClients::ConnectedClients(json clients) {
 }
 
 std::string ConnectedClients::Serialize() {
-    return std::format(R"({ "type": {}, "clients": {} })", type, clients.dump());
+    return fmt::format("{{ \"type\": {}, \"clients\": {} }}", type, clients.dump());
 }

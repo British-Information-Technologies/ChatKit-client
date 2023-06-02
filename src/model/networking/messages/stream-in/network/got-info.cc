@@ -1,5 +1,5 @@
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 #include "got-info.h"
 
@@ -12,5 +12,5 @@ GotInfo::GotInfo(std::string server_name, std::string server_owner) {
 }
 
 std::string GotInfo::Serialize() {
-    return std::format(R"({ "type": {}, "server_name": {}, "server_owner": {} })", type, server_name, server_owner);
+    return fmt::format("{{ \"type\": {}, \"server_name\": {}, \"server_owner\": {} }}", type, server_name, server_owner);
 }

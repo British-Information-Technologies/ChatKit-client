@@ -1,5 +1,5 @@
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 #include "disconnect.h"
 
@@ -10,5 +10,5 @@ Disconnect::Disconnect() {
 }
 
 std::string Disconnect::Serialize() {
-    return std::format(R"({ "type": {} })", type);
+    return fmt::format("{{ \"type\": {} }}", type);
 }

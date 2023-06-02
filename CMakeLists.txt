@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.16)
 
-project(cpp-chat-client VERSION 0.1.0)
+project(cpp-chat-client)
+set(PROJECT_VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 17)
@@ -8,49 +9,52 @@ set(CMAKE_C_STANDARD 17)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 
-include(CPack)
-
-find_package(Git QUIET)
-
 include_directories(src /usr/local/include)
 link_directories(/usr/local/lib)
 
-# update git submodules
-if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
-    option(GIT_SUBMODULE "Check submodules during build" ON)
-    if(GIT_SUBMODULE)
-        message(STATUS "Submodule update")
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
-        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-            message(FATAL_ERROR "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
-        endif()
-    endif()
-endif()
-
 add_subdirectory(src)
-add_subdirectory(lib/googletest)
+#add_subdirectory(lib/googletest)
 
-option(PACKAGE_TESTS "Build the tests" ON)
-if(PACKAGE_TESTS)
-    enable_testing()
-    include(GoogleTest)
-    add_subdirectory(test)
-endif()
 
+# --- enable GoogleTest ---
+#option(PACKAGE_TESTS "Build the tests" ON)
+#if(PACKAGE_TESTS)
+ #   enable_testing()
+ #   include(GoogleTest)
+    #add_subdirectory(test)
+#endif()
+
+
+# --- find required locally installed libraries ---
+find_package(PkgConfig REQUIRED)
+
+pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
+pkg_check_modules(Libevent REQUIRED libevent)
+
+
+# --- FetchContents ---
 include(FetchContent)
 
+# json
 FetchContent_Declare(json
-GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
-GIT_PROGRESS TRUE
-GIT_SHALLOW TRUE
-GIT_TAG v3.10.5)
-
+    GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+    GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
+    GIT_TAG v3.11.2
+)
 FetchContent_MakeAvailable(json)
-FetchContent_GetProperties(json)
 
-if(NOT json_POPULATED)
-  FetchContent_Populate(json)
-  add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
+# thread msd channels
+FetchContent_Declare(channel
+    GIT_REPOSITORY https://github.com/andreiavrammsd/cpp-channel
+    GIT_TAG v0.7.3
+)
+FetchContent_MakeAvailable(channel)
+include_directories(${channel_SOURCE_DIR}/include)
+
+# fmt (format) library
+FetchContent_Declare(fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt
+    GIT_TAG 10.0.0
+)
+FetchContent_MakeAvailable(fmt)
