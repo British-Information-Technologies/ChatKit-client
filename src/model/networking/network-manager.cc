@@ -12,16 +12,18 @@
 using namespace model;
 
 NetworkManager::NetworkManager() {
-  connection_base = event_base_new();
+  connection_base.reset(event_base_new(),
+    [](event_base *b){
+      event_base_loopexit(b, NULL);
+      event_base_free(b);
+    }
+  );
+  
   connection_factory = std::make_unique<ConnectionFactory>();
 }
 
 NetworkManager::~NetworkManager() {
-  event_base_loopexit(connection_base, NULL);
-  event_base_free(connection_base);
-
   this->WaitForInternalThreadToExit();
-  
   connections.clear();
 }
 
@@ -46,7 +48,7 @@ void NetworkManager::Launch() {
 }
 
 void NetworkManager::InternalThreadEntry() {
-  event_base_loop(connection_base, EVLOOP_NO_EXIT_ON_EMPTY);
+  event_base_loop(connection_base.get(), EVLOOP_NO_EXIT_ON_EMPTY);
 }
 
 std::unordered_map<int, std::shared_ptr<Connection>>

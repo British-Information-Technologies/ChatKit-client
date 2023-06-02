@@ -10,7 +10,7 @@
 using namespace model;
 
 std::shared_ptr<Connection> ConnectionFactory::GetConnection(
-  const int &type, event_base *base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port) {
+  const int &type, std::shared_ptr<event_base> base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port) {
     // if(type) return std::make_shared<ClientConnection>(ip_address, port); -- fake (todo)
     return std::make_shared<ServerConnection>(base, network_manager_chann, ip_address, port);
 }

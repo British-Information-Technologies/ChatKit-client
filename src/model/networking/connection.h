@@ -1,6 +1,7 @@
 #ifndef MODEL_NETWORKING_CONNECTION_H_
 #define MODEL_NETWORKING_CONNECTION_H_
 
+#include <memory>
 #include <string>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
@@ -15,9 +16,9 @@ namespace model {
       std::string ip_address;
       std::string port;
 
-      DataHandler *data_handler;
+      std::unique_ptr<DataHandler> data_handler;
 
-      struct bufferevent *bev;
+      std::shared_ptr<bufferevent> bev;
 
       msd::channel<std::string> &out_chann;
  
@@ -41,7 +42,7 @@ namespace model {
       void SetState(DataHandler *);
     
     public:
-      Connection(struct event_base *base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port);
+      Connection(std::shared_ptr<struct event_base> base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port);
 
       ~Connection();
       

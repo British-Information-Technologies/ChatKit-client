@@ -42,7 +42,7 @@ int ServerConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
   return 0;
 }
 
-ServerConnection::ServerConnection(event_base *base,
+ServerConnection::ServerConnection(std::shared_ptr<event_base> base,
                                    msd::channel<std::string> &network_manager_chann,
                                    const std::string &ip_address,
                                    const std::string &port)
@@ -99,5 +99,5 @@ int ServerConnection::EstablishSecureConnection() {
 
   SetState(new SecureDataHandler(ss));
 
-  return bufferevent_getfd(bev);
+  return bufferevent_getfd(bev.get());
 }
