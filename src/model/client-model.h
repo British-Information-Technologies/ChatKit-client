@@ -22,6 +22,8 @@ namespace model {
 
         public:
             ClientModel();
+            
+            int Run();
 
             bool AddFriend(const std::string &uuid, const std::string &name, const std::string &ip, const std::string &port);
 
@@ -36,12 +38,6 @@ namespace model {
 
             std::shared_ptr<model_server_functionality::ServerNode> GetServer(
                 const std::string &uuid) const;
-
-            void StartReceiver();
-
-            void StopReceiver();
-
-            std::unordered_map<int, std::shared_ptr<Connection>> LoadConnections();
 
             int SendMessage(const int &, std::string &);
     };
