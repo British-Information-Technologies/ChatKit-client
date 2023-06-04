@@ -63,11 +63,6 @@ void NetworkManager::InternalThreadEntry() {
   event_base_loop(connection_base.get(), EVLOOP_NO_EXIT_ON_EMPTY);
 }
 
-std::unordered_map<int, std::shared_ptr<Connection>>
-NetworkManager::GetConnections() {
-  return connections;
-}
-
 int NetworkManager::ConnectToServiceServer() {
   // fake ip address and port for testing
   const std::string ip_address = "1234";
