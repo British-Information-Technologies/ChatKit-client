@@ -6,6 +6,7 @@
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 #include <event2/util.h>
+#include <nlohmann/json.hpp>
 #include "msd/channel.hpp"
 
 #include "connection.h"
@@ -14,15 +15,42 @@
 #include "utility/insecure-data-handler.h"
 
 #include "messages/message.h"
+#include "messages/internal/event-error.h"
 
 #include "utility/buffer-reader.h"
 #include "utility/buffer-writer.h"
 
 using namespace model;
 
+using json = nlohmann::json;
+
 // get sockaddr, IPv4 or IPv6:
 void *Connection::GetInAddr(struct sockaddr *sa) {
   return &(((struct sockaddr_in6 *)sa)->sin6_addr);
+}
+
+void Connection::SetState(DataHandler *next_handler) {
+  data_handler.reset(next_handler);
+}
+
+Connection::Connection(std::shared_ptr<event_base> base, msd::channel<json> &network_manager_chann, const std::string &ip_address, const std::string &port):
+out_chann(network_manager_chann) {
+  this->ip_address = ip_address;
+  this->port = port;
+
+  this->pk = nullptr;
+  this->sk = nullptr;
+  
+  this->bev.reset(bufferevent_socket_new(base.get(), -1, BEV_OPT_CLOSE_ON_FREE),
+    [](bufferevent *b){
+      bufferevent_free(b);
+    }
+  );
+  
+  this->data_handler = nullptr;
+}
+
+Connection::~Connection() {
 }
 
 int Connection::CreateConnection() {
@@ -91,26 +119,7 @@ int Connection::CreateConnection() {
 
   SetState(new InsecureDataHandler());
 
-  return 0;
-}
-
-void Connection::SetState(DataHandler *next_handler) {
-  data_handler.reset(next_handler);
-}
-
-Connection::Connection(std::shared_ptr<event_base> base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port):
-out_chann(network_manager_chann) {
-  this->ip_address = ip_address;
-  this->port = port;
-  this->data_handler = nullptr;
-  this->bev.reset(bufferevent_socket_new(base.get(), -1, BEV_OPT_CLOSE_ON_FREE),
-    [](bufferevent *b){
-      bufferevent_free(b);
-    }
-  );
-}
-
-Connection::~Connection() {
+  return sockfd;
 }
 
 int Connection::SendMessage(Message *message) {
@@ -143,8 +152,13 @@ void Connection::ReadMessageCb() {
     return;
   }
 
-  // send plaintext to network manager
-  plaintext >> out_chann;
+  // send data to network manager
+  json data = {
+    { "sockfd", bufferevent_getfd(bev.get()) },
+    { "plaintext", plaintext },
+  };
+
+  data >> out_chann; 
 }
 
 
@@ -166,11 +180,14 @@ void Connection::EventCb(short events) {
   if (events && (BEV_EVENT_ERROR || BEV_EVENT_READING || BEV_EVENT_WRITING)) {
     printf("Buffer Event Error! Terminating Connection!\n");
 
-    int sockfd = bufferevent_getfd(bev.get());
-
-    // todo - change to proper message
-    std::string("sockfd here") >> out_chann;
+    // send data to network manager - todo add message factory
+    json data = {
+      { "sockfd", bufferevent_getfd(bev.get()) },
+      { "internal", internal::EventError("Buffer Event Error! Terminating Connection!").Serialize() },
+    };
 
     bufferevent_free(bev.get());
+    
+    data >> out_chann;
   }
 }

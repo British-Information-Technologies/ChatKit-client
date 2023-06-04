@@ -5,10 +5,13 @@
 #include <string>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
+#include <nlohmann/json.hpp>
 #include "msd/channel.hpp"
 
 #include "messages/message.h"
 #include "utility/data-handler.h"
+
+using json = nlohmann::json;
 
 namespace model {
   class Connection {
@@ -16,11 +19,14 @@ namespace model {
       std::string ip_address;
       std::string port;
 
-      std::unique_ptr<DataHandler> data_handler;
-
       std::shared_ptr<bufferevent> bev;
 
-      msd::channel<std::string> &out_chann;
+      std::unique_ptr<unsigned char[]> pk;
+      std::unique_ptr<unsigned char[]> sk;
+      
+      std::unique_ptr<DataHandler> data_handler;
+
+      msd::channel<json> &out_chann;
  
     private:
       void *GetInAddr(struct sockaddr *);
@@ -37,18 +43,18 @@ namespace model {
       virtual int GetRecipientPublicKey(unsigned char* recv_pk) = 0;
     
     protected:
-      int CreateConnection();
-      
       void SetState(DataHandler *);
     
     public:
-      Connection(std::shared_ptr<struct event_base> base, msd::channel<std::string> &network_manager_chann, const std::string &ip_address, const std::string &port);
+      Connection(std::shared_ptr<struct event_base> base, msd::channel<json> &network_manager_chann, const std::string &ip_address, const std::string &port);
 
       ~Connection();
       
-      // virtual int SendPublicKey() = 0;
+      int CreateConnection();
 
-      virtual int EstablishSecureConnection() = 0;
+      virtual int SendPublicKey() = 0;
+
+      virtual int EstablishSecureConnection(const unsigned char *recv_pk) = 0;
 
       int SendMessage(Message *message);
   };
