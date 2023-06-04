@@ -32,8 +32,6 @@ namespace model {
 
       void Launch();
 
-      std::unordered_map<int, std::shared_ptr<Connection>> GetConnections();
-
       int ConnectToServiceServer();
 
       int InitiateSecureConnection(const int &sockfd);
