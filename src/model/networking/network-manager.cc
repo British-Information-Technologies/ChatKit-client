@@ -4,6 +4,8 @@
 #include <memory>
 #include <event2/event.h>
 #include <nlohmann/json.hpp>
+#include <thread>
+#include <mutex>
 #include "msd/channel.hpp"
 
 #include "network-manager.h"
@@ -17,6 +19,65 @@ using namespace model;
 
 using json = nlohmann::json;
 
+namespace {
+  void LaunchCallbackHandler(std::shared_ptr<event_base> connection_base) {
+    event_base_loop(connection_base.get(), EVLOOP_NO_EXIT_ON_EMPTY);
+  }
+
+  void LaunchChannelHandler(std::mutex &connections_mutex, msd::channel<json> &in_chann, std::unordered_map<int, std::shared_ptr<Connection>> &connections) {
+    // read incoming channel data from connection callbacks
+    for (const json data: in_chann) { // blocks forever waiting for channel items
+      printf("<data read from in_chann: %s>", data);
+
+      std::unique_ptr<Message> message;
+      if (data.contains("plaintext") && DeserializeStreamIn(message.get(), data.at("plaintext")) != 0) {
+        // failed to deserialize data
+        continue;
+        
+      } else if (data.contains("internal") && DeserializeInternal(message.get(), data.at("internal")) != 0) {
+        // failed to deserialize data
+        continue;
+        
+      } else {
+        // invalid data
+        continue;
+      }
+
+      int sockfd = data.at("sockfd");
+
+      connections_mutex.lock();
+
+      if (message->GetType() == server_stream_in::kPublicKey) {
+        std::unique_ptr<server_stream_in::PublicKey> recv_pk(dynamic_cast<server_stream_in::PublicKey*>(message.get()));
+        const unsigned char* recv_pk_ptr = reinterpret_cast<const unsigned char*>(recv_pk->GetKey().c_str());
+
+        auto conn = connections.at(sockfd);
+        
+        connections_mutex.unlock();
+        
+        if (conn->EstablishSecureConnection(recv_pk_ptr) != 0) {
+          // panic! failed to create secure connection
+          continue;
+        }
+
+        printf("<secure sockfd connection established: %d>", sockfd);
+
+      } else if (message->GetType() == internal::kEventError) {
+        std::unique_ptr<internal::EventError> err(dynamic_cast<internal::EventError*>(message.get()));
+
+        printf("<EventError msg: %s>", err->GetMsg());
+
+        connections.erase(sockfd);
+      
+        connections_mutex.unlock();
+      } else {
+        connections_mutex.unlock();
+      }
+    }
+  }
+} // namespace
+
+
 NetworkManager::NetworkManager() {
   connection_base.reset(event_base_new(),
     [](event_base *b){
@@ -27,7 +88,6 @@ NetworkManager::NetworkManager() {
 }
 
 NetworkManager::~NetworkManager() {
-  this->WaitForInternalThreadToExit();
   connections.clear();
 }
 
@@ -35,32 +95,18 @@ void NetworkManager::Launch() {
   // todo - might be good as a coroutine
 
   // start event base loop for connection callbacks
-  this->StartInternalThread();
+  std::jthread callback_thread(
+    LaunchCallbackHandler,
+    this->connection_base
+  );
 
-  // read incoming channel data from connection callbacks
-  for (const json data: in_chann) { // blocks forever waiting for channel items
-    printf("<data read from in_chann: %s>", data);
-
-    std::unique_ptr<Message> message;
-    if (data.contains("plaintext") && DeserializeStreamIn(message.get(), data.at("plaintext")) != 0) {
-      // failed to deserialize data
-      continue;
-      
-    } else if (data.contains("internal") && DeserializeInternal(message.get(), data.at("internal")) != 0) {
-      // failed to deserialize data
-      continue;
-      
-    } else {
-      // invalid data
-      continue;
-    }
-
-    AnalyseIncomingMessage(data.at("sockfd"), message.get());
-  }
-}
-
-void NetworkManager::InternalThreadEntry() {
-  event_base_loop(connection_base.get(), EVLOOP_NO_EXIT_ON_EMPTY);
+  // start channel loop for reading incoming data from connection callbacks
+  std::jthread channel_handler(
+    LaunchChannelHandler,
+    std::ref(this->connections_mutex),
+    std::ref(this->in_chann),
+    std::ref(this->connections)
+  );
 }
 
 int NetworkManager::ConnectToServiceServer() {
@@ -86,7 +132,9 @@ int NetworkManager::ConnectToServiceServer() {
   // store connection in map
   std::pair<int, std::shared_ptr<Connection>> connection_pair(sockfd, service);
 
+  connections_mutex.lock();
   connections.insert(connection_pair);
+  connections_mutex.unlock();
 
   // request for secure connection with service server
   if(InitiateSecureConnection(sockfd) != 0) {
@@ -98,11 +146,15 @@ int NetworkManager::ConnectToServiceServer() {
 }
 
 int NetworkManager::InitiateSecureConnection(const int &sockfd) {
+  connections_mutex.lock();
+
   if (!connections.contains(sockfd)) {
     return -1;
   }
 
   auto conn = connections.at(sockfd);
+
+  connections_mutex.unlock();
 
   // send public key to sockfd connection
   if (conn->SendPublicKey() != 0) {
@@ -114,6 +166,8 @@ int NetworkManager::InitiateSecureConnection(const int &sockfd) {
 }
 
 int NetworkManager::SendMessage(const int &id, std::string &data) {
+  connections_mutex.lock();
+
   if (!connections.contains(id)) {
     return -1;
   }
@@ -125,28 +179,7 @@ int NetworkManager::SendMessage(const int &id, std::string &data) {
 
   int sent_bytes = connections.at(id)->SendMessage(message.get());
 
+  connections_mutex.unlock();
+
   return sent_bytes;
-}
-
-void NetworkManager::AnalyseIncomingMessage(int sockfd, Message *message) {
-  auto conn = connections.at(sockfd);
-  
-  if (message->GetType() == server_stream_in::kPublicKey) {
-    std::unique_ptr<server_stream_in::PublicKey> recv_pk(dynamic_cast<server_stream_in::PublicKey*>(message));
-
-    const unsigned char* key_ptr = reinterpret_cast<const unsigned char*>(recv_pk->GetKey().c_str());
-    if (conn->EstablishSecureConnection(key_ptr) != 0) {
-      // panic! failed to create secure connection
-      return;
-    }
-
-    printf("<secure sockfd connection established: %d>", sockfd);
-
-  } else if (message->GetType() == internal::kEventError) {
-    std::unique_ptr<internal::EventError> err(dynamic_cast<internal::EventError*>(message));
-
-    printf("<EventError msg: %s>", err->GetMsg());
-
-    connections.erase(sockfd);
-  }
 }
