@@ -24,7 +24,7 @@ int ClientModel::Run() {
     return -1;
   }
 
-  network_manager->Launch(); // blocks until application shutdowns
+  network_manager->Launch();
 
   return 0;
 }
