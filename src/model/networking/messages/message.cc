@@ -12,6 +12,7 @@
 #include "stream-in/server/client-removed.h"
 #include "stream-in/server/disconnected.h"
 #include "stream-in/server/error.h"
+#include "stream-in/server/public-key.h"
 
 #include "stream-in/network/request.h"
 #include "stream-in/network/got-info.h"
@@ -26,6 +27,8 @@
 
 #include "stream-out/network/info.h"
 #include "stream-out/network/connect.h"
+
+#include "internal/event-error.h"
 
 using namespace model;
 
@@ -72,6 +75,10 @@ namespace {
         } else if (type == server_stream_in::kError && data_json.contains("msg")) {
             std::string err_msg = data_json.at("msg");
             msg = new server_stream_in::Error(err_msg);
+
+        } else if (type == server_stream_in::kPublicKey && data_json.contains("key")) {
+            std::string key = data_json.at("key");
+            msg = new server_stream_in::PublicKey(key);
 
         } else {
             return 0;
@@ -150,6 +157,20 @@ namespace {
 
         return 1;
     }
+    
+    int isInternalMessage(Message* msg, const json data_json) {
+        std::string type = data_json.at("type");
+        
+        if (type == internal::kEventError) {
+            std::string err_msg = data_json.at("msg");
+            msg = new internal::EventError(err_msg);
+
+        } else {
+            return 0;
+        }
+
+        return 1;
+    }
 } // namespace
 
 std::string Message::GetType() {
@@ -189,5 +210,23 @@ int model::DeserializeStreamIn(Message* msg, std::string data) {
     }
 
     // data is invalid, non-existent stream in message type
+    return -1;
+}
+
+int model::DeserializeInternal(Message* msg, std::string data) {
+    json data_json = json::parse(data);
+
+    if (!data_json.contains("type")) {
+        // data is invalid, must have a type
+        return -1;
+    }
+
+    // convert to message object
+    if (isInternalMessage(msg, data_json)) {
+        // internal message successfully created from data
+        return 0;
+    }
+
+    // data is invalid, non-existent internal message type
     return -1;
 }

@@ -17,6 +17,8 @@ namespace model {
     int DeserializeStreamOut(Message* msg, std::string data);
 
     int DeserializeStreamIn(Message* msg, std::string data);
+
+    int DeserializeInternal(Message* msg, std::string data);
 }
 
 #endif

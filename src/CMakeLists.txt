@@ -27,6 +27,8 @@ set(SOURCES
     
     model/networking/messages/message.cc
 
+    model/networking/messages/internal/event-error.cc
+
     model/networking/messages/stream-in/network/connecting.cc
     model/networking/messages/stream-in/network/error.cc
     model/networking/messages/stream-in/network/got-info.cc
@@ -41,6 +43,7 @@ set(SOURCES
     model/networking/messages/stream-in/server/global-chat-messages.cc
     model/networking/messages/stream-in/server/global-message.cc
     model/networking/messages/stream-in/server/user-message.cc
+    model/networking/messages/stream-in/server/public-key.cc
 
     model/networking/messages/stream-out/network/connect.cc
     model/networking/messages/stream-out/network/info.cc
@@ -65,7 +68,8 @@ set(SOURCES
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -lsodium")
 
-find_package(Libevent CONFIG REQUIRED)
+# todo - must change as machine specific
+find_package(Libevent CONFIG REQUIRED PATHS /home/mitchell/Documents/packages/libevent/build)
 
 add_executable(${BINARY}_run ${SOURCES})
 target_link_directories(${BINARY}_run PRIVATE ${GTKMM_LIBRARY_DIRS})

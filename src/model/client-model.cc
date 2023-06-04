@@ -43,7 +43,7 @@ std::shared_ptr<ServerNode> ClientModel::GetServer(const std::string &uuid) cons
 }
 
 std::unordered_map<int, std::shared_ptr<Connection>> ClientModel::LoadConnections() {
-  int id = 0;
+  /*int id = 0;
 
   for(auto it = server_api->Begin(); it != server_api->End(); ++it) {
     std::string server_ip = it->second->GetIp();
@@ -60,7 +60,7 @@ std::unordered_map<int, std::shared_ptr<Connection>> ClientModel::LoadConnection
 
     network_manager->TryCreateConnection(id, friend_ip, friend_port);
   }
-
+  */
   return network_manager->GetConnections();
 }
 
