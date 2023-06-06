@@ -78,11 +78,15 @@ target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nl
 
 # Don't want to copy if we're building in the source dir
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
-    # List of resources
-    set(data_SHADOW resources/mickyb18-chat-client.glade)
+    # List of resources to add a copy rule
+    set(data_SHADOW
+        view/login.ui
+        view/home.ui
+    )
 
     foreach(item IN LISTS data_SHADOW)
-        message(STATUS ${item})
+        message(STATUS "Item: ${item}")
+
         add_custom_command(
             OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${item}"
             COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${item}" "${CMAKE_CURRENT_BINARY_DIR}/${item}"
@@ -92,4 +96,9 @@ if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
 endif()
 
 # Files only copied if a target depends on them
-add_custom_target(data-target ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/resources/mickyb18-chat-client.glade")
+add_custom_target(data-target ALL DEPENDS 
+    "${CMAKE_CURRENT_BINARY_DIR}/view/login.ui"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/home.ui"
+)
+
+add_dependencies(${BINARY}_run data-target)
