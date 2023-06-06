@@ -3,11 +3,6 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 set(SOURCES
     # controller
     controller/client-controller.cc
-    controller/view-factory.cc
-    
-    controller/observers/addfriend-observer.cc
-    controller/observers/deletefriend-observer.cc
-    controller/observers/send-message-observer.cc
 
     # model
     model/client-model.cc
