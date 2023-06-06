@@ -1,94 +1,57 @@
+#include <gtkmm-4.0/gtkmm.h>
 #include <iostream>
 
 #include "MainApplication.h"
 
-#include "controller/observers/observer.h"
-
-using namespace Gtk;
-using namespace controller_observers;
-using namespace model_friend_functionality;
-
 MainApplication::MainApplication()
-    : Application("org.gtkmm.examples.application") {
+    : Gtk::Application("org.gtkmm.example") {
   this->hold();
 }
 
 MainApplication::~MainApplication() { this->release(); }
 
-Glib::RefPtr<MainApplication> MainApplication::create() {
-  return Glib::make_refptr_for_instance<MainApplication>(new MainApplication());
-}
-
 void MainApplication::on_startup() {
-  Application::on_startup();
-
-  builder = Builder::create_from_file("resources/mickyb18-chat-client.glade");
-  main_window = builder->get_widget<Window>("main_window");
-
-  add_friend_button = builder->get_widget<Gtk::Button>("add_friend_button");
-
-  delete_friend_button =
-      builder->get_widget<Gtk::Button>("delete_friend_button");
-
-  send_button = builder->get_widget<Gtk::Button>("send_button");
-
-  message_box = builder->get_widget<Gtk::Entry>("message_box");
+  Gtk::Application::on_startup();
 }
 
 void MainApplication::on_activate() {
-  Application::on_activate();
+  Gtk::Application::on_activate();
 
-  add_window(*main_window);
-  main_window->show();
+  builder = Gtk::Builder::create();
+
+  try {
+    if (!builder->add_from_file("view/login.ui")) {
+     printf("Builder failed to add_from_file\n");
+     return;
+    }
+
+  } catch (const Glib::FileError &ex) {
+    printf("FileError: %s\n", ex.what());
+    return;
+
+  } catch (const Glib::MarkupError &ex) {
+    printf("MarkupError: %s\n", ex.what());
+    return;
+
+  } catch (const Gtk::BuilderError &ex) {
+    printf("BuilderError: %s\n", ex.what());
+    return;
+
+  }
+
+  app_window = builder->get_widget<Gtk::ApplicationWindow>("rootAppWindow");
+
+  add_window(*app_window);
+  app_window->show();
 }
 
 void MainApplication::on_shutdown() {
-  Application::on_shutdown();
+  Gtk::Application::on_shutdown();
 
-  main_window->hide();
-  remove_window(*main_window);
+  app_window->hide();
+  remove_window(*app_window);
 }
 
-std::string MainApplication::GetInputUuidToAdd() { return "filler text"; }
-
-std::string MainApplication::GetInputNameToAdd() {return "filter text"; }
-
-std::string MainApplication::GetInputUuidToDelete() { return "filler text"; }
-
-std::string MainApplication::GetMessageBoxText() {
-  return message_box->get_text();
-}
-
-void MainApplication::AddMessageToChatBox(const std::string &message,
-                                          const std::string &uuid) {
-  Gtk::Stack *chat_box = builder->get_widget<Gtk::Stack>(uuid + "_stack");
-
-  Gtk::Text text;
-  text.set_text(message);
-
-  chat_box->add(text);
-}
-
-void MainApplication::AddFriendToFriendList(
-    std::shared_ptr<FriendNode> friend_node) {
-  std::cout << "added" << std::endl;
-}
-
-void MainApplication::RemoveFriendFromFriendList(const std::string &uuid) {
-  std::cout << "removed" << std::endl;
-}
-
-void MainApplication::AddObserverAddFriendButton(Observer &observer) {
-  add_friend_button->signal_clicked().connect(
-      sigc::mem_fun(observer, &Observer::Execute));
-}
-
-void MainApplication::AddObserverDeleteFriendButton(Observer &observer) {
-  delete_friend_button->signal_clicked().connect(
-      sigc::mem_fun(observer, &Observer::Execute));
-}
-
-void MainApplication::AddObserverSendButton(Observer &observer) {
-  send_button->signal_clicked().connect(
-      sigc::mem_fun(observer, &Observer::Execute));
+Glib::RefPtr<MainApplication> MainApplication::create() {
+  return Glib::make_refptr_for_instance<MainApplication>(new MainApplication());
 }
