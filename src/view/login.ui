@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.10.3 -->
+<interface>
+  <!-- interface-name chatkit-client-ui.ui -->
+  <requires lib="gtk" version="4.6"/>
+  <requires lib="libadwaita" version="1.1"/>
+  <object class="GtkApplicationWindow" id="rootAppWindow">
+    <child>
+      <object class="GtkGrid" id="rootGrid">
+        <property name="accessible-role">grid</property>
+        <child>
+          <object class="GtkBox" id="loginBox">
+            <child>
+              <object class="GtkGrid" id="loginGrid">
+                <property name="accessible-role">grid</property>
+                <property name="column-homogeneous">True</property>
+                <property name="margin-top">50</property>
+                <child>
+                  <object class="GtkBox" id="usernameBox">
+                    <property name="margin-bottom">20</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLabel" id="usernameLabel">
+                        <property name="accessible-role">label</property>
+                        <property name="halign">start</property>
+                        <property name="hexpand">True</property>
+                        <property name="label">&lt;span size="12pt"&gt;USERNAME&lt;/span&gt;</property>
+                        <property name="margin-bottom">5</property>
+                        <property name="use-markup">True</property>
+                        <property name="xalign">0.0</property>
+                        <property name="yalign">0.0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkText" id="usernameText">
+                        <property name="accessible-role">text-box</property>
+                        <property name="height-request">30</property>
+                        <property name="hexpand">True</property>
+                      </object>
+                    </child>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="column-span">3</property>
+                      <property name="row">0</property>
+                      <property name="row-span">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="passwordBox">
+                    <property name="hexpand">True</property>
+                    <property name="margin-bottom">20</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLabel" id="passwordLabel">
+                        <property name="accessible-role">label</property>
+                        <property name="halign">start</property>
+                        <property name="hexpand">True</property>
+                        <property name="label">&lt;span size="12pt"&gt;PASSWORD&lt;/span&gt;</property>
+                        <property name="margin-bottom">5</property>
+                        <property name="use-markup">True</property>
+                        <property name="xalign">0.0</property>
+                        <property name="yalign">0.0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkText" id="passwordText">
+                        <property name="accessible-role">text-box</property>
+                        <property name="height-request">30</property>
+                        <property name="hexpand">True</property>
+                      </object>
+                    </child>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="column-span">3</property>
+                      <property name="row">2</property>
+                      <property name="row-span">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="loginButton">
+                    <property name="accessible-role">button</property>
+                    <property name="hexpand">True</property>
+                    <property name="label">Login</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="column-span">3</property>
+                      <property name="row">4</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">2</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="welcomeMsg">
+            <property name="accessible-role">label</property>
+            <property name="hexpand">True</property>
+            <property name="label">&lt;span size="24pt"&gt;Welcome!&lt;/span&gt;</property>
+            <property name="margin-top">30</property>
+            <property name="use-markup">True</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="column-span">3</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
