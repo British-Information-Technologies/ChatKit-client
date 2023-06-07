@@ -57,6 +57,10 @@ set(SOURCES
     # view
     view/MainApplication.cc
 
+    view/home/home-application-window.cc
+    
+    view/login/login-application-window.cc
+
     # root
     main.cc
 )
