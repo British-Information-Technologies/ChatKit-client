@@ -2,6 +2,7 @@
 #define VIEW_MAIN_APPLICATION_H_
 
 #include <gtkmm-4.0/gtkmm.h>
+#include <string>
 
 #include "model/friend-functionality/friend-node.h"
 
@@ -15,7 +16,10 @@ class MainApplication : public Gtk::Application {
 private:
   Glib::RefPtr<Gtk::Builder> builder = nullptr;
 
-  Gtk::Window* app_window = nullptr;
+  Gtk::ApplicationWindow *app_window = nullptr;
+
+private:
+  int UpdateBuilder(const std::string &filename);
 
 protected:
   MainApplication();
@@ -27,6 +31,10 @@ protected:
   void on_shutdown() override;
 
 public:
+  int SetLoginWindow();
+  
+  int SetMainWindow();
+
   static Glib::RefPtr<MainApplication> create();
 };
 
