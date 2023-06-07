@@ -62,6 +62,7 @@ void MainApplication::on_shutdown() {
   Gtk::Application::on_shutdown();
 
   if (app_window) {
+    app_window->hide();
     remove_window(*app_window);
   }
 }
@@ -72,10 +73,15 @@ int MainApplication::SetLoginWindow() {
   }
 
   if (app_window) {
+    app_window->hide();
     remove_window(*app_window);
   }
 
-  app_window = builder->get_widget_derived<LoginApplicationWindow>(builder, "rootAppWindow");
+  app_window = builder->get_widget_derived<LoginApplicationWindow>(
+    builder,
+    "rootAppWindow",
+    [this](){ SetMainWindow(); }
+  );
 
   add_window(*app_window);
   app_window->show();
@@ -89,6 +95,7 @@ int MainApplication::SetMainWindow() {
   }
 
   if (app_window) {
+    app_window->hide();
     remove_window(*app_window);
   }
 
