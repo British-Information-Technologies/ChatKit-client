@@ -19,16 +19,10 @@ void MainApplication::on_startup() {
 }
 
 void MainApplication::on_activate() {
-  printf("T1");
-
   Gtk::Application::on_activate();
   
-  printf("T2");
-
   builder = Gtk::Builder::create();
   
-  printf("T3");
-
   if(SetLoginWindow()) {
     return;
   }
@@ -41,6 +35,10 @@ void MainApplication::on_shutdown() {
     app_window->hide();
     remove_window(*app_window);
   }
+}
+
+Glib::RefPtr<MainApplication> MainApplication::create() {
+  return Glib::make_refptr_for_instance<MainApplication>(new MainApplication());
 }
 
 int MainApplication::UpdateBuilder(const std::string &filename) {
@@ -99,14 +97,13 @@ int MainApplication::Login() {
     remove_window(*app_window);
   }
 
-  app_window = builder->get_widget_derived<HomeApplicationWindow>(builder, "rootAppWindow");
+  app_window = builder->get_widget_derived<HomeApplicationWindow>(
+    builder,
+    "rootAppWindow"
+  );
 
   add_window(*app_window);
   app_window->show();
 
   return 0;
-}
-
-Glib::RefPtr<MainApplication> MainApplication::create() {
-  return Glib::make_refptr_for_instance<MainApplication>(new MainApplication());
 }

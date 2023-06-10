@@ -9,7 +9,10 @@ class HomeApplicationWindow : public Gtk::ApplicationWindow {
         std::shared_ptr<Gtk::Entry> msg_entry;
 
     public:
-        HomeApplicationWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
+        HomeApplicationWindow(
+            BaseObjectType *cobject,
+            const Glib::RefPtr<Gtk::Builder> &refBuilder
+        );
         virtual ~HomeApplicationWindow();
 };
 
