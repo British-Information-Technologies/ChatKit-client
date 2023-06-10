@@ -80,7 +80,7 @@ int MainApplication::SetLoginWindow() {
   app_window = builder->get_widget_derived<LoginApplicationWindow>(
     builder,
     "rootAppWindow",
-    [this](){ SetMainWindow(); }
+    [this](){ Login(); }
   );
 
   add_window(*app_window);
@@ -89,7 +89,7 @@ int MainApplication::SetLoginWindow() {
   return 0;
 }
 
-int MainApplication::SetMainWindow() {
+int MainApplication::Login() {
   if (UpdateBuilder("view/home.ui")) {
     return -1;
   }
