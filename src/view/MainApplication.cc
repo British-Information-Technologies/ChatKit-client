@@ -7,30 +7,6 @@
 #include "login/login-application-window.h"
 #include "home/home-application-window.h"
 
-int MainApplication::UpdateBuilder(const std::string &filename) {
-  try {
-    if (!builder->add_from_file(filename)) {
-     printf("Builder failed to add_from_file\n");
-     return -1;
-    }
-
-  } catch (const Glib::FileError &ex) {
-    printf("FileError: %s\n", ex.what());
-    return -1;
-
-  } catch (const Glib::MarkupError &ex) {
-    printf("MarkupError: %s\n", ex.what());
-    return -1;
-
-  } catch (const Gtk::BuilderError &ex) {
-    printf("BuilderError: %s\n", ex.what());
-    return -1;
-
-  }
-
-  return 0;
-}
-
 MainApplication::MainApplication()
     : Gtk::Application("org.gtkmm.example") {
   this->hold();
@@ -65,6 +41,30 @@ void MainApplication::on_shutdown() {
     app_window->hide();
     remove_window(*app_window);
   }
+}
+
+int MainApplication::UpdateBuilder(const std::string &filename) {
+  try {
+    if (!builder->add_from_file(filename)) {
+     printf("Builder failed to add_from_file\n");
+     return -1;
+    }
+
+  } catch (const Glib::FileError &ex) {
+    printf("FileError: %s\n", ex.what());
+    return -1;
+
+  } catch (const Glib::MarkupError &ex) {
+    printf("MarkupError: %s\n", ex.what());
+    return -1;
+
+  } catch (const Gtk::BuilderError &ex) {
+    printf("BuilderError: %s\n", ex.what());
+    return -1;
+
+  }
+
+  return 0;
 }
 
 int MainApplication::SetLoginWindow() {

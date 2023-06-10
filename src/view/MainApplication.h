@@ -18,9 +18,6 @@ private:
 
   Gtk::ApplicationWindow *app_window = nullptr;
 
-private:
-  int UpdateBuilder(const std::string &filename);
-
 protected:
   MainApplication();
   ~MainApplication();
@@ -31,13 +28,14 @@ protected:
   void on_shutdown() override;
 
 public:
+  static Glib::RefPtr<MainApplication> create();
+
+private:
+  int UpdateBuilder(const std::string &filename);
+  
   int SetLoginWindow();
   
   int Login();
-
-  
-
-  static Glib::RefPtr<MainApplication> create();
 };
 
 #endif
