@@ -33,7 +33,9 @@ protected:
 public:
   int SetLoginWindow();
   
-  int SetMainWindow();
+  int Login();
+
+  
 
   static Glib::RefPtr<MainApplication> create();
 };
