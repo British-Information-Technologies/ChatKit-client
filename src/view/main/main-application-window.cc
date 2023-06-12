@@ -3,26 +3,20 @@
 
 #include "main-application-window.h"
 
+#include "model/client-model.h"
+#include "buttons/send-button.h"
+
 MainApplicationWindow::MainApplicationWindow(
     BaseObjectType *cobject, 
-    const Glib::RefPtr<Gtk::Builder> &refBuilder
+    const Glib::RefPtr<Gtk::Builder> &refBuilder,
+    std::shared_ptr<model::ClientModel> model
 ): Glib::ObjectBase("MainApplicationWindow"), Gtk::ApplicationWindow(cobject)
 {
-    send_button = refBuilder->get_object<Gtk::Button>("sendButton");
-    send_button->signal_clicked().connect([this](){
-        if (msg_entry->get_text_length() == 0) {
-            return;
-        }
-
-        printf("Message to send: %s\n", msg_entry->get_text());
-
-        /* TODO
-        *  Need to send the msg to the model.
-        *  Not sure on best approach yet
-        */
-    });
-
-    msg_entry = refBuilder->get_object<Gtk::Entry>("msgEntry");
+    send_button = refBuilder->get_widget_derived<SendButton>(
+        refBuilder,
+        "sendButton",
+        model
+    );
 }
 
 MainApplicationWindow::~MainApplicationWindow() {}

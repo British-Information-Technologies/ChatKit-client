@@ -1,14 +1,17 @@
 #include <gtkmm-4.0/gtkmm.h>
 #include <string>
+#include <memory>
 #include <iostream>
 
 #include "MainApplication.h"
 
+#include "model/client-model.h"
 #include "login/login-application-window.h"
 #include "main/main-application-window.h"
 
-MainApplication::MainApplication()
-    : Gtk::Application("org.gtkmm.example") {
+MainApplication::MainApplication(
+  std::shared_ptr<model::ClientModel> model
+): Gtk::Application("org.gtkmm.example") {
   builder = Gtk::Builder::create();
   
   UpdateBuilder("view/login.ui");
@@ -21,7 +24,8 @@ MainApplication::MainApplication()
 
   main_window = builder->get_widget_derived<MainApplicationWindow>(
     builder,
-    "mainWindow"
+    "mainWindow",
+    model
   );
 }
 
@@ -55,8 +59,8 @@ void MainApplication::on_shutdown() {
   }
 }
   
-Glib::RefPtr<MainApplication> MainApplication::create() {
-  return Glib::make_refptr_for_instance<MainApplication>(new MainApplication());
+Glib::RefPtr<MainApplication> MainApplication::create(std::shared_ptr<model::ClientModel> model) {
+  return Glib::make_refptr_for_instance<MainApplication>(new MainApplication(model));
 }
 
 int MainApplication::UpdateBuilder(const std::string &filename) {

@@ -3,6 +3,9 @@
 
 #include <gtkmm-4.0/gtkmm.h>
 #include <string>
+#include <memory>
+
+#include "model/client-model.h"
 
 /**
  * Author: @michael-bailey @Mitch161
@@ -18,7 +21,7 @@ private:
   Gtk::ApplicationWindow *main_window = nullptr;
 
 protected:
-  MainApplication();
+  MainApplication(std::shared_ptr<model::ClientModel> model);
   virtual ~MainApplication();
 
   // application lifecycle signals
@@ -27,7 +30,7 @@ protected:
   void on_shutdown() override;
 
 public:
-  static Glib::RefPtr<MainApplication> create();
+  static Glib::RefPtr<MainApplication> create(std::shared_ptr<model::ClientModel> model);
 
 private:
   int UpdateBuilder(const std::string &filename);
