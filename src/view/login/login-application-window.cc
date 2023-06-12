@@ -3,14 +3,17 @@
 
 #include "login-application-window.h"
 
+#include "buttons/login-button.h"
+
 LoginApplicationWindow::LoginApplicationWindow(
     BaseObjectType *cobject, 
-    const Glib::RefPtr<Gtk::Builder> &refBuilder,
-    std::function<void()> login_func
+    const Glib::RefPtr<Gtk::Builder> &refBuilder
 ): Glib::ObjectBase("LoginApplicationWindow"), Gtk::ApplicationWindow(cobject)
 {
-    login_button = refBuilder->get_object<Gtk::Button>("loginButton");
-    login_button->signal_clicked().connect(login_func);
+    login_button = refBuilder->get_widget_derived<LoginButton>(
+        refBuilder,
+        "loginButton"
+    );
 }
 
 LoginApplicationWindow::~LoginApplicationWindow() {}

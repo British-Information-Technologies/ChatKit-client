@@ -4,8 +4,6 @@
 #include <gtkmm-4.0/gtkmm.h>
 #include <string>
 
-#include "model/friend-functionality/friend-node.h"
-
 /**
  * Author: @michael-bailey @Mitch161
  * # MainApplication
@@ -16,11 +14,12 @@ class MainApplication : public Gtk::Application {
 private:
   Glib::RefPtr<Gtk::Builder> builder = nullptr;
 
-  Gtk::ApplicationWindow *app_window = nullptr;
+  Gtk::ApplicationWindow *login_window = nullptr;
+  Gtk::ApplicationWindow *main_window = nullptr;
 
 protected:
   MainApplication();
-  ~MainApplication();
+  virtual ~MainApplication();
 
   // application lifecycle signals
   void on_startup() override;
@@ -32,10 +31,6 @@ public:
 
 private:
   int UpdateBuilder(const std::string &filename);
-  
-  int SetLoginWindow();
-  
-  int Login();
 };
 
 #endif

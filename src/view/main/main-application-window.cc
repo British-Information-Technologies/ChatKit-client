@@ -1,12 +1,12 @@
 #include <gtkmm-4.0/gtkmm.h>
 #include <string>
 
-#include "home-application-window.h"
+#include "main-application-window.h"
 
-HomeApplicationWindow::HomeApplicationWindow(
+MainApplicationWindow::MainApplicationWindow(
     BaseObjectType *cobject, 
     const Glib::RefPtr<Gtk::Builder> &refBuilder
-): Glib::ObjectBase("HomeApplicationWindow"), Gtk::ApplicationWindow(cobject)
+): Glib::ObjectBase("MainApplicationWindow"), Gtk::ApplicationWindow(cobject)
 {
     send_button = refBuilder->get_object<Gtk::Button>("sendButton");
     send_button->signal_clicked().connect([this](){
@@ -25,4 +25,4 @@ HomeApplicationWindow::HomeApplicationWindow(
     msg_entry = refBuilder->get_object<Gtk::Entry>("msgEntry");
 }
 
-HomeApplicationWindow::~HomeApplicationWindow() {}
+MainApplicationWindow::~MainApplicationWindow() {}

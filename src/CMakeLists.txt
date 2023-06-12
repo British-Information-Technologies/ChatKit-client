@@ -57,9 +57,11 @@ set(SOURCES
     # view
     view/MainApplication.cc
 
-    view/home/home-application-window.cc
+    view/main/main-application-window.cc
     
     view/login/login-application-window.cc
+
+    view/login/buttons/login-button.cc
 
     # root
     main.cc
@@ -85,7 +87,7 @@ if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
     # List of resources to add a copy rule
     set(data_SHADOW
         view/login.ui
-        view/home.ui
+        view/main.ui
     )
 
     foreach(item IN LISTS data_SHADOW)
@@ -102,7 +104,7 @@ endif()
 # Files only copied if a target depends on them
 add_custom_target(data-target ALL DEPENDS 
     "${CMAKE_CURRENT_BINARY_DIR}/view/login.ui"
-    "${CMAKE_CURRENT_BINARY_DIR}/view/home.ui"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/main.ui"
 )
 
 add_dependencies(${BINARY}_run data-target)
