@@ -25,4 +25,7 @@ void SendButton::on_clicked() {
     }
 
     printf("Message to send: %s\n", msg_entry->get_text().c_str());
+    
+    std::string msg = msg_entry->get_text().c_str();
+    model->SendMessage(1, msg);
 }

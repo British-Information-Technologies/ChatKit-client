@@ -15,6 +15,6 @@ ClientController::ClientController() {
 }
 
 void ClientController::Body(int argc, char **argv) {
-  //model->Run();
+  model->Run();
   view->run(argc, argv); // enters main gui loop - blocks until closed
 }
