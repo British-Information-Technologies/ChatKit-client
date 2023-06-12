@@ -5,14 +5,27 @@
 #include "MainApplication.h"
 
 #include "login/login-application-window.h"
-#include "home/home-application-window.h"
+#include "main/main-application-window.h"
 
 MainApplication::MainApplication()
     : Gtk::Application("org.gtkmm.example") {
-  this->hold();
+  builder = Gtk::Builder::create();
+  
+  UpdateBuilder("view/login.ui");
+  UpdateBuilder("view/main.ui");
+
+  login_window = builder->get_widget_derived<LoginApplicationWindow>(
+    builder,
+    "loginWindow"
+  );
+
+  main_window = builder->get_widget_derived<MainApplicationWindow>(
+    builder,
+    "mainWindow"
+  );
 }
 
-MainApplication::~MainApplication() { this->release(); }
+MainApplication::~MainApplication() {}
 
 void MainApplication::on_startup() {
   Gtk::Application::on_startup();
@@ -20,23 +33,28 @@ void MainApplication::on_startup() {
 
 void MainApplication::on_activate() {
   Gtk::Application::on_activate();
-  
-  builder = Gtk::Builder::create();
-  
-  if(SetLoginWindow()) {
-    return;
-  }
+
+  add_window(*login_window);
+  add_window(*main_window);
+
+  login_window->show();
+  main_window->hide();
 }
 
 void MainApplication::on_shutdown() {
   Gtk::Application::on_shutdown();
 
-  if (app_window) {
-    app_window->hide();
-    remove_window(*app_window);
+  if (login_window) {
+    login_window->hide();
+    remove_window(*login_window);
+  }
+  
+  if (main_window) {
+    main_window->hide();
+    remove_window(*main_window);
   }
 }
-
+  
 Glib::RefPtr<MainApplication> MainApplication::create() {
   return Glib::make_refptr_for_instance<MainApplication>(new MainApplication());
 }
@@ -61,49 +79,6 @@ int MainApplication::UpdateBuilder(const std::string &filename) {
     return -1;
 
   }
-
-  return 0;
-}
-
-int MainApplication::SetLoginWindow() {
-  if (UpdateBuilder("view/login.ui")) {
-    return -1;
-  }
-
-  if (app_window) {
-    app_window->hide();
-    remove_window(*app_window);
-  }
-
-  app_window = builder->get_widget_derived<LoginApplicationWindow>(
-    builder,
-    "rootAppWindow",
-    [this](){ Login(); }
-  );
-
-  add_window(*app_window);
-  app_window->show();
-
-  return 0;
-}
-
-int MainApplication::Login() {
-  if (UpdateBuilder("view/home.ui")) {
-    return -1;
-  }
-
-  if (app_window) {
-    app_window->hide();
-    remove_window(*app_window);
-  }
-
-  app_window = builder->get_widget_derived<HomeApplicationWindow>(
-    builder,
-    "rootAppWindow"
-  );
-
-  add_window(*app_window);
-  app_window->show();
 
   return 0;
 }

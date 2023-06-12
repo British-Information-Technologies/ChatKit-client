@@ -4,15 +4,16 @@
 #include <gtkmm-4.0/gtkmm.h>
 #include <functional>
 
+#include "buttons/login-button.h"
+
 class LoginApplicationWindow : public Gtk::ApplicationWindow {
     private:
-        std::shared_ptr<Gtk::Button> login_button;
+        Gtk::Button* login_button = nullptr;
 
     public:
         LoginApplicationWindow(
             BaseObjectType *cobject,
-            const Glib::RefPtr<Gtk::Builder> &refBuilder,
-            std::function<void()> login_func
+            const Glib::RefPtr<Gtk::Builder> &refBuilder
         );
         virtual ~LoginApplicationWindow();
 };
