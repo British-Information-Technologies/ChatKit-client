@@ -3,15 +3,29 @@
 <interface>
   <!-- interface-name chatkit-client-ui.ui -->
   <requires lib="gtk" version="4.6"/>
-  <requires lib="libadwaita" version="1.1"/>
-  <object class="GtkApplicationWindow" id="rootAppWindow">
+  <object class="GtkApplicationWindow" id="loginWindow">
     <child>
-      <object class="GtkGrid" id="rootGrid">
+      <object class="GtkGrid" id="loginGrid">
         <property name="accessible-role">grid</property>
         <child>
-          <object class="GtkBox" id="loginBox">
+          <object class="GtkLabel" id="loginWelcomeMsg">
+            <property name="accessible-role">label</property>
+            <property name="hexpand">True</property>
+            <property name="label">&lt;span size="24pt"&gt;Welcome!&lt;/span&gt;</property>
+            <property name="margin-top">30</property>
+            <property name="use-markup">True</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="column-span">3</property>
+              <property name="row">0</property>
+              <property name="row-span">2</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="loginInputBox">
             <child>
-              <object class="GtkGrid" id="loginGrid">
+              <object class="GtkGrid" id="loginInputGrid">
                 <property name="accessible-role">grid</property>
                 <property name="column-homogeneous">True</property>
                 <property name="margin-top">50</property>
@@ -95,20 +109,6 @@
             <layout>
               <property name="column">1</property>
               <property name="row">2</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="welcomeMsg">
-            <property name="accessible-role">label</property>
-            <property name="hexpand">True</property>
-            <property name="label">&lt;span size="24pt"&gt;Welcome!&lt;/span&gt;</property>
-            <property name="margin-top">30</property>
-            <property name="use-markup">True</property>
-            <layout>
-              <property name="column">0</property>
-              <property name="column-span">3</property>
-              <property name="row">1</property>
             </layout>
           </object>
         </child>
