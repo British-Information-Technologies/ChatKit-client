@@ -59,6 +59,8 @@ set(SOURCES
 
     view/main/main-application-window.cc
     
+    view/main/buttons/send-button.cc
+    
     view/login/login-application-window.cc
 
     view/login/buttons/login-button.cc

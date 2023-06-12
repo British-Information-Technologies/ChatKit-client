@@ -11,7 +11,7 @@ using namespace model;
 
 ClientController::ClientController() {
   model = std::make_shared<ClientModel>();
-  view = MainApplication::create();
+  view = MainApplication::create(model);
 }
 
 void ClientController::Body(int argc, char **argv) {
