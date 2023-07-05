@@ -2,10 +2,11 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 
 set(SOURCES
     # controller
-    controller/client-controller.cc
+    view-model/network-view-model.cc
 
     # model
-    model/client-model.cc
+    model/data-model.cc
+    model/network-model.cc
 
     model/friend-functionality/friend-hashmap.cc
     model/friend-functionality/friend-node.cc
