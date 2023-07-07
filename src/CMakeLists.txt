@@ -3,6 +3,7 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 set(SOURCES
     # controller
     view-model/network-view-model.cc
+    view-model/account-view-model.cc
 
     # model
     model/data-model.cc
@@ -60,11 +61,7 @@ set(SOURCES
 
     view/main/main-application-window.cc
     
-    view/main/buttons/send-button.cc
-    
     view/login/login-application-window.cc
-
-    view/login/buttons/login-button.cc
 
     # root
     main.cc
