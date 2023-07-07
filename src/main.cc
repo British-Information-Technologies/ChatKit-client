@@ -1,8 +1,8 @@
-#include "controller/client-controller.h"
+#include <gtkmm-4.0/gtkmm.h>
 
-using namespace controller;
+#include "view/MainApplication.h"
 
 int main(int argc, char **argv) {
-  ClientController client_controller;
-  client_controller.Body(argc, argv);
+  auto view = MainApplication::create();
+  view->run();
 }

@@ -3,17 +3,21 @@
 
 #include <gtkmm-4.0/gtkmm.h>
 
-#include "model/client-model.h"
+#include "view-model/network-view-model.h"
 
 class MainApplicationWindow : public Gtk::ApplicationWindow {
     private:
-        Gtk::Button* send_button = nullptr;
+        std::shared_ptr<view_model::NetworkViewModel> network_vm;
+        
+        Glib::RefPtr<Gtk::Builder> refBuilder;
+        
+        Glib::RefPtr<Gtk::Button> send_button;
 
     public:
         MainApplicationWindow(
             BaseObjectType *cobject,
             const Glib::RefPtr<Gtk::Builder> &refBuilder,
-            std::shared_ptr<model::ClientModel> model
+            std::shared_ptr<view_model::NetworkViewModel> network_vm
         );
         virtual ~MainApplicationWindow();
 };

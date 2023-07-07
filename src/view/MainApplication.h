@@ -5,7 +5,8 @@
 #include <string>
 #include <memory>
 
-#include "model/client-model.h"
+#include "view-model/network-view-model.h"
+#include "view-model/account-view-model.h"
 
 /**
  * Author: @michael-bailey @Mitch161
@@ -15,13 +16,11 @@
  */
 class MainApplication : public Gtk::Application {
 private:
-  Glib::RefPtr<Gtk::Builder> builder = nullptr;
-
-  Gtk::ApplicationWindow *login_window = nullptr;
-  Gtk::ApplicationWindow *main_window = nullptr;
+  std::shared_ptr<Gtk::ApplicationWindow> login_window;
+  std::shared_ptr<Gtk::ApplicationWindow> main_window;
 
 protected:
-  MainApplication(std::shared_ptr<model::ClientModel> model);
+  MainApplication();
   virtual ~MainApplication();
 
   // application lifecycle signals
@@ -30,10 +29,10 @@ protected:
   void on_shutdown() override;
 
 public:
-  static Glib::RefPtr<MainApplication> create(std::shared_ptr<model::ClientModel> model);
+  static Glib::RefPtr<MainApplication> create();
 
-private:
-  int UpdateBuilder(const std::string &filename);
+//private:
+  //void SetViewState(int state);
 };
 
 #endif

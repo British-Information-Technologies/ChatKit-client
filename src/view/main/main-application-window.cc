@@ -3,20 +3,23 @@
 
 #include "main-application-window.h"
 
-#include "model/client-model.h"
-#include "buttons/send-button.h"
+#include "view-model/network-view-model.h"
 
 MainApplicationWindow::MainApplicationWindow(
     BaseObjectType *cobject, 
     const Glib::RefPtr<Gtk::Builder> &refBuilder,
-    std::shared_ptr<model::ClientModel> model
+    std::shared_ptr<view_model::NetworkViewModel> network_vm
 ): Glib::ObjectBase("MainApplicationWindow"), Gtk::ApplicationWindow(cobject)
 {
-    send_button = refBuilder->get_widget_derived<SendButton>(
-        refBuilder,
-        "sendButton",
-        model
-    );
+    this->network_vm = network_vm;
+
+    this->refBuilder = refBuilder;
+
+    send_button = this->refBuilder->get_object<Gtk::Button>("sendButton");
+    send_button->signal_clicked().connect(sigc::mem_fun(
+        *this->network_vm,
+        &view_model::NetworkViewModel::SendMessageObserver
+    ));
 }
 
 MainApplicationWindow::~MainApplicationWindow() {}
