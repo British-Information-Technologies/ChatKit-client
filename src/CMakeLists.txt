@@ -57,6 +57,8 @@ set(SOURCES
     model/networking/utility/secure-data-handler.cc
 
     # view
+    view/application-injector.cc
+
     view/MainApplication.cc
 
     view/main/main-application-window.cc
@@ -71,6 +73,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -lsodium")
 
 # todo - must change as machine specific
 find_package(Libevent CONFIG REQUIRED PATHS /home/mitchell/Documents/packages/libevent/build)
+
+add_definitions(${GTKMM_CFLAGS_OTHER})
 
 add_executable(${BINARY}_run ${SOURCES})
 target_link_directories(${BINARY}_run PRIVATE ${GTKMM_LIBRARY_DIRS})
