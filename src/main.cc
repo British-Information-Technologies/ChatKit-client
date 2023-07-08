@@ -1,8 +1,8 @@
 #include <gtkmm-4.0/gtkmm.h>
 
-#include "view/MainApplication.h"
+#include "view/application-injector.h"
 
 int main(int argc, char **argv) {
-  auto view = MainApplication::create();
+  Glib::RefPtr<Gtk::Application> view = ApplicationInjector::inject();
   view->run();
 }

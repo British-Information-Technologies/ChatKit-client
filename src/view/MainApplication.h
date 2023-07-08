@@ -5,9 +5,6 @@
 #include <string>
 #include <memory>
 
-#include "view-model/network-view-model.h"
-#include "view-model/account-view-model.h"
-
 /**
  * Author: @michael-bailey @Mitch161
  * # MainApplication
@@ -29,10 +26,14 @@ protected:
   void on_shutdown() override;
 
 public:
+  void SetViewState(int state);
+  void SetViews(
+    std::shared_ptr<Gtk::ApplicationWindow> login_window,
+    std::shared_ptr<Gtk::ApplicationWindow> main_window
+  );
+  
   static Glib::RefPtr<MainApplication> create();
 
-//private:
-  //void SetViewState(int state);
 };
 
 #endif
