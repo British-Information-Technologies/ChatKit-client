@@ -4,19 +4,18 @@
 
 #include "network-view-model.h"
 
-#include "../model/network-model.h"
+#include "model/network-model.h"
 
 using namespace view_model;
-using namespace model;
 
 NetworkViewModel::NetworkViewModel(
+  std::shared_ptr<model::NetworkModel> model,
   Glib::RefPtr<Gtk::Entry> msg_entry
 ) {
-  model = std::make_shared<NetworkModel>();
-
+  this->model = model;
   this->msg_entry = msg_entry;
   
-  model->Run();
+  //this->model->Run(); // Seg faults
 }
 
 void NetworkViewModel::SendMessageObserver() {
