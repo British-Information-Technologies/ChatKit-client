@@ -7,8 +7,10 @@
 
 using namespace model;
 
-NetworkModel::NetworkModel() {
-  this->network_manager = std::make_shared<NetworkManager>();
+NetworkModel::NetworkModel(
+  std::shared_ptr<NetworkManager> network_manager
+) {
+  this->network_manager = network_manager;
 }
 
 int NetworkModel::Run() {

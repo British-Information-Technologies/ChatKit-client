@@ -16,7 +16,10 @@ namespace model {
             std::shared_ptr<model_server_functionality::ServerAPI> server_api;
 
         public:
-            DataModel();
+            DataModel(
+                std::shared_ptr<model_friend_functionality::FriendAPI> friend_api,
+                std::shared_ptr<model_server_functionality::ServerAPI> server_api
+            );
             
             bool AddFriend(const std::string &uuid, const std::string &name, const std::string &ip, const std::string &port);
 

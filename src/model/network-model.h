@@ -5,7 +5,6 @@
 #include <string>
 
 #include "networking/network-manager.h"
-#include "networking/connection.h"
 
 namespace model {
     class NetworkModel {
@@ -13,7 +12,9 @@ namespace model {
             std::shared_ptr<NetworkManager> network_manager;
 
         public:
-            NetworkModel();
+            NetworkModel(
+                std::shared_ptr<NetworkManager> network_manager
+            );
             
             int Run();
 

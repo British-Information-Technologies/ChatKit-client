@@ -3,7 +3,7 @@
 
 #include "login-application-window.h"
 
-#include "view-model/network-view-model.h"
+#include "view-model/account-view-model.h"
 
 LoginApplicationWindow::LoginApplicationWindow(
     BaseObjectType *cobject, 

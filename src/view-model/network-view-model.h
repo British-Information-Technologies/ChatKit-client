@@ -2,6 +2,7 @@
 #define VIEW_MODEL_NETWORK_H_
 
 #include <gtkmm-4.0/gtkmm.h>
+#include <memory>
 
 #include "../model/network-model.h"
 
@@ -14,7 +15,10 @@ namespace view_model {
       Glib::RefPtr<Gtk::Entry> msg_entry;
 
     public:
-      NetworkViewModel(Glib::RefPtr<Gtk::Entry> msg_entry);
+      NetworkViewModel(
+        std::shared_ptr<model::NetworkModel> model,
+        Glib::RefPtr<Gtk::Entry> msg_entry
+      );
 
       void SendMessageObserver();
   };

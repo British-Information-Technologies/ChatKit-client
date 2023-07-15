@@ -2,10 +2,14 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 
 set(SOURCES
     # controller
+    view-model/injector.cc
+    
     view-model/network-view-model.cc
     view-model/account-view-model.cc
 
     # model
+    model/injector.cc
+    
     model/data-model.cc
     model/network-model.cc
 
@@ -57,7 +61,7 @@ set(SOURCES
     model/networking/utility/secure-data-handler.cc
 
     # view
-    view/application-injector.cc
+    view/injector.cc
 
     view/MainApplication.cc
 
@@ -66,6 +70,7 @@ set(SOURCES
     view/login/login-application-window.cc
 
     # root
+    injector.cc
     main.cc
 )
 
