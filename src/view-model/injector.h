@@ -16,7 +16,7 @@ namespace view_model {
             );
 
             static std::shared_ptr<NetworkViewModel> inject_network_vm(
-                Glib::RefPtr<Gtk::Entry> msg_entry
+                /*Glib::RefPtr<Gtk::Entry> msg_entry*/
             );
     };
 }

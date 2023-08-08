@@ -1,5 +1,28 @@
 set(BINARY ${CMAKE_PROJECT_NAME})
 
+set(RESOURCE_LIST
+    view/res/login.ui
+    view/res/main.ui
+    view/res/friend_list.ui
+    view/res/server_list.ui
+    view/res/profile_card.ui
+    view/res/friend_profile_card.ui
+    view/res/homepage.ui
+    view/res/add_friend.ui
+    view/res/direct_message.ui
+ 
+    view/res/panel_style.css
+)
+
+compile_gresources(
+    RESOURCE_FILE
+    XML_OUT
+    TYPE BUNDLE
+    RESOURCES ${RESOURCE_LIST}
+)
+
+add_custom_target(glib-resource-target ALL DEPENDS ${RESOURCE_FILE})
+
 set(SOURCES
     # controller
     view-model/injector.cc
@@ -66,6 +89,12 @@ set(SOURCES
     view/MainApplication.cc
 
     view/main/main-application-window.cc
+
+    view/main/left/friend-list-box.cc
+    view/main/left/server-list-box.cc
+    view/main/left/friend-profile-card-button.cc
+
+    view/main/right/add-friend-box.cc
     
     view/login/login-application-window.cc
 
@@ -77,7 +106,8 @@ set(SOURCES
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -lsodium")
 
 # todo - must change as machine specific
-find_package(Libevent CONFIG REQUIRED PATHS /home/mitchell/Documents/packages/libevent/build)
+find_package(Libevent CONFIG REQUIRED) 
+#PATHS /home/mitchell/Documents/packages/libevent/build
 
 add_definitions(${GTKMM_CFLAGS_OTHER})
 
@@ -95,8 +125,24 @@ target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nl
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
     # List of resources to add a copy rule
     set(data_SHADOW
-        view/login.ui
-        view/main.ui
+        view/res/add-friend.png
+        view/res/add-server.png
+        view/res/delete-friend.png
+        view/res/delete-server.png
+        view/res/friendlist.png
+        view/res/headphone.png
+        view/res/homepage.png
+        view/res/mic.png
+        view/res/notification.png
+        view/res/search-icon.png
+        view/res/serverlist.png
+        view/res/settings.png
+        view/res/signal_00.png
+        view/res/signal_01.png
+        view/res/signal_02.png
+        view/res/signal_03.png
+        view/res/signal_04.png
+        view/res/user-profile.png
     )
 
     foreach(item IN LISTS data_SHADOW)
@@ -112,8 +158,24 @@ endif()
 
 # Files only copied if a target depends on them
 add_custom_target(data-target ALL DEPENDS 
-    "${CMAKE_CURRENT_BINARY_DIR}/view/login.ui"
-    "${CMAKE_CURRENT_BINARY_DIR}/view/main.ui"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/add-friend.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/add-server.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/delete-friend.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/delete-server.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/friendlist.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/headphone.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/homepage.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/mic.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/notification.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/search-icon.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/serverlist.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/settings.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/signal_00.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/signal_01.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/signal_02.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/signal_03.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/signal_04.png"
+    "${CMAKE_CURRENT_BINARY_DIR}/view/res/user-profile.png"
 )
 
-add_dependencies(${BINARY}_run data-target)
+add_dependencies(${BINARY}_run glib-resource-target data-target)

@@ -12,12 +12,12 @@ namespace view_model {
       std::shared_ptr<model::NetworkModel> model;
 
       // Bindings
-      Glib::RefPtr<Gtk::Entry> msg_entry;
+      //Glib::RefPtr<Gtk::Entry> msg_entry;
 
     public:
       NetworkViewModel(
-        std::shared_ptr<model::NetworkModel> model,
-        Glib::RefPtr<Gtk::Entry> msg_entry
+        std::shared_ptr<model::NetworkModel> model
+        /*Glib::RefPtr<Gtk::Entry> msg_entry*/
       );
 
       void SendMessageObserver();

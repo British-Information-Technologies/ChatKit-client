@@ -11,15 +11,49 @@ class MainApplicationWindow : public Gtk::ApplicationWindow {
         
         Glib::RefPtr<Gtk::Builder> refBuilder;
         
-        Glib::RefPtr<Gtk::Button> send_button;
+        Glib::RefPtr<Gtk::CssProvider> refProvider;
+        
+        Glib::RefPtr<Gtk::Button> home_page_button;
+        Glib::RefPtr<Gtk::Button> friend_list_button;
+        Glib::RefPtr<Gtk::Button> server_list_button;
+        //Glib::RefPtr<Gtk::Button> send_button;
+
+        Glib::RefPtr<Gtk::Box> friend_list;
+        Glib::RefPtr<Gtk::Box> server_list;
+        Glib::RefPtr<Gtk::Box> profile_card;
+        Glib::RefPtr<Gtk::Box> home_page;
+        Glib::RefPtr<Gtk::Box> direct_msg;
+        Glib::RefPtr<Gtk::Box> add_friend;
 
     public:
         MainApplicationWindow(
             BaseObjectType *cobject,
             const Glib::RefPtr<Gtk::Builder> &refBuilder,
-            std::shared_ptr<view_model::NetworkViewModel> network_vm
+            std::shared_ptr<view_model::NetworkViewModel> network_vm,
+            Glib::RefPtr<Gtk::Box> friend_list,
+            Glib::RefPtr<Gtk::Box> server_list,
+            Glib::RefPtr<Gtk::Box> profile_card,
+            Glib::RefPtr<Gtk::Box> home_page,
+            Glib::RefPtr<Gtk::Box> direct_msg,
+            Glib::RefPtr<Gtk::Box> add_friend
         );
         virtual ~MainApplicationWindow();
+        
+        void SetHomePageState();
+        
+        void SetDirectMessageState();
+
+        void SetAddFriendState();
+    
+        void SetFriendListState();
+        
+        void SetServerListState();
+ 
+    protected:
+        static void on_parsing_error(
+            const Glib::RefPtr<const Gtk::CssSection>& section,
+            const Glib::Error& error
+        );
 };
 
 #endif
