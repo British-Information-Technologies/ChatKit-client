@@ -9,21 +9,6 @@ set(CMAKE_C_STANDARD 17)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 
-include_directories(src /usr/local/include)
-link_directories(/usr/local/lib)
-
-add_subdirectory(src)
-#add_subdirectory(lib/googletest)
-
-
-# --- enable GoogleTest ---
-#option(PACKAGE_TESTS "Build the tests" ON)
-#if(PACKAGE_TESTS)
- #   enable_testing()
- #   include(GoogleTest)
-    #add_subdirectory(test)
-#endif()
-
 
 # --- find required locally installed libraries ---
 find_package(PkgConfig REQUIRED)
@@ -58,3 +43,29 @@ FetchContent_Declare(fmt
     GIT_TAG 10.0.0
 )
 FetchContent_MakeAvailable(fmt)
+
+# GCR_CMake extension tool
+FetchContent_Declare(gcr
+    GIT_REPOSITORY https://github.com/Makman2/GCR_CMake
+    GIT_TAG 4.0
+)
+FetchContent_MakeAvailable(gcr)
+list(APPEND CMAKE_MODULE_PATH ${gcr_SOURCE_DIR}/macros)
+include(GlibCompileResourcesSupport)
+
+
+# --- setup src ---
+include_directories(src /usr/local/include)
+link_directories(/usr/local/lib)
+
+add_subdirectory(src)
+#add_subdirectory(lib/googletest)
+
+
+# --- enable GoogleTest ---
+#option(PACKAGE_TESTS "Build the tests" ON)
+#if(PACKAGE_TESTS)
+ #   enable_testing()
+ #   include(GoogleTest)
+    #add_subdirectory(test)
+#endif()

@@ -13,8 +13,12 @@ namespace view {
             );
 
             static std::shared_ptr<Gtk::ApplicationWindow> inject_main();
+            
+            static std::shared_ptr<Gtk::Button> inject_friend_profile_card(
+                std::function<void()> setDirectMessageState
+            );
 
-        private:
+        private:             
             static int UpdateBuilder(
                 const Glib::RefPtr<Gtk::Builder> &ref_builder,
                 const std::string &filename

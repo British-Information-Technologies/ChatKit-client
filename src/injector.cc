@@ -8,6 +8,13 @@
 
 Glib::RefPtr<Gtk::Application> Injector::inject_app() { 
     Glib::RefPtr<MainApplication> view = MainApplication::create();
+    
+    GResource* g_res = g_resource_load("./resources.gresource", NULL);
+    if (!g_res) {
+        return view;
+    }
+
+    g_resources_register(g_res);
 
     using std::placeholders::_1;
     std::function<void(int)> setViewState = std::bind(

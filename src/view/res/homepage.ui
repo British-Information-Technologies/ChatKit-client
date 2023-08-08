@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.12.1 -->
+<interface>
+  <requires lib="gtk" version="4.10"/>
+  <template class="HomePage" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="spacing">15</property>
+    <child>
+      <object class="GtkLabel">
+        <property name="label">&lt;span size="36pt"&gt;Good morning&lt;/span&gt;</property>
+        <property name="margin-end">50</property>
+        <property name="margin-start">50</property>
+        <property name="use-markup">True</property>
+        <property name="xalign">0.0</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-end">50</property>
+        <property name="margin-start">50</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">&lt;span size="26pt"&gt;Recent servers&lt;/span&gt;</property>
+            <property name="use-markup">True</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox"/>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-end">50</property>
+        <property name="margin-start">50</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">&lt;span size="26pt"&gt;Recent friends&lt;/span&gt;</property>
+            <property name="use-markup">True</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox"/>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-end">50</property>
+        <property name="margin-start">50</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">&lt;span size="26pt"&gt;What's new&lt;/span&gt;</property>
+            <property name="use-markup">True</property>
+            <property name="xalign">0.0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox"/>
+        </child>
+      </object>
+    </child>
+    <style>
+      <class name="panel"/>
+    </style>
+  </template>
+</interface>

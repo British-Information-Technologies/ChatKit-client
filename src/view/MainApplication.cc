@@ -15,7 +15,6 @@ void MainApplication::on_startup() {
 
 void MainApplication::on_activate() {
   Gtk::Application::on_activate();
-
   add_window(*login_window);
   login_window->show();
 }
