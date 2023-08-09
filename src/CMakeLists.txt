@@ -95,6 +95,7 @@ set(SOURCES
     view/main/left/friend-profile-card-button.cc
 
     view/main/right/add-friend-box.cc
+    view/main/right/direct-message-box.cc
     
     view/login/login-application-window.cc
 
