@@ -3,8 +3,6 @@
 
 #include "add-friend-box.h"
 
-bool on_widget_key_pressed(guint keyval, guint, Gdk::ModifierType state);
-
 struct _AddFriend {
     GtkBox parent_type;
 
@@ -16,6 +14,20 @@ struct _AddFriend {
 G_DEFINE_TYPE(AddFriend, add_friend, GTK_TYPE_BOX)
 
 static AddFriend *add_friend;
+
+namespace {
+    // TODO (eventually remove): faked for testing reasons
+    bool on_widget_key_pressed(guint keyval, guint _, Gdk::ModifierType state) {
+        if (keyval == GDK_KEY_Return) {
+            gtk_widget_set_visible(
+                GTK_WIDGET(add_friend->addFriendProfileCardBox),
+                true
+            );
+        }
+
+        return false;
+    }
+}
 
 static void add_friend_dispose(GObject *gobject) {
     gtk_widget_dispose_template(GTK_WIDGET(gobject), ADD_FRIEND_TYPE);
@@ -57,18 +69,6 @@ void set_friend_code_entry(/*TODO: std::function<void()> func (function to send 
     );
 
     Glib::wrap(GTK_WIDGET(add_friend), true)->add_controller(event_ck);
-}
-
-// TODO (eventually remove): faked for testing reasons
-bool on_widget_key_pressed(guint keyval, guint _, Gdk::ModifierType state) {
-    if (keyval == GDK_KEY_Return) {
-        gtk_widget_set_visible(
-            GTK_WIDGET(add_friend->addFriendProfileCardBox),
-            true
-        );
-    }
-
-    return false;
 }
 
 void set_send_invite_button(std::function<void()> func) {
