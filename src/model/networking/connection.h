@@ -52,11 +52,11 @@ namespace model {
       
       int CreateConnection();
 
-      virtual int SendPublicKey() = 0;
+      int SendPublicKey();
 
-      virtual int EstablishSecureConnection(const unsigned char *recv_pk) = 0;
+      int EstablishSecureConnection(const unsigned char *recv_pk);
 
-      int SendMessage(Message *message);
+      virtual int SendMessage(Message *message) = 0;
   };
 }  // namespace model_networking
 

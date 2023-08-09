@@ -1,5 +1,7 @@
 #include <memory>
 #include <string>
+#include <algorithm>
+#include <sodium.h>
 #include <arpa/inet.h>
 #include <bits/stdc++.h>
 #include <netdb.h>
@@ -13,12 +15,12 @@
 
 #include "utility/data-handler.h"
 #include "utility/insecure-data-handler.h"
+#include "utility/secure-data-handler.h"
 
 #include "messages/message.h"
 #include "messages/internal/event-error.h"
 
-#include "utility/buffer-reader.h"
-#include "utility/buffer-writer.h"
+#include "model/networking/utility/buffer-reader.h"
 
 using namespace model;
 
@@ -122,17 +124,61 @@ int Connection::CreateConnection() {
   return sockfd;
 }
 
-int Connection::SendMessage(Message *message) {
-  std::string msg_str = message->Serialize();
-  std::string encoded_packet = data_handler->FormatSend(msg_str);
+int Connection::SendPublicKey() {
+  // ensures operations are thread safe
+  if (sodium_init() < 0) {
+    // sodium initialisation failed
+    return -1;
+  }
   
-  if (!encoded_packet.length()) {
-    // encoded packet is empty, failed to format message
+  // generate keypair
+  pk = std::unique_ptr<unsigned char[]>(new unsigned char[crypto_box_PUBLICKEYBYTES]);  
+  sk = std::unique_ptr<unsigned char[]>(new unsigned char[crypto_box_SECRETKEYBYTES]);  
+  if(crypto_box_keypair(pk.get(), sk.get()) != 0) {
+    // keypair generation failed
+    return -1;
+  }
+  
+  // convert pk into message format
+  std::string str_pk(reinterpret_cast<char const*>(pk.get()), crypto_box_PUBLICKEYBYTES);
+  std::unique_ptr<Message> msg_pk;
+  if (DeserializeStreamOut(msg_pk.get(), str_pk) != 0) {
+    // failed to create PK message
     return -1;
   }
 
-  // send encoded packet
-  return WriteBufferLine(bev, encoded_packet);
+  // send our PK as plaintext
+  if (SendMessage(msg_pk.get()) < 0) {
+    // failed to send PK
+    return -1;
+  }
+
+  return 0;
+}
+
+int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
+  // ensures operations are thread safe
+  if (sodium_init() < 0) {
+    // sodium initialisation failed
+    return -1;
+  }
+
+  // ensure a pk and sk pair exist
+  if (!pk.get() || !sk.get()) {
+    // no pk and sk pair exist
+    return -1;
+  }
+
+  // create shared secret with recipient PK and our SK
+  unsigned char ss[crypto_box_BEFORENMBYTES];
+  if(crypto_box_beforenm(ss, recv_pk, sk.get()) != 0) {
+    // shared secret creation failed
+    return -1;
+  }
+
+  SetState(new SecureDataHandler(ss));
+
+  return 0;
 }
 
 void Connection::ReadMessageCbHandler(struct bufferevent *bev, void *ptr) {

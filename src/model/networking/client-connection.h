@@ -1,5 +1,5 @@
-#ifndef MODEL_NETWORKING_SERVER_CONNECTION_H_
-#define MODEL_NETWORKING_SERVER_CONNECTION_H_
+#ifndef MODEL_NETWORKING_CLIENT_CONNECTION_H_
+#define MODEL_NETWORKING_CLIENT_CONNECTION_H_
 
 #include <memory>
 #include <string>
@@ -13,12 +13,12 @@
 using json = nlohmann::json;
 
 namespace model {
-    class ServerConnection : public Connection {
+    class ClientConnection : public Connection {
         private:
             int GetRecipientPublicKey(unsigned char* recv_pk);
 
         public:
-            ServerConnection(
+            ClientConnection(
                 std::shared_ptr<struct event_base> base,
                 msd::channel<json> &network_manager_chann,
                 const std::string &ip_address,

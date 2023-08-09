@@ -48,6 +48,7 @@ set(SOURCES
     model/networking/connection.cc
     model/networking/network-manager.cc
     model/networking/server-connection.cc
+    model/networking/client-connection.cc
     
     model/networking/messages/message.cc
 
