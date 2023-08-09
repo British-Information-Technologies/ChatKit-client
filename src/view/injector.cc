@@ -108,6 +108,11 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
 
         append_friend_to_list(friend_profile_card_button);
     });
+    
+    set_message_entry(sigc::mem_fun(
+        *network_vm,
+        &view_model::NetworkViewModel::SendMessageObserver
+    ));
 
     return main_window;
 }
