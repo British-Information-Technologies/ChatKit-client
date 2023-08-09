@@ -56,12 +56,6 @@ MainApplicationWindow::MainApplicationWindow(
         &MainApplicationWindow::SetServerListState
     ));
 
-    /*send_button = this->refBuilder->get_object<Gtk::Button>("sendButton");
-    send_button->signal_clicked().connect(sigc::mem_fun(
-        *this->network_vm,
-        &view_model::NetworkViewModel::SendMessageObserver
-    ));*/
-
     this->friend_list = friend_list;
 
     this->server_list = server_list;

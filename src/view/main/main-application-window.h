@@ -16,7 +16,6 @@ class MainApplicationWindow : public Gtk::ApplicationWindow {
         Glib::RefPtr<Gtk::Button> home_page_button;
         Glib::RefPtr<Gtk::Button> friend_list_button;
         Glib::RefPtr<Gtk::Button> server_list_button;
-        //Glib::RefPtr<Gtk::Button> send_button;
 
         Glib::RefPtr<Gtk::Box> friend_list;
         Glib::RefPtr<Gtk::Box> server_list;
