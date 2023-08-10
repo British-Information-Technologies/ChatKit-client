@@ -69,6 +69,8 @@ set(SOURCES
     model/networking/messages/stream-in/server/global-message.cc
     model/networking/messages/stream-in/server/user-message.cc
     model/networking/messages/stream-in/server/public-key.cc
+    
+    model/networking/messages/stream-in/client/send-message.cc
 
     model/networking/messages/stream-out/network/connect.cc
     model/networking/messages/stream-out/network/info.cc
