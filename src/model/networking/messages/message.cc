@@ -19,6 +19,8 @@
 #include "stream-in/network/connecting.h"
 #include "stream-in/network/error.h"
 
+#include "stream-in/client/send-message.h"
+
 #include "stream-out/server/get-clients.h"
 #include "stream-out/server/get-messages.h"
 #include "stream-out/server/send-message.h"
@@ -27,6 +29,8 @@
 
 #include "stream-out/network/info.h"
 #include "stream-out/network/connect.h"
+
+#include "stream-out/client/send-message.h"
 
 #include "internal/event-error.h"
 
@@ -111,6 +115,21 @@ namespace {
         return 1;
     }
 
+    int isClientStreamInMessage(Message* msg, const json data_json) {
+        std::string type = data_json.at("type");
+        
+        if (type == client_stream_in::kSendMessage) {
+            std::string time = data_json.at("time");
+            std::string date = data_json.at("date");
+            std::string content = data_json.at("content");
+            msg = new client_stream_in::SendMessage(time, date, content);
+        } else {
+            return 0;
+        }
+        
+        return 1;
+    }
+
     int isServerStreamOutMessage(Message* msg, const json data_json) {
         std::string type = data_json.at("type");
         
@@ -157,6 +176,21 @@ namespace {
 
         return 1;
     }
+
+    int isClientStreamOutMessage(Message* msg, const json data_json) {
+        std::string type = data_json.at("type");
+        
+        if (type == client_stream_out::kSendMessage) {
+            std::string time = data_json.at("time");
+            std::string date = data_json.at("date");
+            std::string content = data_json.at("content");
+            msg = new client_stream_out::SendMessage(time, date, content);
+        } else {
+            return 0;
+        }
+        
+        return 1;
+    }
     
     int isInternalMessage(Message* msg, const json data_json) {
         std::string type = data_json.at("type");
@@ -186,7 +220,11 @@ int model::DeserializeStreamOut(Message* msg, std::string data) {
     }
 
     // convert to message object
-    if (isServerStreamOutMessage(msg, data_json) || isNetworkStreamOutMessage(msg, data_json)) {
+    if (
+        isClientStreamOutMessage(msg, data_json) ||
+        isServerStreamOutMessage(msg, data_json) ||
+        isNetworkStreamOutMessage(msg, data_json)
+    ) {
         // stream out message successfully created from data
         return 0;
     }
@@ -204,7 +242,11 @@ int model::DeserializeStreamIn(Message* msg, std::string data) {
     }
 
     // convert to message object
-    if (isServerStreamInMessage(msg, data_json) || isNetworkStreamInMessage(msg, data_json)) {
+    if (
+        isClientStreamInMessage(msg, data_json) ||
+        isServerStreamInMessage(msg, data_json) ||
+        isNetworkStreamInMessage(msg, data_json)
+    ) {
         // stream in message successfully created from data
         return 0;
     }
