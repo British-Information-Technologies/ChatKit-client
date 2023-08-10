@@ -78,6 +78,8 @@ set(SOURCES
     model/networking/messages/stream-out/server/get-messages.cc
     model/networking/messages/stream-out/server/send-global-message.cc
     model/networking/messages/stream-out/server/send-message.cc
+    
+    model/networking/messages/stream-out/client/send-message.cc
 
     model/networking/utility/buffer-reader.cc
     model/networking/utility/buffer-writer.cc
