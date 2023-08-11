@@ -30,18 +30,18 @@ namespace model {
             std::string GetType();
     };
     
-    int DeserializeStreamIn(Message* msg, std::string data);
-    int DeserializeClientStreamIn(Message* msg, std::string data);
-    int DeserializeServerStreamIn(Message* msg, std::string data);
-    int DeserializeNetworkStreamIn(Message* msg, std::string data);
+    int DeserializeStreamIn(Message* msg, std::string &data);
+    int DeserializeClientStreamIn(Message* msg, std::string &data);
+    int DeserializeServerStreamIn(Message* msg, std::string &data);
+    int DeserializeNetworkStreamIn(Message* msg, std::string &data);
 
-    int DeserializeStreamOut(Message* msg, std::string data);
-    int DeserializeClientStreamOut(Message* msg, std::string data);
-    int DeserializeServerStreamOut(Message* msg, std::string data);
-    int DeserializeNetworkStreamOut(Message* msg, std::string data);
+    int DeserializeStreamOut(Message* msg, std::string &data);
+    int DeserializeClientStreamOut(Message* msg, std::string &data);
+    int DeserializeServerStreamOut(Message* msg, std::string &data);
+    int DeserializeNetworkStreamOut(Message* msg, std::string &data);
 
 
-    int DeserializeInternal(Message* msg, std::string data);
+    int DeserializeInternal(Message* msg, std::string &data);
 }
 
 #endif

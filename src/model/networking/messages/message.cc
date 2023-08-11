@@ -59,26 +59,26 @@ std::string Message::GetType() {
 
 
 // Stream In
-int model::DeserializeStreamIn(Message* msg, std::string data) {
+int model::DeserializeStreamIn(Message* msg, std::string &data) {
     // convert to message object
     if (
-        model::DeserializeClientStreamIn(msg, data) ||
-        model::DeserializeServerStreamIn(msg, data) ||
+        model::DeserializeClientStreamIn(msg, data) &&
+        model::DeserializeServerStreamIn(msg, data) &&
         model::DeserializeNetworkStreamIn(msg, data)
     ) {
-        // stream in message successfully created from data
-        return 0;
+        // data is invalid, non-existent stream in message type
+        return -1;
     }
 
-    // data is invalid, non-existent stream in message type
-    return -1;
+    // stream in message successfully created from data
+    return 0;
 }
 
 
-int model::DeserializeServerStreamIn(Message* msg, std::string data) {
+int model::DeserializeServerStreamIn(Message* msg, std::string &data) {
     json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return 0;
+        return -1;
     }
     
     std::string type = data_json.at("type");
@@ -125,16 +125,16 @@ int model::DeserializeServerStreamIn(Message* msg, std::string data) {
         msg = new server_stream_in::PublicKey(key);
 
     } else {
-        return 0;
+        return -1;
     }
 
-    return 1;
+    return 0;
 }
 
-int model::DeserializeNetworkStreamIn(Message* msg, std::string data) {
+int model::DeserializeNetworkStreamIn(Message* msg, std::string &data) {
     json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return 0;
+        return -1;
     }
     
     std::string type = data_json.at("type");
@@ -154,16 +154,16 @@ int model::DeserializeNetworkStreamIn(Message* msg, std::string data) {
         msg = new network_stream_in::Error();
 
     } else {
-        return 0;
+        return -1;
     }
 
-    return 1;
+    return 0;
 }
 
-int model::DeserializeClientStreamIn(Message* msg, std::string data) {
+int model::DeserializeClientStreamIn(Message* msg, std::string &data) {
     json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return 0;
+        return -1;
     }
     
     std::string type = data_json.at("type");
@@ -174,33 +174,33 @@ int model::DeserializeClientStreamIn(Message* msg, std::string data) {
         std::string content = data_json.at("content");
         msg = new client_stream_in::SendMessage(time, date, content);
     } else {
-        return 0;
+        return -1;
     }
     
-    return 1;
+    return 0;
 }
 
 
 // Stream Out
-int model::DeserializeStreamOut(Message* msg, std::string data) {
+int model::DeserializeStreamOut(Message* msg, std::string &data) {
     // convert to message object
     if (
-        model::DeserializeClientStreamOut(msg, data) ||
-        model::DeserializeServerStreamOut(msg, data) ||
+        model::DeserializeClientStreamOut(msg, data) &&
+        model::DeserializeServerStreamOut(msg, data) &&
         model::DeserializeNetworkStreamOut(msg, data)
     ) {
-        // stream out message successfully created from data
-        return 0;
+        // data is invalid, non-existent stream out message type
+        return -1;
     }
 
-    // data is invalid, non-existent stream out message type
-    return -1;
+    // stream out message successfully created from data
+    return 0;
 }
 
-int model::DeserializeServerStreamOut(Message* msg, std::string data) {
+int model::DeserializeServerStreamOut(Message* msg, std::string &data) {
     json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return 0;
+        return -1;
     }
     
     std::string type = data_json.at("type");
@@ -224,16 +224,16 @@ int model::DeserializeServerStreamOut(Message* msg, std::string data) {
         msg = new server_stream_out::Disconnect();
 
     } else {
-        return 0;
+        return -1;
     }
 
-    return 1;
+    return 0;
 }
 
-int model::DeserializeNetworkStreamOut(Message* msg, std::string data) {
+int model::DeserializeNetworkStreamOut(Message* msg, std::string &data) {
     json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return 0;
+        return -1;
     }
     
     std::string type = data_json.at("type");
@@ -248,16 +248,16 @@ int model::DeserializeNetworkStreamOut(Message* msg, std::string data) {
         msg = new network_stream_out::Connect(uuid, username, address);
 
     } else {
-        return 0;
+        return -1;
     }
 
-    return 1;
+    return 0;
 }
 
-int model::DeserializeClientStreamOut(Message* msg, std::string data) {
+int model::DeserializeClientStreamOut(Message* msg, std::string &data) {
     json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return 0;
+        return -1;
     }
     
     std::string type = data_json.at("type");
@@ -268,18 +268,18 @@ int model::DeserializeClientStreamOut(Message* msg, std::string data) {
         std::string content = data_json.at("content");
         msg = new client_stream_out::SendMessage(time, date, content);
     } else {
-        return 0;
+        return -1;
     }
     
-    return 1;
+    return 0;
 }
 
 
 // Internal
-int model::DeserializeInternal(Message* msg, std::string data) {
+int model::DeserializeInternal(Message* msg, std::string &data) {
     json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return 0;
+        return -1;
     }
     
     std::string type = data_json.at("type");
@@ -289,7 +289,7 @@ int model::DeserializeInternal(Message* msg, std::string data) {
         // internal message successfully created from data
         std::string err_msg = data_json.at("msg");
         msg = new internal::EventError(err_msg);
-        
+
         return 0;
     }
 
