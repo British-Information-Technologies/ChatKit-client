@@ -39,11 +39,12 @@ using namespace model;
 using json = nlohmann::json;
 
 namespace {
-    json isValidJson(const std::string &data) {
+    json isValidJson(Message* msg, const std::string &data) {
         json data_json = json::parse(data);
 
         if (!data_json.contains("type")) {
             // data is invalid, must have a type
+            msg = new internal::EventError("[DeserializeError]: Message is not valid json");
             return nullptr;
         }
         
@@ -76,7 +77,7 @@ int model::DeserializeStreamIn(Message* msg, std::string &data) {
 
 
 int model::DeserializeServerStreamIn(Message* msg, std::string &data) {
-    json data_json = isValidJson(data);
+    json data_json = isValidJson(msg, data);
     if (data_json.is_null()) {
         return -1;
     }
@@ -125,6 +126,7 @@ int model::DeserializeServerStreamIn(Message* msg, std::string &data) {
         msg = new server_stream_in::PublicKey(key);
 
     } else {
+        msg = new internal::EventError("[DeserializeError]: Message is not StreamIn");
         return -1;
     }
 
@@ -132,7 +134,7 @@ int model::DeserializeServerStreamIn(Message* msg, std::string &data) {
 }
 
 int model::DeserializeNetworkStreamIn(Message* msg, std::string &data) {
-    json data_json = isValidJson(data);
+    json data_json = isValidJson(msg, data);
     if (data_json.is_null()) {
         return -1;
     }
@@ -154,6 +156,7 @@ int model::DeserializeNetworkStreamIn(Message* msg, std::string &data) {
         msg = new network_stream_in::Error();
 
     } else {
+        msg = new internal::EventError("[DeserializeError]: Message is not StreamIn");
         return -1;
     }
 
@@ -161,7 +164,7 @@ int model::DeserializeNetworkStreamIn(Message* msg, std::string &data) {
 }
 
 int model::DeserializeClientStreamIn(Message* msg, std::string &data) {
-    json data_json = isValidJson(data);
+    json data_json = isValidJson(msg, data);
     if (data_json.is_null()) {
         return -1;
     }
@@ -174,6 +177,7 @@ int model::DeserializeClientStreamIn(Message* msg, std::string &data) {
         std::string content = data_json.at("content");
         msg = new client_stream_in::SendMessage(time, date, content);
     } else {
+        msg = new internal::EventError("[DeserializeError]: Message is not StreamIn");
         return -1;
     }
     
@@ -198,7 +202,7 @@ int model::DeserializeStreamOut(Message* msg, std::string &data) {
 }
 
 int model::DeserializeServerStreamOut(Message* msg, std::string &data) {
-    json data_json = isValidJson(data);
+    json data_json = isValidJson(msg, data);
     if (data_json.is_null()) {
         return -1;
     }
@@ -224,6 +228,7 @@ int model::DeserializeServerStreamOut(Message* msg, std::string &data) {
         msg = new server_stream_out::Disconnect();
 
     } else {
+        msg = new internal::EventError("[DeserializeError]: Message is not StreamOut");
         return -1;
     }
 
@@ -231,7 +236,7 @@ int model::DeserializeServerStreamOut(Message* msg, std::string &data) {
 }
 
 int model::DeserializeNetworkStreamOut(Message* msg, std::string &data) {
-    json data_json = isValidJson(data);
+    json data_json = isValidJson(msg, data);
     if (data_json.is_null()) {
         return -1;
     }
@@ -248,6 +253,7 @@ int model::DeserializeNetworkStreamOut(Message* msg, std::string &data) {
         msg = new network_stream_out::Connect(uuid, username, address);
 
     } else {
+        msg = new internal::EventError("[DeserializeError]: Message is not StreamOut");
         return -1;
     }
 
@@ -255,7 +261,7 @@ int model::DeserializeNetworkStreamOut(Message* msg, std::string &data) {
 }
 
 int model::DeserializeClientStreamOut(Message* msg, std::string &data) {
-    json data_json = isValidJson(data);
+    json data_json = isValidJson(msg, data);
     if (data_json.is_null()) {
         return -1;
     }
@@ -268,6 +274,7 @@ int model::DeserializeClientStreamOut(Message* msg, std::string &data) {
         std::string content = data_json.at("content");
         msg = new client_stream_out::SendMessage(time, date, content);
     } else {
+        msg = new internal::EventError("[DeserializeError]: Message is not StreamOut");
         return -1;
     }
     
@@ -277,7 +284,7 @@ int model::DeserializeClientStreamOut(Message* msg, std::string &data) {
 
 // Internal
 int model::DeserializeInternal(Message* msg, std::string &data) {
-    json data_json = isValidJson(data);
+    json data_json = isValidJson(msg, data);
     if (data_json.is_null()) {
         return -1;
     }
@@ -294,5 +301,6 @@ int model::DeserializeInternal(Message* msg, std::string &data) {
     }
 
     // data is invalid, non-existent internal message type
+    msg = new internal::EventError("[DeserializeError]: Message is not Internal");
     return -1;
 }
