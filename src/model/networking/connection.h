@@ -5,13 +5,11 @@
 #include <string>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
-#include <nlohmann/json.hpp>
 #include "msd/channel.hpp"
 
 #include "messages/message.h"
 #include "utility/data-handler.h"
-
-using json = nlohmann::json;
+#include "utility/data.h"
 
 namespace model {
   class Connection {
@@ -26,13 +24,13 @@ namespace model {
       
       std::unique_ptr<DataHandler> data_handler;
 
-      msd::channel<json> &out_chann;
+      msd::channel<std::shared_ptr<Data>> &out_chann;
  
     private:
       void *GetInAddr(struct sockaddr *);
        
       static void ReadMessageCbHandler(struct bufferevent *bev, void *ptr);
-      void ReadMessageCb();
+      virtual void ReadMessageCb() = 0;
       
       static void WriteMessageCbHandler(struct bufferevent *bev, void *ptr);
       void WriteMessageCb();
@@ -46,7 +44,12 @@ namespace model {
       void SetState(DataHandler *);
     
     public:
-      Connection(std::shared_ptr<struct event_base> base, msd::channel<json> &network_manager_chann, const std::string &ip_address, const std::string &port);
+      Connection(
+        std::shared_ptr<struct event_base> base,
+        msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+        const std::string &ip_address,
+        const std::string &port
+      );
 
       ~Connection();
       

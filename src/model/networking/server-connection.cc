@@ -7,7 +7,6 @@
 #include <sodium.h>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
-#include <nlohmann/json.hpp>
 #include "msd/channel.hpp"
 
 #include "server-connection.h"
@@ -20,8 +19,6 @@
 #include "model/networking/utility/buffer-reader.h"
 
 using namespace model;
-
-using json = nlohmann::json;
 
 int ServerConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
   // read potential PK - todo
@@ -47,7 +44,7 @@ int ServerConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
 
 ServerConnection::ServerConnection(
   std::shared_ptr<event_base> base,
-  msd::channel<json> &network_manager_chann,
+  msd::channel<std::shared_ptr<Data>> &network_manager_chann,
   const std::string &ip_address,
   const std::string &port
 ): Connection(base, network_manager_chann, ip_address, port) {}
@@ -71,4 +68,31 @@ int ServerConnection::SendMessage(Message *message) {
 
   // send encoded packet
   return WriteBufferLine(bev, encoded_packet);
+}
+
+void ServerConnection::ReadMessageCb() {
+  // read encoded packet
+  std::string encoded_packet = ReadBufferLine(bev);
+
+  // decode or decode and decrypt data
+  std::string plaintext = data_handler->FormatRead(encoded_packet);
+
+  if (!plaintext.length()) {
+    // plaintext is empty, failed to format encoded packet
+    return;
+  }
+
+  std::shared_ptr<Message> message;
+  if (DeserializeServerStreamIn(message.get(), plaintext)) {
+    // message is not a server message, check if network message
+    DeserializeNetworkStreamIn(message.get(), plaintext);
+  }
+
+  // send data to network manager
+  std::shared_ptr<Data> data(new Data {
+    sockfd: bufferevent_getfd(bev.get()),
+    message: message,
+  });
+
+  data >> out_chann;
 }

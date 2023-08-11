@@ -7,7 +7,6 @@
 #include <sodium.h>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
-#include <nlohmann/json.hpp>
 #include "msd/channel.hpp"
 
 #include "client-connection.h"
@@ -16,12 +15,11 @@
 
 #include "model/networking/utility/secure-data-handler.h"
 
+#include "model/networking/utility/data.h"
 #include "model/networking/utility/buffer-writer.h"
 #include "model/networking/utility/buffer-reader.h"
 
 using namespace model;
-
-using json = nlohmann::json;
 
 int ClientConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
   return 0;
@@ -29,7 +27,7 @@ int ClientConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
 
 ClientConnection::ClientConnection(
     std::shared_ptr<event_base> base,
-    msd::channel<json> &network_manager_chann,
+    msd::channel<std::shared_ptr<Data>> &network_manager_chann,
     const std::string &ip_address,
     const std::string &port
 ): Connection(base, network_manager_chann, ip_address, port) {}
@@ -50,4 +48,28 @@ int ClientConnection::SendMessage(Message *message) {
 
   // send encoded packet
   return WriteBufferLine(bev, encoded_packet);
+}
+
+void ClientConnection::ReadMessageCb() {
+  // read encoded packet
+  std::string encoded_packet = ReadBufferLine(bev);
+
+  // decode or decode and decrypt data
+  std::string plaintext = data_handler->FormatRead(encoded_packet);
+
+  if (!plaintext.length()) {
+    // plaintext is empty, failed to format encoded packet
+    return;
+  }
+
+  std::shared_ptr<Message> message;
+  DeserializeClientStreamIn(message.get(), plaintext);
+
+  // send data to network manager
+  std::shared_ptr<Data> data(new Data {
+    sockfd: bufferevent_getfd(bev.get()),
+    message: message,
+  });
+
+  data >> out_chann;
 }

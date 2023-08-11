@@ -8,7 +8,6 @@
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 #include <event2/util.h>
-#include <nlohmann/json.hpp>
 #include "msd/channel.hpp"
 
 #include "connection.h"
@@ -20,11 +19,7 @@
 #include "messages/message.h"
 #include "messages/internal/event-error.h"
 
-#include "model/networking/utility/buffer-reader.h"
-
 using namespace model;
-
-using json = nlohmann::json;
 
 // get sockaddr, IPv4 or IPv6:
 void *Connection::GetInAddr(struct sockaddr *sa) {
@@ -35,8 +30,13 @@ void Connection::SetState(DataHandler *next_handler) {
   data_handler.reset(next_handler);
 }
 
-Connection::Connection(std::shared_ptr<event_base> base, msd::channel<json> &network_manager_chann, const std::string &ip_address, const std::string &port):
-out_chann(network_manager_chann) {
+Connection::Connection(
+  std::shared_ptr<event_base> base,
+  msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+  const std::string &ip_address, 
+  const std::string &port
+): out_chann(network_manager_chann)
+{
   this->ip_address = ip_address;
   this->port = port;
 
@@ -186,28 +186,6 @@ void Connection::ReadMessageCbHandler(struct bufferevent *bev, void *ptr) {
   conn->ReadMessageCb();
 }
 
-void Connection::ReadMessageCb() {
-  // read encoded packet
-  std::string encoded_packet = ReadBufferLine(bev);
-
-  // decode or decode and decrypt data
-  std::string plaintext = data_handler->FormatRead(encoded_packet);
-
-  if (!plaintext.length()) {
-    // plaintext is empty, failed to format encoded packet
-    return;
-  }
-
-  // send data to network manager
-  json data = {
-    { "sockfd", bufferevent_getfd(bev.get()) },
-    { "plaintext", plaintext },
-  };
-
-  data >> out_chann; 
-}
-
-
 void Connection::WriteMessageCbHandler(struct bufferevent *bev, void *ptr) {
   Connection *conn = static_cast<Connection *>(ptr);
   conn->WriteMessageCb();
@@ -226,7 +204,7 @@ void Connection::EventCb(short events) {
   if (events && (BEV_EVENT_ERROR || BEV_EVENT_READING || BEV_EVENT_WRITING)) {
     printf("Buffer Event Error! Terminating Connection!\n");
 
-    // send data to network manager - todo add message factory
+    /* send data to network manager - todo add message factory
     json data = {
       { "sockfd", bufferevent_getfd(bev.get()) },
       { "internal", internal::EventError("Buffer Event Error! Terminating Connection!").Serialize() },
@@ -234,6 +212,6 @@ void Connection::EventCb(short events) {
 
     bufferevent_free(bev.get());
     
-    data >> out_chann;
+    data >> out_chann;*/
   }
 }
