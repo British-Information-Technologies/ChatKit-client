@@ -17,6 +17,7 @@
 #include "model/networking/utility/secure-data-handler.h"
 
 #include "model/networking/utility/buffer-writer.h"
+#include "model/networking/utility/buffer-reader.h"
 
 using namespace model;
 
@@ -52,6 +53,14 @@ ServerConnection::ServerConnection(
 ): Connection(base, network_manager_chann, ip_address, port) {}
 
 int ServerConnection::SendMessage(Message *message) {
+  if (
+    message->GetStreamType() != StreamType::ServerStreamOut ||
+    message->GetStreamType() != StreamType::NetworkStreamOut
+  ) {
+    // message must be a server stream out or network stream out
+    return -1;
+  }
+  
   std::string msg_str = message->Serialize();
   std::string encoded_packet = data_handler->FormatSend(msg_str);
   
