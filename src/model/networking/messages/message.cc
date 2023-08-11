@@ -38,214 +38,33 @@ using namespace model;
 
 using json = nlohmann::json;
 
-// internal linkage - functions are not referenced outside message.cc
 namespace {
-    int isServerStreamInMessage(Message* msg, const json data_json) {
-        std::string type = data_json.at("type");
-        
-        if (type == server_stream_in::kConnected) {
-            msg = new server_stream_in::Connected();
+    json isValidJson(const std::string &data) {
+        json data_json = json::parse(data);
 
-        } else if (type == server_stream_in::kConnectedClients && data_json.contains("clients")) {
-            json clients = data_json.at("clients");
-            msg = new server_stream_in::ConnectedClients(clients);
-
-        } else if (type == server_stream_in::kGlobalChatMessages && data_json.contains("messages")) {
-            json messages = data_json.at("messages");
-            msg = new server_stream_in::GlobalChatMessages(messages);
-
-        } else if (type == server_stream_in::kUserMessage && data_json.contains("from") && data_json.contains("content")) {
-            std::string from = data_json.at("from");
-            std::string content = data_json.at("content");
-            msg = new server_stream_in::UserMessage(from, content);
-
-        } else if (type == server_stream_in::kGlobalMessage && data_json.contains("from") && data_json.contains("content")) {
-            std::string from = data_json.at("from");
-            std::string content = data_json.at("content");
-            msg = new server_stream_in::GlobalMessage(from, content);
-
-        } else if (type == server_stream_in::kClientConnected && data_json.contains("id") && data_json.contains("username")) {
-            std::string id = data_json.at("id");
-            std::string username = data_json.at("username");
-            msg = new server_stream_in::ClientConnected(id, username);
-            
-        } else if (type == server_stream_in::kClientRemoved && data_json.contains("id")) {
-            std::string id = data_json.at("id");
-            msg = new server_stream_in::ClientRemoved(id);
-
-        } else if (type == server_stream_in::kDisconnected) {
-            msg = new server_stream_in::Disconnected();
-
-        } else if (type == server_stream_in::kError && data_json.contains("msg")) {
-            std::string err_msg = data_json.at("msg");
-            msg = new server_stream_in::Error(err_msg);
-
-        } else if (type == server_stream_in::kPublicKey && data_json.contains("key")) {
-            std::string key = data_json.at("key");
-            msg = new server_stream_in::PublicKey(key);
-
-        } else {
-            return 0;
-        }
-
-        return 1;
-    }
-
-    int isNetworkStreamInMessage(Message* msg, const json data_json) {
-        std::string type = data_json.at("type");
-        
-        if (type == network_stream_in::kRequest) {
-            msg = new network_stream_in::Request();
-
-        } else if (type == network_stream_in::kGotInfo && data_json.contains("server_name") && data_json.contains("server_owner")) {
-            std::string server_name = data_json.at("server_name");
-            std::string server_owner = data_json.at("server_owner");
-            msg = new network_stream_in::GotInfo(server_name, server_owner);
-
-        } else if (type == network_stream_in::kConnecting) {
-            msg = new network_stream_in::Connecting();
-
-        } else if (type == network_stream_in::kError) {
-            msg = new network_stream_in::Error();
-
-        } else {
-            return 0;
-        }
-
-        return 1;
-    }
-
-    int isClientStreamInMessage(Message* msg, const json data_json) {
-        std::string type = data_json.at("type");
-        
-        if (type == client_stream_in::kSendMessage) {
-            std::string time = data_json.at("time");
-            std::string date = data_json.at("date");
-            std::string content = data_json.at("content");
-            msg = new client_stream_in::SendMessage(time, date, content);
-        } else {
-            return 0;
+        if (!data_json.contains("type")) {
+            // data is invalid, must have a type
+            return nullptr;
         }
         
-        return 1;
-    }
-
-    int isServerStreamOutMessage(Message* msg, const json data_json) {
-        std::string type = data_json.at("type");
-        
-        if (type == server_stream_out::kGetClients) {
-            msg = new server_stream_out::GetClients();
-
-        } else if (type == server_stream_out::kGetMessages) {
-            msg = new server_stream_out::GetMessages();
-
-        } else if (type == server_stream_out::kSendMessage && data_json.contains("to") && data_json.contains("content")) {
-            std::string to = data_json.at("to");
-            std::string content = data_json.at("content");
-            msg = new server_stream_out::SendMessage(to, content);
-
-        } else if (type == server_stream_out::kSendGlobalMessage && data_json.contains("content")) {
-            std::string content = data_json.at("content");
-            msg = new server_stream_out::SendGlobalMessage(content);
-
-        } else if (type == server_stream_out::kDisconnect) {
-            msg = new server_stream_out::Disconnect();
-
-        } else {
-            return 0;
-        }
-
-        return 1;
-    }
-
-    int isNetworkStreamOutMessage(Message* msg, const json data_json) {
-        std::string type = data_json.at("type");
-        
-        if (type == network_stream_out::kInfo) {
-            msg = new network_stream_out::Info();
-
-        } else if (type == network_stream_out::kConnect && data_json.contains("uuid") && data_json.contains("username") && data_json.contains("address")) {
-            std::string uuid = data_json.at("uuid");
-            std::string username = data_json.at("username");
-            std::string address = data_json.at("address");
-            msg = new network_stream_out::Connect(uuid, username, address);
-
-        } else {
-            return 0;
-        }
-
-        return 1;
-    }
-
-    int isClientStreamOutMessage(Message* msg, const json data_json) {
-        std::string type = data_json.at("type");
-        
-        if (type == client_stream_out::kSendMessage) {
-            std::string time = data_json.at("time");
-            std::string date = data_json.at("date");
-            std::string content = data_json.at("content");
-            msg = new client_stream_out::SendMessage(time, date, content);
-        } else {
-            return 0;
-        }
-        
-        return 1;
-    }
-    
-    int isInternalMessage(Message* msg, const json data_json) {
-        std::string type = data_json.at("type");
-        
-        if (type == internal::kEventError) {
-            std::string err_msg = data_json.at("msg");
-            msg = new internal::EventError(err_msg);
-
-        } else {
-            return 0;
-        }
-
-        return 1;
+        return data_json;
     }
 } // namespace
+
+
 
 std::string Message::GetType() {
     return this->type;
 }
 
-int model::DeserializeStreamOut(Message* msg, std::string data) {
-    json data_json = json::parse(data);
 
-    if (!data_json.contains("type")) {
-        // data is invalid, must have a type
-        return -1;
-    }
-
-    // convert to message object
-    if (
-        isClientStreamOutMessage(msg, data_json) ||
-        isServerStreamOutMessage(msg, data_json) ||
-        isNetworkStreamOutMessage(msg, data_json)
-    ) {
-        // stream out message successfully created from data
-        return 0;
-    }
-
-    // data is invalid, non-existent stream out message type
-    return -1;
-}
-
+// Stream In
 int model::DeserializeStreamIn(Message* msg, std::string data) {
-    json data_json = json::parse(data);
-
-    if (!data_json.contains("type")) {
-        // data is invalid, must have a type
-        return -1;
-    }
-
     // convert to message object
     if (
-        isClientStreamInMessage(msg, data_json) ||
-        isServerStreamInMessage(msg, data_json) ||
-        isNetworkStreamInMessage(msg, data_json)
+        model::DeserializeClientStreamIn(msg, data) ||
+        model::DeserializeServerStreamIn(msg, data) ||
+        model::DeserializeNetworkStreamIn(msg, data)
     ) {
         // stream in message successfully created from data
         return 0;
@@ -255,17 +74,222 @@ int model::DeserializeStreamIn(Message* msg, std::string data) {
     return -1;
 }
 
-int model::DeserializeInternal(Message* msg, std::string data) {
-    json data_json = json::parse(data);
 
-    if (!data_json.contains("type")) {
-        // data is invalid, must have a type
-        return -1;
+int model::DeserializeServerStreamIn(Message* msg, std::string data) {
+    json data_json = isValidJson(data);
+    if (data_json.is_null()) {
+        return 0;
+    }
+    
+    std::string type = data_json.at("type");
+    
+    if (type == server_stream_in::kConnected) {
+        msg = new server_stream_in::Connected();
+
+    } else if (type == server_stream_in::kConnectedClients && data_json.contains("clients")) {
+        json clients = data_json.at("clients");
+        msg = new server_stream_in::ConnectedClients(clients);
+
+    } else if (type == server_stream_in::kGlobalChatMessages && data_json.contains("messages")) {
+        json messages = data_json.at("messages");
+        msg = new server_stream_in::GlobalChatMessages(messages);
+
+    } else if (type == server_stream_in::kUserMessage && data_json.contains("from") && data_json.contains("content")) {
+        std::string from = data_json.at("from");
+        std::string content = data_json.at("content");
+        msg = new server_stream_in::UserMessage(from, content);
+
+    } else if (type == server_stream_in::kGlobalMessage && data_json.contains("from") && data_json.contains("content")) {
+        std::string from = data_json.at("from");
+        std::string content = data_json.at("content");
+        msg = new server_stream_in::GlobalMessage(from, content);
+
+    } else if (type == server_stream_in::kClientConnected && data_json.contains("id") && data_json.contains("username")) {
+        std::string id = data_json.at("id");
+        std::string username = data_json.at("username");
+        msg = new server_stream_in::ClientConnected(id, username);
+        
+    } else if (type == server_stream_in::kClientRemoved && data_json.contains("id")) {
+        std::string id = data_json.at("id");
+        msg = new server_stream_in::ClientRemoved(id);
+
+    } else if (type == server_stream_in::kDisconnected) {
+        msg = new server_stream_in::Disconnected();
+
+    } else if (type == server_stream_in::kError && data_json.contains("msg")) {
+        std::string err_msg = data_json.at("msg");
+        msg = new server_stream_in::Error(err_msg);
+
+    } else if (type == server_stream_in::kPublicKey && data_json.contains("key")) {
+        std::string key = data_json.at("key");
+        msg = new server_stream_in::PublicKey(key);
+
+    } else {
+        return 0;
     }
 
+    return 1;
+}
+
+int model::DeserializeNetworkStreamIn(Message* msg, std::string data) {
+    json data_json = isValidJson(data);
+    if (data_json.is_null()) {
+        return 0;
+    }
+    
+    std::string type = data_json.at("type");
+    
+    if (type == network_stream_in::kRequest) {
+        msg = new network_stream_in::Request();
+
+    } else if (type == network_stream_in::kGotInfo && data_json.contains("server_name") && data_json.contains("server_owner")) {
+        std::string server_name = data_json.at("server_name");
+        std::string server_owner = data_json.at("server_owner");
+        msg = new network_stream_in::GotInfo(server_name, server_owner);
+
+    } else if (type == network_stream_in::kConnecting) {
+        msg = new network_stream_in::Connecting();
+
+    } else if (type == network_stream_in::kError) {
+        msg = new network_stream_in::Error();
+
+    } else {
+        return 0;
+    }
+
+    return 1;
+}
+
+int model::DeserializeClientStreamIn(Message* msg, std::string data) {
+    json data_json = isValidJson(data);
+    if (data_json.is_null()) {
+        return 0;
+    }
+    
+    std::string type = data_json.at("type");
+    
+    if (type == client_stream_in::kSendMessage) {
+        std::string time = data_json.at("time");
+        std::string date = data_json.at("date");
+        std::string content = data_json.at("content");
+        msg = new client_stream_in::SendMessage(time, date, content);
+    } else {
+        return 0;
+    }
+    
+    return 1;
+}
+
+
+// Stream Out
+int model::DeserializeStreamOut(Message* msg, std::string data) {
     // convert to message object
-    if (isInternalMessage(msg, data_json)) {
+    if (
+        model::DeserializeClientStreamOut(msg, data) ||
+        model::DeserializeServerStreamOut(msg, data) ||
+        model::DeserializeNetworkStreamOut(msg, data)
+    ) {
+        // stream out message successfully created from data
+        return 0;
+    }
+
+    // data is invalid, non-existent stream out message type
+    return -1;
+}
+
+int model::DeserializeServerStreamOut(Message* msg, std::string data) {
+    json data_json = isValidJson(data);
+    if (data_json.is_null()) {
+        return 0;
+    }
+    
+    std::string type = data_json.at("type");
+    
+    if (type == server_stream_out::kGetClients) {
+        msg = new server_stream_out::GetClients();
+
+    } else if (type == server_stream_out::kGetMessages) {
+        msg = new server_stream_out::GetMessages();
+
+    } else if (type == server_stream_out::kSendMessage && data_json.contains("to") && data_json.contains("content")) {
+        std::string to = data_json.at("to");
+        std::string content = data_json.at("content");
+        msg = new server_stream_out::SendMessage(to, content);
+
+    } else if (type == server_stream_out::kSendGlobalMessage && data_json.contains("content")) {
+        std::string content = data_json.at("content");
+        msg = new server_stream_out::SendGlobalMessage(content);
+
+    } else if (type == server_stream_out::kDisconnect) {
+        msg = new server_stream_out::Disconnect();
+
+    } else {
+        return 0;
+    }
+
+    return 1;
+}
+
+int model::DeserializeNetworkStreamOut(Message* msg, std::string data) {
+    json data_json = isValidJson(data);
+    if (data_json.is_null()) {
+        return 0;
+    }
+    
+    std::string type = data_json.at("type");
+    
+    if (type == network_stream_out::kInfo) {
+        msg = new network_stream_out::Info();
+
+    } else if (type == network_stream_out::kConnect && data_json.contains("uuid") && data_json.contains("username") && data_json.contains("address")) {
+        std::string uuid = data_json.at("uuid");
+        std::string username = data_json.at("username");
+        std::string address = data_json.at("address");
+        msg = new network_stream_out::Connect(uuid, username, address);
+
+    } else {
+        return 0;
+    }
+
+    return 1;
+}
+
+int model::DeserializeClientStreamOut(Message* msg, std::string data) {
+    json data_json = isValidJson(data);
+    if (data_json.is_null()) {
+        return 0;
+    }
+    
+    std::string type = data_json.at("type");
+    
+    if (type == client_stream_out::kSendMessage) {
+        std::string time = data_json.at("time");
+        std::string date = data_json.at("date");
+        std::string content = data_json.at("content");
+        msg = new client_stream_out::SendMessage(time, date, content);
+    } else {
+        return 0;
+    }
+    
+    return 1;
+}
+
+
+// Internal
+int model::DeserializeInternal(Message* msg, std::string data) {
+    json data_json = isValidJson(data);
+    if (data_json.is_null()) {
+        return 0;
+    }
+    
+    std::string type = data_json.at("type");
+
+    // convert to message object
+    if (type == internal::kEventError) {
         // internal message successfully created from data
+        std::string err_msg = data_json.at("msg");
+        msg = new internal::EventError(err_msg);
+        
         return 0;
     }
 
