@@ -14,3 +14,7 @@ GlobalMessage::GlobalMessage(std::string from, std::string content) {
 std::string GlobalMessage::Serialize() {
     return fmt::format("{{ \"type\": {}, \"from\": {}, \"content\": {} }}", type, from, content);
 }
+
+model::StreamType GlobalMessage::GetStreamType() {
+    return model::StreamType::ServerStreamIn;
+}

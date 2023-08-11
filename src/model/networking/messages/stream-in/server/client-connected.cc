@@ -14,3 +14,7 @@ ClientConnected::ClientConnected(std::string id, std::string username) {
 std::string ClientConnected::Serialize() {
     return fmt::format("{{ \"type\": {}, \"id\": {}, \"username\": {} }}", type, id, username);
 }
+
+model::StreamType ClientConnected::GetStreamType() {
+    return model::StreamType::ServerStreamIn;
+}

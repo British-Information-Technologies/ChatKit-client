@@ -17,6 +17,8 @@ namespace server_stream_in {
             GlobalMessage(std::string from, std::string content);
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

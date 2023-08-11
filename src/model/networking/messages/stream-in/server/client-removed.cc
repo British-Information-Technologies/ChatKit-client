@@ -13,3 +13,7 @@ ClientRemoved::ClientRemoved(std::string id) {
 std::string ClientRemoved::Serialize() {
     return fmt::format("{{ \"type\": {}, \"id\": {} }}", type, id);
 }
+
+model::StreamType ClientRemoved::GetStreamType() {
+    return model::StreamType::ServerStreamIn;
+}

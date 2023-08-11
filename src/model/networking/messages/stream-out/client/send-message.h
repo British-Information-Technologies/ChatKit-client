@@ -22,6 +22,8 @@ namespace client_stream_out {
             );
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

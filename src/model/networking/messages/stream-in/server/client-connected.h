@@ -17,6 +17,8 @@ namespace server_stream_in {
             ClientConnected(std::string id, std::string username);
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

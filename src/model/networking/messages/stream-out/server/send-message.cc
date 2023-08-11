@@ -14,3 +14,7 @@ SendMessage::SendMessage(std::string to, std::string content) {
 std::string SendMessage::Serialize() {
     return fmt::format("{{ \"type\": {}, \"to\": {}, \"content\": {} }}", type, to, content);
 }
+
+model::StreamType SendMessage::GetStreamType() {
+    return model::StreamType::ServerStreamOut;
+}

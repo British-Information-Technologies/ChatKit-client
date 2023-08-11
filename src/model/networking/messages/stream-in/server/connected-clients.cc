@@ -16,3 +16,7 @@ ConnectedClients::ConnectedClients(json clients) {
 std::string ConnectedClients::Serialize() {
     return fmt::format("{{ \"type\": {}, \"clients\": {} }}", type, clients.dump());
 }
+
+model::StreamType ConnectedClients::GetStreamType() {
+    return model::StreamType::ServerStreamIn;
+}

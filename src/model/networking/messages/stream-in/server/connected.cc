@@ -12,3 +12,7 @@ Connected::Connected() {
 std::string Connected::Serialize() {
     return fmt::format("{{ \"type\": {} }}", type);
 }
+
+model::StreamType Connected::GetStreamType() {
+    return model::StreamType::ServerStreamIn;
+}

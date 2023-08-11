@@ -13,6 +13,8 @@ namespace server_stream_out {
             GetClients();
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

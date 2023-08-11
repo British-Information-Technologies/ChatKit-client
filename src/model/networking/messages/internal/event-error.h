@@ -18,6 +18,8 @@ namespace internal {
             std::string Serialize();
 
             std::string GetMsg();
+            
+            model::StreamType GetStreamType();
     };
 }
 

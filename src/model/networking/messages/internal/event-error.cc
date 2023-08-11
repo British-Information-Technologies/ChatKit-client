@@ -16,3 +16,7 @@ std::string EventError::Serialize() {
 std::string EventError::GetMsg() {
     return this->msg;
 }
+
+model::StreamType EventError::GetStreamType() {
+    return model::StreamType::Internal;
+}

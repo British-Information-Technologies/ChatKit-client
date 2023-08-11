@@ -12,3 +12,7 @@ Info::Info() {
 std::string Info::Serialize() {
     return fmt::format("{{ \"type\": {} }}", type);
 }
+
+model::StreamType Info::GetStreamType() {
+    return model::StreamType::NetworkStreamOut;
+}

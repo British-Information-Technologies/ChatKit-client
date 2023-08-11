@@ -12,3 +12,7 @@ GetMessages::GetMessages() {
 std::string GetMessages::Serialize() {
     return fmt::format("{{ \"type\": {} }}", type);
 }
+
+model::StreamType GetMessages::GetStreamType() {
+    return model::StreamType::ServerStreamOut;
+}

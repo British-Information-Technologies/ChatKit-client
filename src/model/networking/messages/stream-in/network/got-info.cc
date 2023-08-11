@@ -14,3 +14,7 @@ GotInfo::GotInfo(std::string server_name, std::string server_owner) {
 std::string GotInfo::Serialize() {
     return fmt::format("{{ \"type\": {}, \"server_name\": {}, \"server_owner\": {} }}", type, server_name, server_owner);
 }
+
+model::StreamType GotInfo::GetStreamType() {
+    return model::StreamType::NetworkStreamIn;
+}

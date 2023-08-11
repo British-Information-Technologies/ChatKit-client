@@ -13,6 +13,8 @@ namespace server_stream_in {
             Connected();
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

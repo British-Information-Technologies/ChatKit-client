@@ -13,3 +13,7 @@ SendGlobalMessage::SendGlobalMessage(std::string content) {
 std::string SendGlobalMessage::Serialize() {
     return fmt::format("{{ \"type\": {}, \"content\": {} }}", type, content);
 }
+
+model::StreamType SendGlobalMessage::GetStreamType() {
+    return model::StreamType::ServerStreamOut;
+}

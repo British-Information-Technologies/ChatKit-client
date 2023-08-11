@@ -16,6 +16,8 @@ namespace server_stream_in {
             ClientRemoved(std::string id);
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

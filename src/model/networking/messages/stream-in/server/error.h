@@ -16,6 +16,8 @@ namespace server_stream_in {
             Error(std::string msg);
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

@@ -19,3 +19,7 @@ SendMessage::SendMessage(
 std::string SendMessage::Serialize() {
     return fmt::format("{{ \"type\": {}, \"time\": {}, \"date\": {}, \"content\": {} }}", type, time, date, content);
 }
+
+model::StreamType SendMessage::GetStreamType() {
+    return model::StreamType::ClientStreamOut;
+}

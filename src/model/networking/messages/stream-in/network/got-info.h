@@ -17,6 +17,8 @@ namespace network_stream_in {
             GotInfo(std::string server_name, std::string server_owner);
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

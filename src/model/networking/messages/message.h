@@ -4,12 +4,28 @@
 #include <string>
 
 namespace model {
+    enum StreamType {
+        StreamIn,
+        ClientStreamIn,
+        ServerStreamIn,
+        NetworkStreamIn,
+
+        StreamOut,
+        ClientStreamOut,
+        ServerStreamOut,
+        NetworkStreamOut,
+
+        Internal
+    };
+
     class Message {
         protected:
             std::string type;
 
         public:
             virtual std::string Serialize() = 0;
+
+            virtual StreamType GetStreamType() = 0;
 
             std::string GetType();
     };

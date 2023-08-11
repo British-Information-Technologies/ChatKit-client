@@ -13,6 +13,8 @@ namespace server_stream_in {
             Disconnected();
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

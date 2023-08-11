@@ -19,6 +19,8 @@ namespace server_stream_in {
             ConnectedClients(json clients);
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

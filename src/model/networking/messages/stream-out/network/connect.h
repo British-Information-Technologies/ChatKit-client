@@ -18,6 +18,8 @@ namespace network_stream_out {
             Connect(std::string uuid, std::string username, std::string address);
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

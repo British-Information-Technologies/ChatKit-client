@@ -18,6 +18,8 @@ namespace server_stream_in {
             std::string Serialize();
 
             std::string GetKey();
+            
+            model::StreamType GetStreamType();
     };
 }
 

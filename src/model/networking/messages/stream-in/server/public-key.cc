@@ -17,3 +17,7 @@ std::string PublicKey::Serialize() {
 std::string PublicKey::GetKey() {
     return this->key;
 }
+
+model::StreamType PublicKey::GetStreamType() {
+    return model::StreamType::ServerStreamIn;
+}

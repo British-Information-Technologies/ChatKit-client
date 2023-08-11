@@ -16,3 +16,7 @@ GlobalChatMessages::GlobalChatMessages(json messages) {
 std::string GlobalChatMessages::Serialize() {
     return fmt::format("{{ \"type\": {}, \"messages\": {} }}", type, messages.dump());
 }
+
+model::StreamType GlobalChatMessages::GetStreamType() {
+    return model::StreamType::ServerStreamIn;
+}

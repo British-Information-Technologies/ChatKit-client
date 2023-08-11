@@ -19,6 +19,8 @@ namespace server_stream_in {
             GlobalChatMessages(json messages);
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

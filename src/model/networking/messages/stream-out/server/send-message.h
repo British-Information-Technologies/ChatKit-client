@@ -17,6 +17,8 @@ namespace server_stream_out {
             SendMessage(std::string to, std::string content);
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

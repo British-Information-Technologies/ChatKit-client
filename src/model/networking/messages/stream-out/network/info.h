@@ -13,6 +13,8 @@ namespace network_stream_out {
             Info();
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

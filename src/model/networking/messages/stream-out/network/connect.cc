@@ -15,3 +15,7 @@ Connect::Connect(std::string uuid, std::string username, std::string address) {
 std::string Connect::Serialize() {
     return fmt::format("{{ \"type\": {}, \"uuid\": {}, \"username\": {}, \"address\": {} }}", type, uuid, username, address);
 }
+            
+model::StreamType Connect::GetStreamType() {
+    return model::StreamType::NetworkStreamOut;
+}

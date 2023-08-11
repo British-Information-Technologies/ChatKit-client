@@ -12,3 +12,7 @@ Request::Request() {
 std::string Request::Serialize() {
     return fmt::format("{{ \"type\": {} }}", type);
 }
+
+model::StreamType Request::GetStreamType() {
+    return model::StreamType::NetworkStreamIn;
+}

@@ -14,3 +14,7 @@ UserMessage::UserMessage(std::string from, std::string content) {
 std::string UserMessage::Serialize() {
     return fmt::format("{{ \"type\": {}, \"from\": {}, \"content\": {} }}", type, from, content);
 }
+
+model::StreamType UserMessage::GetStreamType() {
+    return model::StreamType::ServerStreamIn;
+}

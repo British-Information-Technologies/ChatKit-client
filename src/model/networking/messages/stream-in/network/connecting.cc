@@ -12,3 +12,7 @@ Connecting::Connecting() {
 std::string Connecting::Serialize() {
     return fmt::format("{{ \"type\": {} }}", type);
 }
+
+model::StreamType Connecting::GetStreamType() {
+    return model::StreamType::NetworkStreamIn;
+}

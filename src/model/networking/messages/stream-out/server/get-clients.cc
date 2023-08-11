@@ -12,3 +12,7 @@ GetClients::GetClients() {
 std::string GetClients::Serialize() {
     return fmt::format("{{ \"type\": {} }}", type);
 }
+
+model::StreamType GetClients::GetStreamType() {
+    return model::StreamType::ServerStreamOut;
+}

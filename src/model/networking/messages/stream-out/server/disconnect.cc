@@ -12,3 +12,7 @@ Disconnect::Disconnect() {
 std::string Disconnect::Serialize() {
     return fmt::format("{{ \"type\": {} }}", type);
 }
+            
+model::StreamType Disconnect::GetStreamType() {
+    return model::StreamType::ServerStreamOut;
+}

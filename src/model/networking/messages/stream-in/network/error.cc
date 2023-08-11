@@ -12,3 +12,7 @@ Error::Error() {
 std::string Error::Serialize() {
     return fmt::format("{{ \"type\": {} }}", type);
 }
+
+model::StreamType Error::GetStreamType() {
+    return model::StreamType::NetworkStreamIn;
+}
