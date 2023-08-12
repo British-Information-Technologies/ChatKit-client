@@ -15,6 +15,7 @@
 
 #include "model/networking/utility/secure-data-handler.h"
 
+#include "model/networking/utility/data.h"
 #include "model/networking/utility/buffer-writer.h"
 #include "model/networking/utility/buffer-reader.h"
 

@@ -8,6 +8,7 @@
 #include "connection.h"
 
 #include "model/networking/messages/message.h"
+#include "utility/data.h"
 
 namespace model {
     class ServerConnection : public Connection {
