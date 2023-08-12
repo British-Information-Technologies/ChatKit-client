@@ -5,15 +5,13 @@
 #include <unordered_map>
 #include <memory>
 #include <event2/event.h>
-#include <nlohmann/json.hpp>
 #include <mutex>
 #include "msd/channel.hpp"
 
 #include "connection.h"
 #include "connection-factory.h"
 #include "messages/message.h"
-
-using json = nlohmann::json;
+#include "utility/data.h"
 
 namespace model {
   class NetworkManager {
@@ -22,7 +20,7 @@ namespace model {
 
       std::shared_ptr<struct event_base> connection_base;
       
-      msd::channel<json> in_chann;
+      msd::channel<std::shared_ptr<Data>> in_chann;
 
       std::unordered_map<int, std::shared_ptr<Connection>>
       connections;

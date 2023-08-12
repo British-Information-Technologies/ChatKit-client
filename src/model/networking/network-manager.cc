@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include <memory>
 #include <event2/event.h>
-#include <nlohmann/json.hpp>
 #include <thread>
 #include <mutex>
 #include "msd/channel.hpp"
@@ -14,20 +13,19 @@
 #include "messages/message.h"
 #include "messages/stream-in/server/public-key.h"
 #include "messages/internal/event-error.h"
+#include "utility/data.h"
 
 using namespace model;
-
-using json = nlohmann::json;
 
 namespace {
   void LaunchCallbackHandler(std::shared_ptr<event_base> connection_base) {
     event_base_loop(connection_base.get(), EVLOOP_NO_EXIT_ON_EMPTY);
   }
 
-  void LaunchChannelHandler(std::mutex &connections_mutex, msd::channel<json> &in_chann, std::unordered_map<int, std::shared_ptr<Connection>> &connections) {
+  void LaunchChannelHandler(std::mutex &connections_mutex, msd::channel<std::shared_ptr<Data>> &in_chann, std::unordered_map<int, std::shared_ptr<Connection>> &connections) {
     // read incoming channel data from connection callbacks
-    for (const json data: in_chann) { // blocks forever waiting for channel items
-      printf("<data read from in_chann: %s>", data);
+    for (const std::shared_ptr<Data> data: in_chann) { // blocks forever waiting for channel items
+      /*printf("<data read from in_chann: %s>", data);
 
       std::unique_ptr<Message> message;
       if (data.contains("plaintext") && DeserializeStreamIn(message.get(), data.at("plaintext")) != 0) {
@@ -72,7 +70,7 @@ namespace {
         connections_mutex.unlock();
       } else {
         connections_mutex.unlock();
-      }
+      }*/
     }
   }
 } // namespace
