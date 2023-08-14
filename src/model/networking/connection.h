@@ -53,7 +53,7 @@ namespace model {
 
       ~Connection();
       
-      int CreateConnection();
+      int Initiate();
 
       int SendPublicKey();
 

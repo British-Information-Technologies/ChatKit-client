@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include <memory>
 #include <event2/event.h>
-#include <thread>
 #include <mutex>
 #include "msd/channel.hpp"
 
@@ -93,7 +92,7 @@ void NetworkManager::Launch() {
   // todo - might be good as a coroutine
 
   // start event base loop for connection callbacks
-  std::jthread callback_thread(
+  /*std::jthread callback_thread(
     LaunchCallbackHandler,
     this->connection_base
   );
@@ -104,38 +103,21 @@ void NetworkManager::Launch() {
     std::ref(this->connections_mutex),
     std::ref(this->in_chann),
     std::ref(this->connections)
-  );
+  );*/
 }
 
 int NetworkManager::ConnectToServiceServer() {
-  // fake ip address and port for testing
+  // TODO: load ip addresses and ports (currently faked)
+  const std::string uuid = "1234";
   const std::string ip_address = "1234";
   const std::string port = "1234";
 
-  if (sodium_init() < 0) {
-    /* panic! library wont initilise */
+  if (CreateConnection(ConnectionType::Server, uuid, ip_address, port)) {
     return -1;
   }
-
-  auto service = model_connection_factory::GetConnection(connection_base, std::ref(in_chann), ip_address, port);
   
-  int sockfd = service->CreateConnection();
-
-  // create a TCP connection
-  if (sockfd == -1) {
-    // TCP connection failed
-    return sockfd;
-  }
-  
-  // store connection in map
-  std::pair<int, std::shared_ptr<Connection>> connection_pair(sockfd, service);
-
-  connections_mutex.lock();
-  connections.insert(connection_pair);
-  connections_mutex.unlock();
-
   // request for secure connection with service server
-  if(InitiateSecureConnection(sockfd) != 0) {
+  if (InitiateSecureConnection(uuid) != 0) {
     // failed to initiate secure connection with service server
     return -1;
   }
@@ -143,18 +125,14 @@ int NetworkManager::ConnectToServiceServer() {
   return 0;
 }
 
-int NetworkManager::InitiateSecureConnection(const int &sockfd) {
-  connections_mutex.lock();
-
-  if (!connections.contains(sockfd)) {
+int NetworkManager::InitiateSecureConnection(const std::string &uuid) { 
+  if (!connections.contains(uuid)) {
     return -1;
   }
 
-  auto conn = connections.at(sockfd);
+  auto conn = connections.at(uuid);
 
-  connections_mutex.unlock();
-
-  // send public key to sockfd connection
+  // send public key to connection to try initiate a secure connection
   if (conn->SendPublicKey() != 0) {
     // panic! failed to send public key to scokfd connection
     return -1;
@@ -162,11 +140,37 @@ int NetworkManager::InitiateSecureConnection(const int &sockfd) {
 
   return 0;
 }
+  
+int NetworkManager::CreateConnection(
+  const ConnectionType type,
+  const std::string &uuid,
+  const std::string &ip_address,
+  const std::string &port
+) 
+{
+  if (connections.contains(uuid)) {
+    return 1;
+  }
+ 
+  auto conn = GetConnection(
+    type,
+    connection_base,
+    std::ref(in_chann),
+    ip_address,
+    port
+  );
+  
+  if (conn->Initiate()) {
+    return -1;
+  }
 
-int NetworkManager::SendMessage(const int &id, std::string &data) {
-  connections_mutex.lock();
+  connections.insert(std::pair<std::string, std::shared_ptr<Connection>>(uuid, conn));
+  
+  return 0;
+}
 
-  if (!connections.contains(id)) {
+int NetworkManager::SendMessage(const std::string &uuid, std::string &data) {
+  if (!connections.contains(uuid)) {
     return -1;
   }
 
@@ -175,9 +179,7 @@ int NetworkManager::SendMessage(const int &id, std::string &data) {
     return -1;
   }
 
-  int sent_bytes = connections.at(id)->SendMessage(message.get());
-
-  connections_mutex.unlock();
+  int sent_bytes = connections.at(uuid)->SendMessage(message.get());
 
   return sent_bytes;
 }

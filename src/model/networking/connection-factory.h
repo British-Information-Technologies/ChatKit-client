@@ -10,13 +10,19 @@
 
 #include "utility/data.h"
 
-namespace model_connection_factory {
+namespace model {
+    enum class ConnectionType {
+        Client,
+        Server,
+    };
+    
     std::shared_ptr<model::Connection> GetConnection(
+        ConnectionType type,
         std::shared_ptr<struct event_base> base,
         msd::channel<std::shared_ptr<model::Data>> &network_manager_chann,
         const std::string &ip_address,
         const std::string &port
     );
-}  // namespace model_networking
+}  // namespace model
 
 #endif

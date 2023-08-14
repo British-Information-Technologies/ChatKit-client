@@ -55,7 +55,7 @@ Connection::Connection(
 Connection::~Connection() {
 }
 
-int Connection::CreateConnection() {
+int Connection::Initiate() {
   if (!bev.get()) {
     // panic! failed to create connection - bev is null
     return -1;
@@ -70,8 +70,7 @@ int Connection::CreateConnection() {
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_protocol = IPPROTO_TCP;
 
-  if ((rv = getaddrinfo(ip_address.c_str(), port.c_str(), &hints, &servinfo)) !=
-      0) {
+  if ((rv = getaddrinfo(ip_address.c_str(), port.c_str(), &hints, &servinfo)) != 0) {
     fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
     return -1;
   }
@@ -98,8 +97,7 @@ int Connection::CreateConnection() {
     return -1;
   }
 
-  inet_ntop(p->ai_family, GetInAddr((struct sockaddr *)p->ai_addr), s,
-            sizeof s);
+  inet_ntop(p->ai_family, GetInAddr((struct sockaddr *)p->ai_addr), s, sizeof s);
 
   printf("connection: connecting to %s\n", s);
 
@@ -121,7 +119,7 @@ int Connection::CreateConnection() {
 
   SetState(new InsecureDataHandler());
 
-  return sockfd;
+  return 0;
 }
 
 int Connection::SendPublicKey() {

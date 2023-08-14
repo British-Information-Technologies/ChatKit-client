@@ -58,11 +58,6 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
 
     UpdateBuilder(builder, "/view/res/main.ui");
  
-    // create network view model
-    std::shared_ptr<view_model::NetworkViewModel> network_vm = view_model::Injector::inject_network_vm(
-        /*builder->get_object<Gtk::Entry>("msgEntry")*/
-    );
-
     // get templates for main window
     Glib::RefPtr<Gtk::Box> friend_list = builder->get_object<Gtk::Box>("friendListBox");
 
@@ -81,7 +76,6 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
         builder->get_widget_derived<MainApplicationWindow>(
             builder,
             "mainWindow",
-            network_vm,
             friend_list,
             server_list,
             profile_card,
@@ -90,6 +84,17 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
             add_friend
         )
     );
+    
+    // create network view model
+    std::shared_ptr<view_model::NetworkViewModel> network_vm = view_model::Injector::inject_network_vm(
+        builder->get_object<Gtk::Entry>("msgEntry"),
+        sigc::mem_fun(
+            *main_window,
+            &MainApplicationWindow::SetDirectMessageState
+        )
+    );
+
+    main_window->SetNetworkViewModel(network_vm);
 
     // assign friend list button behaviour
     set_add_friend_button(sigc::mem_fun(
@@ -98,12 +103,10 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
     ));
     
     // TODO: currently hard coded and faked, eventually change with net vm
-    set_send_invite_button([main_window](){
+    set_send_invite_button([network_vm](){
         auto friend_profile_card_button = Injector::inject_friend_profile_card(
-            sigc::mem_fun(
-                *main_window,
-                &MainApplicationWindow::SetDirectMessageState
-            )
+            network_vm,
+            "faked uuid"
         );
 
         append_friend_to_list(friend_profile_card_button);
@@ -118,17 +121,24 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
 }
 
 std::shared_ptr<Gtk::Button> Injector::inject_friend_profile_card(
-    std::function<void()> setDirectMessageState
+    std::shared_ptr<view_model::NetworkViewModel> network_vm,
+    const std::string &uuid
 ) {
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
 
     UpdateBuilder(builder, "/view/res/friend_profile_card.ui");
     
+    // TODO: use uuid to load user data from local storage (names, etc)
+    const std::string username = "fake username";
+    const std::string type = "fake type";
+
     std::shared_ptr<FriendProfileCardButton> friend_profile_card_button(
         builder->get_widget_derived<FriendProfileCardButton>(
             builder,
             "openChatButton",
-            setDirectMessageState
+            network_vm,
+            username,
+            type
         )
     );
     

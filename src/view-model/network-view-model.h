@@ -12,15 +12,20 @@ namespace view_model {
       std::shared_ptr<model::NetworkModel> model;
 
       // Bindings
-      //Glib::RefPtr<Gtk::Entry> msg_entry;
+      Glib::RefPtr<Gtk::Entry> msg_entry;
+      
+      std::function<void()> showDirectMessage;
 
     public:
       NetworkViewModel(
-        std::shared_ptr<model::NetworkModel> model
-        /*Glib::RefPtr<Gtk::Entry> msg_entry*/
+        std::shared_ptr<model::NetworkModel> model,
+        Glib::RefPtr<Gtk::Entry> msg_entry,
+        std::function<void()> showDirectMessage
       );
 
       void SendMessageObserver();
+
+      void OpenContactObserver();
   };
 }  // namespace view_model
 

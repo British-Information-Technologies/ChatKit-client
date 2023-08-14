@@ -22,8 +22,8 @@ namespace model {
       
       msd::channel<std::shared_ptr<Data>> in_chann;
 
-      std::unordered_map<int, std::shared_ptr<Connection>>
-      connections;
+      std::unordered_map<std::string, std::shared_ptr<Connection>> connections;
+      
 
     public:
       NetworkManager();
@@ -33,9 +33,16 @@ namespace model {
 
       int ConnectToServiceServer();
 
-      int InitiateSecureConnection(const int &sockfd);
+      int InitiateSecureConnection(const std::string &uuid);
 
-      int SendMessage(const int &id, std::string &data);
+      int CreateConnection(
+        const ConnectionType type,
+        const std::string &uuid,
+        const std::string &ip_address,
+        const std::string &port
+      );
+
+      int SendMessage(const std::string &uuid, std::string &data);
   };
 }  // namespace model_networking
 
