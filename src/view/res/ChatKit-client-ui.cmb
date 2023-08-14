@@ -359,6 +359,7 @@
 	(8,9,"GtkWidget","vexpand","True",None,None,None,None,None,None,None,None,None),
 	(8,10,"GtkWidget","height-request","32",None,None,None,None,None,None,None,None,None),
 	(8,10,"GtkWidget","width-request","32",None,None,None,None,None,None,None,None,None),
+	(8,11,"GtkEntry","max-length","250",None,None,None,None,None,None,None,None,None),
 	(8,11,"GtkEntry","placeholder-text","Message",None,None,None,None,None,None,None,None,None),
 	(8,11,"GtkEntry","show-emoji-icon","True",None,None,None,None,None,None,None,None,None),
 	(8,11,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),

@@ -87,7 +87,6 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
     
     // create network view model
     std::shared_ptr<view_model::NetworkViewModel> network_vm = view_model::Injector::inject_network_vm(
-        builder->get_object<Gtk::Entry>("msgEntry"),
         sigc::mem_fun(
             *main_window,
             &MainApplicationWindow::SetDirectMessageState

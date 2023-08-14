@@ -3,16 +3,6 @@
 
 #include "direct-message-box.h"
 
-namespace {
-    bool on_widget_key_pressed(guint keyval, guint _, Gdk::ModifierType state) {
-        if (keyval == GDK_KEY_Return) {
-            printf("Hello Mitch\n");
-        }
-
-        return false;
-    }
-}
-
 struct _DirectMessage {
     GtkBox parent_type;
 
@@ -23,7 +13,19 @@ struct _DirectMessage {
 G_DEFINE_TYPE(DirectMessage, direct_message, GTK_TYPE_BOX)
 
 static DirectMessage *direct_message;
-static std::function<void()> message_observer;
+static std::function<void(std::string &)> message_observer;
+
+namespace {
+    bool on_widget_key_pressed(guint keyval, guint _, Gdk::ModifierType state) {
+        if (keyval == GDK_KEY_Return) {
+            std::string data = Glib::wrap(direct_message->messageEntry, true)->get_text().c_str();
+            
+            message_observer(data);
+        }
+
+        return false;
+    }
+}
 
 static void direct_message_dispose(GObject *gobject) {
     gtk_widget_dispose_template(GTK_WIDGET(gobject), DIRECT_MESSAGE_TYPE);
@@ -52,11 +54,6 @@ static void direct_message_init(DirectMessage *self) {
     direct_message = self;
 
     // It is now possible to access self->attributes
-}
-
-void set_message_entry(std::function<void()> func) {
-    message_observer = func;
-
     auto event_ck = Gtk::EventControllerKey::create();
     
     event_ck->signal_key_pressed().connect(
@@ -65,4 +62,8 @@ void set_message_entry(std::function<void()> func) {
     );
 
     Glib::wrap(GTK_WIDGET(direct_message), true)->add_controller(event_ck);
+}
+
+void set_message_entry(std::function<void(std::string &)> func) {
+    message_observer = func;
 }

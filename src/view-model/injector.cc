@@ -24,7 +24,6 @@ std::shared_ptr<AccountViewModel> Injector::inject_account_vm(
 }
 
 std::shared_ptr<NetworkViewModel> Injector::inject_network_vm(
-    Glib::RefPtr<Gtk::Entry> msg_entry,
     std::function<void()> showDirectMessage
 ) {
     std::shared_ptr<model::NetworkModel> network_model = model::Injector::inject_network_model();
@@ -32,7 +31,6 @@ std::shared_ptr<NetworkViewModel> Injector::inject_network_vm(
     std::shared_ptr<NetworkViewModel> network_vm(
         new NetworkViewModel(
             network_model,
-            msg_entry,
             showDirectMessage
         )
     );
