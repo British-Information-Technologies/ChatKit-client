@@ -14,8 +14,8 @@
 namespace model {
   class Connection {
     protected:
-      std::string ip_address;
-      std::string port;
+      const std::string ip_address;
+      const std::string port;
 
       std::shared_ptr<bufferevent> bev;
 

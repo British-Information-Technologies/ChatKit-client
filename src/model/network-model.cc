@@ -30,31 +30,30 @@ int NetworkModel::CreateClientConnection(
   const std::string &port
 )
 {
-  int res = network_manager->CreateConnection(
+  if (network_manager->CreateConnection(
     ConnectionType::Client,
     uuid,
     ip_address,
     port
-  );
-  
-  if (res == -1) {
-    printf("[Connection]: failed to initiate\n");
+  )) {
     return -1;
-
-  } else if (res == 1) {
-    printf("[Connection]: loaded\n");
-    return 0;
   }
-
-  printf("[Connection]: created\n");
-
-  network_manager->InitiateSecureConnection(uuid);
-
-  printf("[Connection]: public key transmitted");
+  
+  // TODO: needs to communicate with server: network_manager->InitiateSecureConnection(uuid);
 
   return 0;
 }
 
 int NetworkModel::SendMessage(const std::string &uuid, std::string &data) {
   return network_manager->SendMessage(uuid, data);
+}
+
+int NetworkModel::SendClientMessage(
+  const std::string &uuid,
+  const std::string &time,
+  const std::string &date,
+  const std::string &data
+)
+{
+  return network_manager->SendClientMessage(uuid, time, date, data);
 }

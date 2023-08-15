@@ -35,11 +35,11 @@ Connection::Connection(
   msd::channel<std::shared_ptr<Data>> &network_manager_chann,
   const std::string &ip_address, 
   const std::string &port
-): out_chann(network_manager_chann)
+):out_chann(network_manager_chann), 
+  ip_address(ip_address),
+  port(port),
+  data_handler(new InsecureDataHandler)
 {
-  this->ip_address = ip_address;
-  this->port = port;
-
   this->pk = nullptr;
   this->sk = nullptr;
   
@@ -48,8 +48,6 @@ Connection::Connection(
       bufferevent_free(b);
     }
   );
-  
-  this->data_handler = nullptr;
 }
 
 Connection::~Connection() {

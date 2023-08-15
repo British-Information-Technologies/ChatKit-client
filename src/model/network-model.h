@@ -25,6 +25,13 @@ namespace model {
             );
 
             int SendMessage(const std::string &uuid, std::string &data);
+            
+            int SendClientMessage(
+                const std::string &uuid,
+                const std::string &time,
+                const std::string &date,
+                const std::string &data
+            );
     };
 }  // namespace model
 

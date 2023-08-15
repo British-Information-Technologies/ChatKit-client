@@ -125,7 +125,7 @@ int NetworkManager::ConnectToServiceServer() {
   return 0;
 }
 
-int NetworkManager::InitiateSecureConnection(const std::string &uuid) { 
+int NetworkManager::InitiateSecureConnection(const std::string &uuid) {
   if (!connections.contains(uuid)) {
     return -1;
   }
@@ -133,7 +133,7 @@ int NetworkManager::InitiateSecureConnection(const std::string &uuid) {
   auto conn = connections.at(uuid);
 
   // send public key to connection to try initiate a secure connection
-  if (conn->SendPublicKey() != 0) {
+  if (conn->SendPublicKey()) {
     // panic! failed to send public key to scokfd connection
     return -1;
   }
@@ -149,7 +149,8 @@ int NetworkManager::CreateConnection(
 ) 
 {
   if (connections.contains(uuid)) {
-    return 1;
+    printf("[NetworkManager]: connection loaded\n");
+    return 0;
   }
  
   auto conn = GetConnection(
@@ -161,11 +162,13 @@ int NetworkManager::CreateConnection(
   );
   
   if (conn->Initiate()) {
+    printf("[NetworkManager]: connection failed to initiate\n");
     return -1;
   }
 
   connections.insert(std::pair<std::string, std::shared_ptr<Connection>>(uuid, conn));
   
+  printf("[NetworkManager]: connection created\n");
   return 0;
 }
 
@@ -178,6 +181,28 @@ int NetworkManager::SendMessage(const std::string &uuid, std::string &data) {
   if (DeserializeStreamOut(message.get(), data) != 0) {
     return -1;
   }
+
+  int sent_bytes = connections.at(uuid)->SendMessage(message.get());
+
+  return sent_bytes;
+}
+
+int NetworkManager::SendClientMessage(
+  const std::string &uuid,
+  const std::string &time,
+  const std::string &date,
+  const std::string &data
+)
+{
+  if (!connections.contains(uuid)) {
+    return -1;
+  }
+
+  std::unique_ptr<Message> message = CreateClientStreamOutSendMessage(
+    time,
+    date,
+    data
+  );
 
   int sent_bytes = connections.at(uuid)->SendMessage(message.get());
 

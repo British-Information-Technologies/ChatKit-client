@@ -26,14 +26,17 @@ void NetworkViewModel::SendMessageObserver(std::string &data) {
 
   std::cout << "Message to send: " << data << std::endl;
   
-  model->SendMessage("faked uuid", data); // TODO: currently faked, will use data model getUuid() or server,
+  const std::string time("fake time"); // TODO
+  const std::string date("fake date"); // TODO
+  
+  model->SendClientMessage("faked uuid", time, date, data); // TODO: currently faked, will use data model getUuid() or server,
 }
 
 void NetworkViewModel::OpenContactObserver() {
   model->CreateClientConnection(
     "faked uuid", // TODO: currently faked, will use data model getUuid() or server,
-    "faked ip",   // TODO: currently faked, will use data model getIpAddress() or server,
-    "faked port"  // TODO: currently faked, will use data model getPort() or server
+    "localhost",   // TODO: currently faked, will use data model getIpAddress() or server,
+    "5789"  // TODO: currently faked, will use data model getPort() or server
   );
 
   showDirectMessage();
