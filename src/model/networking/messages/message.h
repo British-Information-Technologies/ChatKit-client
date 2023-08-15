@@ -2,6 +2,7 @@
 #define MODEL_NETWORKING_MESSAGES_H_
 
 #include <string>
+#include <memory>
 
 namespace model {
     enum StreamType {
@@ -29,6 +30,12 @@ namespace model {
 
             std::string GetType();
     };
+
+    std::unique_ptr<Message> CreateClientStreamOutSendMessage(
+        const std::string &time,
+        const std::string &date,
+        const std::string &data
+    );
     
     int DeserializeStreamIn(Message* msg, std::string &data);
     int DeserializeClientStreamIn(Message* msg, std::string &data);

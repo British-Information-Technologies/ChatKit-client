@@ -1,5 +1,6 @@
 #include <string>
 #include <nlohmann/json.hpp>
+#include <memory>
 
 #include "message.h"
 
@@ -63,6 +64,14 @@ std::string Message::GetType() {
     return this->type;
 }
 
+std::unique_ptr<Message> model::CreateClientStreamOutSendMessage(
+    const std::string &time,
+    const std::string &date,
+    const std::string &data
+)
+{
+    return std::make_unique<client_stream_out::SendMessage>(time, date, data);
+}
 
 // Stream In
 int model::DeserializeStreamIn(Message* msg, std::string &data) {
