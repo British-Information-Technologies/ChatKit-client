@@ -1,5 +1,6 @@
 #include <gtkmm-4.0/gtkmm.h>
 #include <functional>
+#include <string>
 
 #include "direct-message-box.h"
 
@@ -18,8 +19,8 @@ static std::function<void(std::string &)> message_observer;
 namespace {
     bool on_widget_key_pressed(guint keyval, guint _, Gdk::ModifierType state) {
         if (keyval == GDK_KEY_Return) {
-            std::string data = Glib::wrap(direct_message->messageEntry, true)->get_text().c_str();
-            
+            std::string data(Glib::wrap(direct_message->messageEntry, true)->get_text());
+
             message_observer(data);
         }
 

@@ -1,6 +1,7 @@
 #include <gtkmm-4.0/gtkmm.h>
 #include <memory>
 #include <string>
+#include <iostream>
 
 #include "network-view-model.h"
 
@@ -23,7 +24,7 @@ void NetworkViewModel::SendMessageObserver(std::string &data) {
       return;
   }
 
-  printf("Message to send: %s\n", data);
+  std::cout << "Message to send: " << data << std::endl;
   
   model->SendMessage("faked uuid", data); // TODO: currently faked, will use data model getUuid() or server,
 }
