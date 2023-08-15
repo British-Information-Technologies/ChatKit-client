@@ -40,15 +40,20 @@ using json = nlohmann::json;
 
 namespace {
     json isValidJson(Message* msg, const std::string &data) {
-        json data_json = json::parse(data);
-
-        if (!data_json.contains("type")) {
-            // data is invalid, must have a type
-            msg = new internal::EventError("[DeserializeError]: Message is not valid json");
+        try {
+            json data_json = json::parse(data);
+            
+            if (!data_json.contains("type")) {
+                // data is invalid, must have a type
+                msg = new internal::EventError("[DeserializeError]: Missing type, message is not valid json");
+                return nullptr;
+            }
+            
+            return data_json;
+        } catch (std::exception _) {
+            msg = new internal::EventError("[DeserializeError]: Parse error, message is not json");
             return nullptr;
         }
-        
-        return data_json;
     }
 } // namespace
 
