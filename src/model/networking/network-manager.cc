@@ -4,6 +4,7 @@
 #include <memory>
 #include <event2/event.h>
 #include <mutex>
+#include <thread>
 #include "msd/channel.hpp"
 
 #include "network-manager.h"
@@ -17,7 +18,8 @@
 using namespace model;
 
 namespace {
-  void LaunchCallbackHandler(std::shared_ptr<event_base> connection_base) {
+  void LaunchConnectionBaseHandler(std::shared_ptr<event_base> connection_base) {
+    printf("[NetworkManager]: connection base launched\n");
     event_base_loop(connection_base.get(), EVLOOP_NO_EXIT_ON_EMPTY);
   }
 
@@ -85,20 +87,20 @@ NetworkManager::NetworkManager() {
 }
 
 NetworkManager::~NetworkManager() {
+  connection_base_thread->request_stop();
+  event_base_free(connection_base.get());
   connections.clear();
 }
 
-void NetworkManager::Launch() {
-  // todo - might be good as a coroutine
-
+void NetworkManager::LaunchConnectionBase() {
   // start event base loop for connection callbacks
-  /*std::jthread callback_thread(
-    LaunchCallbackHandler,
+  connection_base_thread = std::make_unique<std::jthread>(
+    LaunchConnectionBaseHandler,
     this->connection_base
   );
 
   // start channel loop for reading incoming data from connection callbacks
-  std::jthread channel_handler(
+  /*std::jthread channel_handler(
     LaunchChannelHandler,
     std::ref(this->connections_mutex),
     std::ref(this->in_chann),

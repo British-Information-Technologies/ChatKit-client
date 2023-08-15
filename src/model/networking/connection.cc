@@ -188,7 +188,7 @@ void Connection::WriteMessageCbHandler(struct bufferevent *bev, void *ptr) {
 }
 
 void Connection::WriteMessageCb() {
-  printf("<data successfully written to socket>");
+  printf("[Connection]: data successfully written to socket");
 }
 
 void Connection::EventCbHandler(struct bufferevent *bev, short events, void *ptr) {
@@ -198,7 +198,7 @@ void Connection::EventCbHandler(struct bufferevent *bev, short events, void *ptr
 
 void Connection::EventCb(short events) {
   if (events && (BEV_EVENT_ERROR || BEV_EVENT_READING || BEV_EVENT_WRITING)) {
-    printf("Buffer Event Error! Terminating Connection!\n");
+    printf("[Connection]: buffer event error, terminating connection!\n");
 
     /* send data to network manager - todo add message factory
     json data = {

@@ -14,9 +14,7 @@ NetworkViewModel::NetworkViewModel(
   std::function<void()> showDirectMessage
 ) {
   this->model = model;
-  this->showDirectMessage = showDirectMessage;
-  
-  //this->model->Run(); // Seg faults
+  this->showDirectMessage = showDirectMessage;  
 }
 
 void NetworkViewModel::SendMessageObserver(std::string &data) {

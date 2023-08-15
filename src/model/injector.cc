@@ -34,6 +34,8 @@ std::shared_ptr<NetworkModel> Injector::inject_network_model() {
       network_manager
     )
   );
+  
+  network_model->Run();
 
   return network_model;
 }

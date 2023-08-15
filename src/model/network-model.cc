@@ -14,12 +14,12 @@ NetworkModel::NetworkModel(
 }
 
 int NetworkModel::Run() {
-  if (network_manager->ConnectToServiceServer() != 0) {
+  //TODO: if (network_manager->ConnectToServiceServer() != 0) {
     // failed to connect to service service
-    return -1;
-  }
+    //return -1;
+  //}
 
-  network_manager->Launch();
+  network_manager->LaunchConnectionBase();
 
   return 0;
 }

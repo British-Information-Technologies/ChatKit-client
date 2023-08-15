@@ -6,6 +6,7 @@
 #include <memory>
 #include <event2/event.h>
 #include <mutex>
+#include <thread>
 #include "msd/channel.hpp"
 
 #include "connection.h"
@@ -18,6 +19,8 @@ namespace model {
     private:
       std::mutex connections_mutex;
 
+      std::unique_ptr<std::jthread> connection_base_thread;
+
       std::shared_ptr<struct event_base> connection_base;
       
       msd::channel<std::shared_ptr<Data>> in_chann;
@@ -29,7 +32,7 @@ namespace model {
       NetworkManager();
       ~NetworkManager();
 
-      void Launch();
+      void LaunchConnectionBase();
 
       int ConnectToServiceServer();
 
