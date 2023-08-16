@@ -8,12 +8,11 @@
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 #include "msd/channel.hpp"
+#include <iostream>
 
 #include "client-connection.h"
 
 #include "model/networking/messages/message.h"
-
-#include "model/networking/utility/secure-data-handler.h"
 
 #include "model/networking/utility/data.h"
 #include "model/networking/utility/buffer-writer.h"
@@ -29,8 +28,34 @@ ClientConnection::ClientConnection(
     std::shared_ptr<event_base> base,
     msd::channel<std::shared_ptr<Data>> &network_manager_chann,
     const std::string &ip_address,
-    const std::string &port
-): Connection(base, network_manager_chann, ip_address, port) {}
+    const std::string &port,
+    unsigned char *pk,
+    unsigned char *sk
+): Connection(base, network_manager_chann, ip_address, port, pk, sk) {}
+
+std::shared_ptr<Connection> ClientConnection::Create(
+  std::shared_ptr<struct event_base> base,
+  msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+  const std::string &ip_address,
+  const std::string &port
+) {
+  auto [pk, sk] = GenerateKeyPair();
+
+  if (pk == nullptr || sk == nullptr) {
+    return nullptr;
+  }
+
+  std::shared_ptr<Connection> conn(new ClientConnection(
+    base,
+    network_manager_chann,
+    ip_address,
+    port,
+    pk,
+    sk
+  ));
+
+  return conn;
+}
 
 int ClientConnection::SendMessage(Message *message) {
   if (message->GetStreamType() != StreamType::ClientStreamOut) {

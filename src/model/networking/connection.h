@@ -28,7 +28,7 @@ namespace model {
  
     private:
       void *GetInAddr(struct sockaddr *);
-       
+
       static void ReadMessageCbHandler(struct bufferevent *bev, void *ptr);
       virtual void ReadMessageCb() = 0;
       
@@ -42,20 +42,26 @@ namespace model {
     
     protected:
       void SetState(DataHandler *);
-    
-    public:
+      
+      static std::tuple<unsigned char*, unsigned char*> GenerateKeyPair();
+      
       Connection(
         std::shared_ptr<struct event_base> base,
         msd::channel<std::shared_ptr<Data>> &network_manager_chann,
         const std::string &ip_address,
-        const std::string &port
+        const std::string &port,
+        unsigned char *pk,
+        unsigned char *sk
       );
 
-      ~Connection();
+      virtual ~Connection();
+    
+    public:
+      bool IsSecure();
+
+      const std::string GetPublicKey();
       
       int Initiate();
-
-      int SendPublicKey();
 
       int EstablishSecureConnection(const unsigned char *recv_pk);
 

@@ -19,8 +19,8 @@ std::shared_ptr<model::Connection> model::GetConnection(
 ) 
 {
     if (type == model::ConnectionType::Client) {
-        return std::make_shared<model::ClientConnection>(base, network_manager_chann, ip_address, port);
+        return model::ClientConnection::Create(base, network_manager_chann, ip_address, port);
     }
 
-    return std::make_shared<model::ServerConnection>(base, network_manager_chann, ip_address, port);
+    return model::ServerConnection::Create(base, network_manager_chann, ip_address, port);
 }

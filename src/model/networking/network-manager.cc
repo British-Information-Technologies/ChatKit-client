@@ -88,7 +88,6 @@ NetworkManager::NetworkManager() {
 
 NetworkManager::~NetworkManager() {
   connection_base_thread->request_stop();
-  event_base_free(connection_base.get());
   connections.clear();
 }
 
@@ -119,7 +118,7 @@ int NetworkManager::ConnectToServiceServer() {
   }
   
   // request for secure connection with service server
-  if (InitiateSecureConnection(uuid) != 0) {
+  if (InitiateSecureConnection(uuid)) {
     // failed to initiate secure connection with service server
     return -1;
   }
@@ -129,14 +128,29 @@ int NetworkManager::ConnectToServiceServer() {
 
 int NetworkManager::InitiateSecureConnection(const std::string &uuid) {
   if (!connections.contains(uuid)) {
+    printf("[NetworkManager]: connection does not exist\n");
     return -1;
   }
 
   auto conn = connections.at(uuid);
 
-  // send public key to connection to try initiate a secure connection
-  if (conn->SendPublicKey()) {
-    // panic! failed to send public key to scokfd connection
+  // TODO: check if conn is a server connection
+
+  if (conn->IsSecure()) {
+    printf("[NetworkManager]: connection already secure\n");
+    return -1;
+  }
+
+  const std::string pk = conn->GetPublicKey();
+  
+  std::unique_ptr<Message> pk_msg = CreateServerStreamOutPublicKey(
+    uuid,
+    pk
+  );
+
+  // send our PK as plaintext
+  if (conn->SendMessage(pk_msg.get()) < 0) {
+    // failed to send PK
     return -1;
   }
 
@@ -162,6 +176,11 @@ int NetworkManager::CreateConnection(
     ip_address,
     port
   );
+
+  if(conn == nullptr) {
+    printf("[NetworkManager]: connection failed to create\n");
+    return -1;
+  }
   
   if (conn->Initiate()) {
     printf("[NetworkManager]: connection failed to initiate\n");

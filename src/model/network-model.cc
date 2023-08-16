@@ -39,9 +39,7 @@ int NetworkModel::CreateClientConnection(
     return -1;
   }
   
-  // TODO: needs to communicate with server: network_manager->InitiateSecureConnection(uuid);
-
-  return 0;
+  return network_manager->InitiateSecureConnection(/*TODO*/ "faked server uuid");
 }
 
 int NetworkModel::SendMessage(const std::string &uuid, std::string &data) {

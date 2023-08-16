@@ -17,8 +17,18 @@ namespace model {
             
             void ReadMessageCb();
 
-        public:
+        protected:
             ClientConnection(
+                std::shared_ptr<struct event_base> base,
+                msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+                const std::string &ip_address,
+                const std::string &port,
+                unsigned char *pk,
+                unsigned char *sk
+            );
+
+        public:
+            static std::shared_ptr<Connection> Create(
                 std::shared_ptr<struct event_base> base,
                 msd::channel<std::shared_ptr<Data>> &network_manager_chann,
                 const std::string &ip_address,

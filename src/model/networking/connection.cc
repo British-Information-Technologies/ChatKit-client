@@ -26,6 +26,24 @@ void *Connection::GetInAddr(struct sockaddr *sa) {
   return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
 
+std::tuple<unsigned char*, unsigned char*> Connection::GenerateKeyPair() {
+  // ensures operations are thread safe
+  if (sodium_init() < 0) {
+    // sodium initialisation failed
+    return std::make_tuple(nullptr, nullptr);
+  }
+
+  // generate keypair
+  unsigned char *pk = (unsigned char*) malloc(sizeof(unsigned char[crypto_box_PUBLICKEYBYTES]));
+  unsigned char *sk = (unsigned char*) malloc(sizeof(unsigned char[crypto_box_SECRETKEYBYTES]));
+  if(crypto_box_keypair(pk, sk) != 0) {
+    // keypair generation failed
+    return std::make_tuple(nullptr, nullptr);
+  }
+  
+  return std::make_tuple(pk, sk);
+}
+
 void Connection::SetState(DataHandler *next_handler) {
   data_handler.reset(next_handler);
 }
@@ -34,15 +52,16 @@ Connection::Connection(
   std::shared_ptr<event_base> base,
   msd::channel<std::shared_ptr<Data>> &network_manager_chann,
   const std::string &ip_address, 
-  const std::string &port
-):out_chann(network_manager_chann), 
+  const std::string &port,
+  unsigned char *pk,
+  unsigned char *sk
+): out_chann(network_manager_chann),
   ip_address(ip_address),
   port(port),
-  data_handler(new InsecureDataHandler)
+  data_handler(new InsecureDataHandler),
+  pk(pk),
+  sk(sk)
 {
-  this->pk = nullptr;
-  this->sk = nullptr;
-  
   this->bev.reset(bufferevent_socket_new(base.get(), -1, BEV_OPT_CLOSE_ON_FREE),
     [](bufferevent *b){
       bufferevent_free(b);
@@ -50,7 +69,14 @@ Connection::Connection(
   );
 }
 
-Connection::~Connection() {
+Connection::~Connection() {}
+
+bool Connection::IsSecure() {
+  return data_handler->GetType() == DataHandlerType::Secure;
+}
+
+const std::string Connection::GetPublicKey() {
+  return std::string(reinterpret_cast<char const*>(pk.get()), crypto_box_PUBLICKEYBYTES);
 }
 
 int Connection::Initiate() {
@@ -69,7 +95,7 @@ int Connection::Initiate() {
   hints.ai_protocol = IPPROTO_TCP;
 
   if ((rv = getaddrinfo(ip_address.c_str(), port.c_str(), &hints, &servinfo)) != 0) {
-    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+    fprintf(stderr, "[Connection]: getaddrinfo = %s\n", gai_strerror(rv));
     return -1;
   }
 
@@ -77,13 +103,13 @@ int Connection::Initiate() {
   int sockfd;
   for (p = servinfo; p != NULL; p = p->ai_next) {
     if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-      perror("connection: socket creation failed");
+      perror("[Connection]: socket creation failed");
       continue;
     }
 
     if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
       close(sockfd);
-      perror("connection: open socket failed");
+      perror("[Connection]: open socket failed");
       continue;
     }
 
@@ -91,13 +117,13 @@ int Connection::Initiate() {
   }
 
   if (p == NULL) {
-    fprintf(stderr, "connection: failed to connect\n");
+    fprintf(stderr, "[Connection]: failed to connect\n");
     return -1;
   }
 
   inet_ntop(p->ai_family, GetInAddr((struct sockaddr *)p->ai_addr), s, sizeof s);
 
-  printf("connection: connecting to %s\n", s);
+  printf("[Connection]: connecting to %s\n", s);
 
   freeaddrinfo(servinfo);  // all done with this structure
    
@@ -120,38 +146,6 @@ int Connection::Initiate() {
   return 0;
 }
 
-int Connection::SendPublicKey() {
-  // ensures operations are thread safe
-  if (sodium_init() < 0) {
-    // sodium initialisation failed
-    return -1;
-  }
-  
-  // generate keypair
-  pk = std::unique_ptr<unsigned char[]>(new unsigned char[crypto_box_PUBLICKEYBYTES]);  
-  sk = std::unique_ptr<unsigned char[]>(new unsigned char[crypto_box_SECRETKEYBYTES]);  
-  if(crypto_box_keypair(pk.get(), sk.get()) != 0) {
-    // keypair generation failed
-    return -1;
-  }
-  
-  // convert pk into message format
-  std::string str_pk(reinterpret_cast<char const*>(pk.get()), crypto_box_PUBLICKEYBYTES);
-  std::unique_ptr<Message> msg_pk;
-  if (DeserializeStreamOut(msg_pk.get(), str_pk) != 0) {
-    // failed to create PK message
-    return -1;
-  }
-
-  // send our PK as plaintext
-  if (SendMessage(msg_pk.get()) < 0) {
-    // failed to send PK
-    return -1;
-  }
-
-  return 0;
-}
-
 int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
   // ensures operations are thread safe
   if (sodium_init() < 0) {
@@ -159,14 +153,8 @@ int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
     return -1;
   }
 
-  // ensure a pk and sk pair exist
-  if (!pk.get() || !sk.get()) {
-    // no pk and sk pair exist
-    return -1;
-  }
-
   // create shared secret with recipient PK and our SK
-  unsigned char ss[crypto_box_BEFORENMBYTES];
+  unsigned char *ss = (unsigned char*) malloc(sizeof(unsigned char[crypto_box_BEFORENMBYTES]));
   if(crypto_box_beforenm(ss, recv_pk, sk.get()) != 0) {
     // shared secret creation failed
     return -1;
