@@ -37,6 +37,11 @@ namespace model {
         const std::string &data
     );
     
+    std::unique_ptr<Message> CreateServerStreamOutPublicKey(
+        const std::string &to,
+        const std::string &pk
+    );
+    
     int DeserializeStreamIn(Message* msg, std::string &data);
     int DeserializeClientStreamIn(Message* msg, std::string &data);
     int DeserializeServerStreamIn(Message* msg, std::string &data);

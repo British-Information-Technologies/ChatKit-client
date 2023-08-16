@@ -27,6 +27,7 @@
 #include "stream-out/server/send-message.h"
 #include "stream-out/server/send-global-message.h"
 #include "stream-out/server/disconnect.h"
+#include "stream-out/server/public-key.h"
 
 #include "stream-out/network/info.h"
 #include "stream-out/network/connect.h"
@@ -71,6 +72,14 @@ std::unique_ptr<Message> model::CreateClientStreamOutSendMessage(
 )
 {
     return std::make_unique<client_stream_out::SendMessage>(time, date, data);
+}
+
+std::unique_ptr<Message> model::CreateServerStreamOutPublicKey(
+    const std::string &to,
+    const std::string &pk
+)
+{
+    return std::make_unique<server_stream_out::PublicKey>(to, pk);
 }
 
 // Stream In
