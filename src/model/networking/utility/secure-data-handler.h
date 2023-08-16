@@ -9,10 +9,14 @@
 namespace model {
 class SecureDataHandler : public DataHandler {
  private:
-  std::unique_ptr<unsigned char> ss;
+  DataHandlerType type = DataHandlerType::Secure;
+
+  std::unique_ptr<unsigned char[]> ss;
 
  public:
   SecureDataHandler(unsigned char *ss);
+
+  DataHandlerType GetType();
 
   std::string FormatSend(std::string &data);
   std::string FormatRead(std::string &data);

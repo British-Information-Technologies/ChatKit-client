@@ -11,8 +11,13 @@ using namespace model;
 
 using json = nlohmann::json;
 
-SecureDataHandler::SecureDataHandler(unsigned char *ss) {
-  this->ss.reset(ss);
+SecureDataHandler::SecureDataHandler(
+  unsigned char *ss
+): ss(ss) 
+{}
+
+DataHandlerType SecureDataHandler::GetType() {
+  return type;
 }
 
 std::string SecureDataHandler::FormatSend(std::string &data) {

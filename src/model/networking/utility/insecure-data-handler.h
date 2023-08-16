@@ -7,7 +7,12 @@
 
 namespace model {
   class InsecureDataHandler : public DataHandler {
+    private:
+      DataHandlerType type = DataHandlerType::Insecure;
+    
     public:
+      DataHandlerType GetType();
+
       std::string FormatSend(std::string &data);
       std::string FormatRead(std::string &data);
   };

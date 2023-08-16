@@ -10,6 +10,10 @@ using namespace model;
 
 using json = nlohmann::json;
 
+DataHandlerType InsecureDataHandler::GetType() {
+  return type;
+}
+
 std::string InsecureDataHandler::FormatSend(std::string &data) {
   // create packet
   std::string packet = json({
