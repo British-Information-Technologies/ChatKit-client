@@ -42,6 +42,25 @@ int NetworkModel::CreateClientConnection(
   return network_manager->InitiateSecureConnection(/*TODO*/ "faked server uuid");
 }
 
+
+int NetworkModel::CreateServerConnection(
+  const std::string &uuid,
+  const std::string &ip_address,
+  const std::string &port
+)
+{
+  if (network_manager->CreateConnection(
+    ConnectionType::Server,
+    uuid,
+    ip_address,
+    port
+  )) {
+    return -1;
+  }
+
+  return network_manager->InitiateSecureConnection(/*TODO*/ "some higher hierarchy server");
+}
+
 int NetworkModel::SendMessage(const std::string &uuid, std::string &data) {
   return network_manager->SendMessage(uuid, data);
 }
