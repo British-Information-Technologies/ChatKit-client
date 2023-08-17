@@ -103,13 +103,13 @@ int Connection::Initiate() {
   int sockfd;
   for (p = servinfo; p != NULL; p = p->ai_next) {
     if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-      perror("[Connection]: socket creation failed");
+      perror("[Connection]: socket creation failed\n");
       continue;
     }
 
     if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
       close(sockfd);
-      perror("[Connection]: open socket failed");
+      perror("[Connection]: open socket failed\n");
       continue;
     }
 
@@ -176,7 +176,7 @@ void Connection::WriteMessageCbHandler(struct bufferevent *bev, void *ptr) {
 }
 
 void Connection::WriteMessageCb() {
-  printf("[Connection]: data successfully written to socket");
+  printf("[Connection]: data successfully written to socket\n");
 }
 
 void Connection::EventCbHandler(struct bufferevent *bev, short events, void *ptr) {
