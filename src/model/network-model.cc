@@ -14,12 +14,9 @@ NetworkModel::NetworkModel(
 }
 
 int NetworkModel::Run() {
-  //TODO: if (network_manager->ConnectToServiceServer() != 0) {
-    // failed to connect to service service
-    //return -1;
-  //}
-
   network_manager->LaunchConnectionBase();
+  
+  CreateServiceServerConnection(); // TODO: move to connect on login and retry automatically if fail
 
   return 0;
 }
@@ -63,7 +60,7 @@ int NetworkModel::CreateServerConnection(
 
 int NetworkModel::CreateServiceServerConnection() {
   // TODO: load ip addresses and ports (currently faked)
-  const std::string uuid = "faked server uuid";
+  const std::string uuid = "some higher hierarchy server";
   const std::string ip_address = "localhost";
   const std::string port = "5790";
 
@@ -76,9 +73,10 @@ int NetworkModel::CreateServiceServerConnection() {
     return -1;
   }
   
-  /* TODO: currently this connection will immidately recieve a pk to make secure. 
-           When done, it should ask some CA or something to verify it. */
-
+  /* TODO: currently this connection will never recieve a pk to make it secure. 
+   *       When done, it should ask some CA or something to verify it the pk
+   *       it recieves.
+   */
   return 0;
 }
 
