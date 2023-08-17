@@ -39,7 +39,7 @@ int NetworkModel::CreateClientConnection(
     return -1;
   }
   
-  return network_manager->InitiateSecureConnection(/*TODO*/ "faked server uuid");
+  return network_manager->InitiateSecureConnection(uuid, /*TODO*/ "some higher hierarchy server");
 }
 
 
@@ -58,7 +58,28 @@ int NetworkModel::CreateServerConnection(
     return -1;
   }
 
-  return network_manager->InitiateSecureConnection(/*TODO*/ "some higher hierarchy server");
+  return network_manager->InitiateSecureConnection(uuid, /*TODO*/ "some higher hierarchy server");
+}
+
+int NetworkModel::CreateServiceServerConnection() {
+  // TODO: load ip addresses and ports (currently faked)
+  const std::string uuid = "faked server uuid";
+  const std::string ip_address = "localhost";
+  const std::string port = "5790";
+
+  if (network_manager->CreateConnection(
+    ConnectionType::Server,
+    uuid,
+    ip_address,
+    port
+  )) {
+    return -1;
+  }
+  
+  /* TODO: currently this connection will immidately recieve a pk to make secure. 
+           When done, it should ask some CA or something to verify it. */
+
+  return 0;
 }
 
 int NetworkModel::SendMessage(const std::string &uuid, std::string &data) {

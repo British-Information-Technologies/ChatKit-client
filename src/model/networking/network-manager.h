@@ -34,9 +34,7 @@ namespace model {
 
       void LaunchConnectionBase();
 
-      int ConnectToServiceServer();
-
-      int InitiateSecureConnection(const std::string &uuid);
+      int InitiateSecureConnection(const std::string &end_point_uuid, const std::string &service_uuid);
 
       int CreateConnection(
         const ConnectionType type,

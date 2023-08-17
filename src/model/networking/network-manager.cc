@@ -107,49 +107,35 @@ void NetworkManager::LaunchConnectionBase() {
   );*/
 }
 
-int NetworkManager::ConnectToServiceServer() {
-  // TODO: load ip addresses and ports (currently faked)
-  const std::string uuid = "1234";
-  const std::string ip_address = "1234";
-  const std::string port = "1234";
+int NetworkManager::InitiateSecureConnection(const std::string &end_point_uuid, const std::string &service_uuid) {
+  if (!connections.contains(end_point_uuid) || !connections.contains(service_uuid)) {
+    printf("[NetworkManager]: connections do not exist\n");
+    return -1;
+  }
 
-  if (CreateConnection(ConnectionType::Server, uuid, ip_address, port)) {
+  auto end_point_conn = connections.at(end_point_uuid);  
+
+  if (end_point_conn->IsSecure()) {
+    printf("[NetworkManager]: end point already secure\n");
     return -1;
   }
   
-  // request for secure connection with service server
-  if (InitiateSecureConnection(uuid)) {
-    // failed to initiate secure connection with service server
+  auto service_conn = connections.at(service_uuid);
+
+  if (!service_conn->IsSecure()) {
+    printf("[NetworkManager]: service not secure\n");
     return -1;
   }
 
-  return 0;
-}
-
-int NetworkManager::InitiateSecureConnection(const std::string &uuid) {
-  if (!connections.contains(uuid)) {
-    printf("[NetworkManager]: connection does not exist\n");
-    return -1;
-  }
-
-  auto conn = connections.at(uuid);
-
-  // TODO: check if conn is a server connection
-
-  if (conn->IsSecure()) {
-    printf("[NetworkManager]: connection already secure\n");
-    return -1;
-  }
-
-  const std::string pk = conn->GetPublicKey();
+  const std::string end_point_pk = end_point_conn->GetPublicKey();
   
   std::unique_ptr<Message> pk_msg = CreateServerStreamOutPublicKey(
-    uuid,
-    pk
+    end_point_uuid,
+    end_point_pk
   );
 
   // send our PK as plaintext
-  if (conn->SendMessage(pk_msg.get()) < 0) {
+  if (service_conn->SendMessage(pk_msg.get()) < 0) {
     // failed to send PK
     return -1;
   }

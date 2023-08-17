@@ -29,6 +29,8 @@ namespace model {
                 const std::string &ip_address,
                 const std::string &port
             );
+            
+            int CreateServiceServerConnection();
 
             int SendMessage(const std::string &uuid, std::string &data);
             
