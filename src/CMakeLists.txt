@@ -110,23 +110,19 @@ set(SOURCES
     main.cc
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -lsodium")
-
-# todo - must change as machine specific
-find_package(Libevent CONFIG REQUIRED) 
-#PATHS /home/mitchell/Documents/packages/libevent/build
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 add_definitions(${GTKMM_CFLAGS_OTHER})
 
 add_executable(${BINARY}_run ${SOURCES})
 target_link_directories(${BINARY}_run PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_run PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads msd_channel fmt)
+target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt)
 
 add_library(${BINARY}_lib STATIC ${SOURCES})
 target_link_directories(${BINARY}_lib PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_lib PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads msd_channel fmt)
+target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt)
 
 # Don't want to copy if we're building in the source dir
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
