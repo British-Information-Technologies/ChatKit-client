@@ -122,10 +122,11 @@ int NetworkManager::InitiateSecureConnection(const std::string &end_point_uuid, 
   
   auto service_conn = connections.at(service_uuid);
 
-  if (!service_conn->IsSecure()) {
-    printf("[NetworkManager]: service not secure\n");
-    return -1;
-  }
+  // TODO Note: comment out for python test server
+  //if (!service_conn->IsSecure()) {
+  //  printf("[NetworkManager]: service not secure\n");
+  //  return -1;
+  //}
 
   const std::string end_point_pk = end_point_conn->GetPublicKey();
   
