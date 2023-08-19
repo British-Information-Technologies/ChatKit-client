@@ -144,7 +144,7 @@ int Connection::Initiate() {
   return 0;
 }
 
-void Connection::LaunchListener(std::shared_ptr<event_base> base) {
+void Connection::Listen(std::shared_ptr<event_base> base) {
   struct sockaddr_in sin;
   
   // Clear the sockaddr in case extra platform-specific fields are messed up

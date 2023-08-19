@@ -79,7 +79,7 @@ namespace model {
       
       int Initiate();
 
-      void LaunchListener(std::shared_ptr<event_base> base);
+      void Listen(std::shared_ptr<event_base> base);
 
       int EstablishSecureConnection(const unsigned char *recv_pk);
 
