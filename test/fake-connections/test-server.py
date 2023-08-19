@@ -26,11 +26,11 @@ async def handle(conn, address, index):
 
 async def main():
     # specify Host and Port
-    HOST = 'localhost'
+    HOST = ''
     PORT = 5790
     
     soc = socket.socket(
-        socket.AF_INET6,         # append 6 for ipv6 or remove for ipv4
+        socket.AF_INET,         # append 6 for ipv6 or remove for ipv4
         socket.SOCK_STREAM
     )
     
