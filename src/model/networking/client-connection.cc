@@ -82,6 +82,8 @@ void ClientConnection::ReadMessageCb() {
   // decode or decode and decrypt data
   std::string plaintext = data_handler->FormatRead(encoded_packet);
 
+  std::cout << "[ClientConnection]: " << plaintext << std::endl;
+
   if (!plaintext.length()) {
     // plaintext is empty, failed to format encoded packet
     return;
@@ -96,5 +98,5 @@ void ClientConnection::ReadMessageCb() {
     message: message,
   });
 
-  data >> out_chann;
+  //TODO data >> out_chann;
 }

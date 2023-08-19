@@ -7,6 +7,7 @@
 #include <sodium.h>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
+#include <iostream>
 #include "msd/channel.hpp"
 
 #include "server-connection.h"
@@ -102,6 +103,8 @@ void ServerConnection::ReadMessageCb() {
   // decode or decode and decrypt data
   std::string plaintext = data_handler->FormatRead(encoded_packet);
 
+  std::cout << "[ServerConnection]: " << plaintext << std::endl;
+
   if (!plaintext.length()) {
     // plaintext is empty, failed to format encoded packet
     return;
@@ -119,5 +122,5 @@ void ServerConnection::ReadMessageCb() {
     message: message,
   });
 
-  data >> out_chann;
+  //TODO: data >> out_chann;
 }
