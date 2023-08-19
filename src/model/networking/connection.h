@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <event2/listener.h>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 #include "msd/channel.hpp"
@@ -13,6 +14,9 @@
 
 namespace model {
   class Connection {
+    private:
+      evconnlistener *listener;
+
     protected:
       const std::string ip_address;
       const std::string port;
@@ -28,6 +32,18 @@ namespace model {
  
     private:
       void *GetInAddr(struct sockaddr *);
+
+      static void AcceptConnectionCbHandler(
+        struct evconnlistener *listener,
+        evutil_socket_t sockfd,
+        struct sockaddr *address,
+        int socklen,
+        void *ptr
+      );
+      void AcceptConnectionCb(evutil_socket_t sockfd, struct sockaddr *address);
+
+      static void AcceptErrorCbHandler(struct evconnlistener *listener, void *ptr);
+      void AcceptErrorCb();
 
       static void ReadMessageCbHandler(struct bufferevent *bev, void *ptr);
       virtual void ReadMessageCb() = 0;
@@ -62,6 +78,8 @@ namespace model {
       const std::string GetPublicKey();
       
       int Initiate();
+
+      void LaunchListener(std::shared_ptr<event_base> base);
 
       int EstablishSecureConnection(const unsigned char *recv_pk);
 

@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <bits/stdc++.h>
 #include <netdb.h>
+#include <event2/listener.h>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 #include <event2/util.h>
@@ -23,7 +24,7 @@ using namespace model;
 
 // get sockaddr, IPv4 or IPv6:
 void *Connection::GetInAddr(struct sockaddr *sa) {
-  return &(((struct sockaddr_in6 *)sa)->sin6_addr);
+  return &(((struct sockaddr_in *)sa)->sin_addr);
 }
 
 std::tuple<unsigned char*, unsigned char*> Connection::GenerateKeyPair() {
@@ -66,10 +67,12 @@ Connection::Connection(
     [](bufferevent *b){
       bufferevent_free(b);
     }
-  );
+  );  
 }
 
-Connection::~Connection() {}
+Connection::~Connection() {
+  evconnlistener_free(listener);
+}
 
 bool Connection::IsSecure() {
   return data_handler->GetType() == DataHandlerType::Secure;
@@ -87,10 +90,10 @@ int Connection::Initiate() {
   
   struct addrinfo hints, *servinfo, *p;
   int rv;
-  char s[INET6_ADDRSTRLEN];
+  char s[INET_ADDRSTRLEN]; // add a 6 to INET to make it work with ivp 6 - remove 6 for ivp 4
 
   memset(&hints, 0, sizeof hints);
-  hints.ai_family = AF_INET6;  // add a 6 to make it work with ivp 6 - remove 6 for ivp 4
+  hints.ai_family = AF_INET;  // add a 6 to make it work with ivp 6 - remove 6 for ivp 4
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_protocol = IPPROTO_TCP;
 
@@ -131,19 +134,38 @@ int Connection::Initiate() {
 
   bufferevent_setcb(bev.get(), ReadMessageCbHandler, WriteMessageCbHandler, EventCbHandler, this);
   
-  if (bufferevent_enable(bev.get(), EV_READ) != 0) {
-    // panic! failed to enable event socket read
-    return -1;
-  }
-
-  if (bufferevent_enable(bev.get(), EV_WRITE) != 0) {
-    // panic! failed to enable event socket write
+  if (bufferevent_enable(bev.get(), EV_READ|EV_WRITE) != 0) {
+    // panic! failed to enable event socket read and write
     return -1;
   }
 
   SetState(new InsecureDataHandler());
 
   return 0;
+}
+
+void Connection::LaunchListener(std::shared_ptr<event_base> base) {
+  struct sockaddr_in sin;
+  
+  // Clear the sockaddr in case extra platform-specific fields are messed up
+  memset(&sin, 0, sizeof(sin));
+
+  sin.sin_family = AF_INET; // add 6 for ipv6
+  
+  sin.sin_addr.s_addr = htonl(0); // listen on 0.0.0.0
+  sin.sin_port = htons(std::stoi(port)); // listen on port
+
+  listener = evconnlistener_new_bind(
+    base.get(),
+    AcceptConnectionCbHandler,
+    this,
+    LEV_OPT_CLOSE_ON_FREE|LEV_OPT_REUSEABLE,
+    -1,
+    (struct sockaddr*)&sin,
+    sizeof(sin)
+  );
+
+  evconnlistener_set_error_cb(listener, AcceptErrorCbHandler);
 }
 
 int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
@@ -163,6 +185,49 @@ int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
   SetState(new SecureDataHandler(ss));
 
   return 0;
+}
+      
+void Connection::AcceptConnectionCbHandler(
+  struct evconnlistener *listener,
+  evutil_socket_t sockfd,
+  struct sockaddr *address,
+  int socklen,
+  void *ptr
+) {
+  Connection *conn = static_cast<Connection *>(ptr);
+  conn->AcceptConnectionCb(sockfd, address);
+}
+
+void Connection::AcceptConnectionCb(evutil_socket_t sockfd, struct sockaddr *address) {
+  // we got a new connection, free the listener
+  evconnlistener_free(listener);
+  
+  // set the socket fd for the connection bufferevent
+  bufferevent_setfd(bev.get(), sockfd);
+
+  // set connection callbacks
+  bufferevent_setcb(bev.get(), ReadMessageCbHandler, WriteMessageCbHandler, EventCbHandler, this);
+
+  // enable the bufferevent read and write
+  if (bufferevent_enable(bev.get(), EV_READ|EV_WRITE) != 0) {
+    // panic! failed to enable event socket read and write
+    return;
+  }
+
+  printf("[Connection]: connecting to %s\n", address);
+}
+
+void Connection::AcceptErrorCbHandler(struct evconnlistener *listener, void *ptr) {
+  Connection *conn = static_cast<Connection *>(ptr);
+  conn->AcceptErrorCb();
+}
+
+void Connection::AcceptErrorCb() {
+  int err = EVUTIL_SOCKET_ERROR();
+  
+  fprintf(stderr, "[Connection]: listener error = %d (%s)\n", err, evutil_socket_error_to_string(err));
+  
+  evconnlistener_free(listener);
 }
 
 void Connection::ReadMessageCbHandler(struct bufferevent *bev, void *ptr) {
