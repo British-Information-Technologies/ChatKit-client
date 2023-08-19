@@ -144,6 +144,8 @@ int Connection::Initiate() {
   return 0;
 }
 
+/* TODO: most likely will need to be moved to NetworkManager, rather than per Connection.
+ *       this is to handle multiple Connections requesting to connect. */
 void Connection::Listen(std::shared_ptr<event_base> base) {
   struct sockaddr_in sin;
   

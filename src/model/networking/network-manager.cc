@@ -107,6 +107,20 @@ void NetworkManager::LaunchConnectionBase() {
   );*/
 }
 
+int NetworkManager::LaunchListener(const std::string &uuid) {
+  if (!connections.contains(uuid)) {
+    printf("[NetworkManager]: connection does not exist\n");
+    return -1;
+  }
+
+  auto conn = connections.at(uuid);
+  
+  conn->Listen(connection_base);
+
+  return 0;
+}
+
+
 int NetworkManager::InitiateSecureConnection(const std::string &end_point_uuid, const std::string &service_uuid) {
   if (!connections.contains(end_point_uuid) || !connections.contains(service_uuid)) {
     printf("[NetworkManager]: connections do not exist\n");

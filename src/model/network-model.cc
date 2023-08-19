@@ -35,6 +35,15 @@ int NetworkModel::CreateClientConnection(
   )) {
     return -1;
   }
+
+  /* TODO: Note: this is fake, the code will eventually be removed.
+   * comment out when not testing, only use when testing (one 
+   * client must listen). must comment out Initiate function call
+   * inside CreateConnection and line below. */
+  //if (network_manager->LaunchListener(uuid)) {
+  //  return -1;
+  //}
+  // return 0;
   
   return network_manager->InitiateSecureConnection(uuid, /*TODO*/ "some higher hierarchy server");
 }

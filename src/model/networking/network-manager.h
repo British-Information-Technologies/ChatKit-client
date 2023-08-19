@@ -34,6 +34,8 @@ namespace model {
 
       void LaunchConnectionBase();
 
+      int LaunchListener(const std::string &uuid);
+
       int InitiateSecureConnection(const std::string &end_point_uuid, const std::string &service_uuid);
 
       int CreateConnection(
