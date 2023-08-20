@@ -37,7 +37,7 @@
 
 #include "internal/event-error.h"
 
-#include "model/networking/utility/variants.h"
+#include "model/networking/utility/decode.h"
 
 using namespace model;
 
@@ -150,23 +150,9 @@ int model::DeserializeServerStreamIn(Message* msg, std::string &data) {
     } else if (type == server_stream_in::kPublicKey && data_json.contains("key")) {
         std::string encoded_key = data_json.at("key");
 
-        const char* encoded_key_ptr = reinterpret_cast<const char*>(encoded_key.c_str());
+        std::string key_str = Base642Bin(encoded_key);
 
-        size_t key_len = encoded_key.length() / 4 * 3;
-        unsigned char key_ptr[key_len];
-        
-        sodium_base642bin(
-            key_ptr,
-            key_len,
-            encoded_key_ptr,
-            sizeof encoded_key_ptr,
-            NULL,
-            &key_len,
-            NULL,
-            base64_VARIANT
-        );
-
-        msg = new server_stream_in::PublicKey(std::string(reinterpret_cast<char const*>(key_ptr), key_len));
+        msg = new server_stream_in::PublicKey(key_str);
 
     } else {
         msg = new internal::EventError("[DeserializeError]: Message is not StreamIn");
@@ -274,23 +260,9 @@ int model::DeserializeServerStreamOut(Message* msg, std::string &data) {
         std::string to = data_json.at("to");
         std::string encoded_key = data_json.at("key");
 
-        const char* encoded_key_ptr = reinterpret_cast<const char*>(encoded_key.c_str());
+        std::string key_str = Base642Bin(encoded_key);
 
-        size_t key_len = encoded_key.length() / 4 * 3;
-        unsigned char key_ptr[key_len];
-        
-        sodium_base642bin(
-            key_ptr,
-            key_len,
-            encoded_key_ptr,
-            sizeof encoded_key_ptr,
-            NULL,
-            &key_len,
-            NULL,
-            base64_VARIANT
-        );
-
-        msg = new server_stream_out::PublicKey(to, std::string(reinterpret_cast<char const*>(key_ptr), key_len));
+        msg = new server_stream_out::PublicKey(to, key_str);
 
     } else {
         msg = new internal::EventError("[DeserializeError]: Message is not StreamOut");
