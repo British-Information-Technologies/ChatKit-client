@@ -4,7 +4,7 @@
 
 #include "model/networking/utility/variants.h"
 
-std::string model::Base642Bin(std::string &encoded_data) {
+std::string model::Base642Bin(const std::string &encoded_data) {
     const char* encoded_data_ptr = reinterpret_cast<const char*>(encoded_data.c_str());
 
     size_t data_len = encoded_data.length() / 4 * 3; // base64 encodes 3 bytes as 4 characters

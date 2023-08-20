@@ -4,7 +4,7 @@
 
 #include "model/networking/utility/variants.h"
 
-std::string model::Bin2Base64(std::string &data) {
+std::string model::Bin2Base64(const std::string &data) {
     const unsigned char* data_ptr = reinterpret_cast<const unsigned char*>(data.c_str());
     unsigned long long data_len = sizeof data_ptr;
 

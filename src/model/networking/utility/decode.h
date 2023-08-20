@@ -4,7 +4,7 @@
 #include <string>
 
 namespace model {
-    std::string Base642Bin(std::string &encoded_data);
+    std::string Base642Bin(const std::string &encoded_data);
 } // namespace model
 
 #endif
