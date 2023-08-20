@@ -10,10 +10,10 @@ namespace server_stream_in {
     
     class PublicKey: public model::ServerStreamIn {
         private:
-            std::string key;
+            const std::string key;
         
         public:
-            PublicKey(std::string key);
+            PublicKey(const std::string &key);
 
             std::string Serialize();
 

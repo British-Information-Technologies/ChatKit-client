@@ -8,9 +8,8 @@
 
 using namespace server_stream_in;
 
-PublicKey::PublicKey(std::string key) {
+PublicKey::PublicKey(const std::string &key): key(key) {
     this->type = kPublicKey;
-    this->key = key;
 }
 
 std::string PublicKey::Serialize() {
