@@ -119,12 +119,12 @@ add_definitions(${GTKMM_CFLAGS_OTHER})
 add_executable(${BINARY}_run ${SOURCES})
 target_link_directories(${BINARY}_run PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_run PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt)
+target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt magic_enum::magic_enum)
 
 add_library(${BINARY}_lib STATIC ${SOURCES})
 target_link_directories(${BINARY}_lib PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_lib PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt)
+target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt magic_enum::magic_enum)
 
 # Don't want to copy if we're building in the source dir
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
