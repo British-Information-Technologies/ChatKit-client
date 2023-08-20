@@ -2,6 +2,9 @@
 
 #include <string>
 #include <fmt/core.h>
+#include <sodium.h>
+
+#include "model/networking/utility/variants.h"
 
 using namespace server_stream_out;
 
@@ -12,7 +15,21 @@ PublicKey::PublicKey(
 {}
 
 std::string PublicKey::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"to\": {}, \"key\": {} }}", type, to, key);
+    const unsigned char* key_ptr = reinterpret_cast<const unsigned char*>(key.c_str());
+    unsigned long long key_len = sizeof key_ptr;
+
+    unsigned long long encoded_key_len = sodium_base64_ENCODED_LEN(key_len, base64_VARIANT);
+    char encoded_key[encoded_key_len];
+    
+    sodium_bin2base64(
+        encoded_key,
+        encoded_key_len,
+        key_ptr,
+        key_len,
+        base64_VARIANT
+    );
+    
+    return fmt::format("{{ \"type\": {}, \"to\": {}, \"key\": {} }}", type, to, std::string(encoded_key, encoded_key_len));
 }
 
 std::string PublicKey::GetKey() {
