@@ -12,7 +12,9 @@ PublicKey::PublicKey(
     const std::string &to,
     const std::string &key
 ): to(to), key(key)
-{}
+{
+    this->type = kPublicKey;
+}
 
 std::string PublicKey::Serialize() {
     return fmt::format("{{ \"type\": {}, \"to\": {}, \"key\": {} }}", type, to, model::Bin2Base64(key));
