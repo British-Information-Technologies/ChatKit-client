@@ -2,6 +2,9 @@
 
 #include <string>
 #include <fmt/core.h>
+#include <sodium.h>
+
+#include "model/networking/utility/encode.h"
 
 using namespace server_stream_out;
 
@@ -12,7 +15,7 @@ PublicKey::PublicKey(
 {}
 
 std::string PublicKey::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"to\": {}, \"key\": {} }}", type, to, key);
+    return fmt::format("{{ \"type\": {}, \"to\": {}, \"key\": {} }}", type, to, model::Bin2Base64(key));
 }
 
 std::string PublicKey::GetKey() {
@@ -20,5 +23,5 @@ std::string PublicKey::GetKey() {
 }
 
 model::StreamType PublicKey::GetStreamType() {
-    return model::StreamType::ServerStreamIn;
+    return model::StreamType::ServerStreamOut;
 }

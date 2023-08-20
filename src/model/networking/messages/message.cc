@@ -1,6 +1,7 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include <memory>
+#include <sodium.h>
 
 #include "message.h"
 
@@ -35,6 +36,8 @@
 #include "stream-out/client/send-message.h"
 
 #include "internal/event-error.h"
+
+#include "model/networking/utility/decode.h"
 
 using namespace model;
 
@@ -145,8 +148,11 @@ int model::DeserializeServerStreamIn(Message* msg, std::string &data) {
         msg = new server_stream_in::Error(err_msg);
 
     } else if (type == server_stream_in::kPublicKey && data_json.contains("key")) {
-        std::string key = data_json.at("key");
-        msg = new server_stream_in::PublicKey(key);
+        std::string encoded_key = data_json.at("key");
+
+        std::string key_str = Base642Bin(encoded_key);
+
+        msg = new server_stream_in::PublicKey(key_str);
 
     } else {
         msg = new internal::EventError("[DeserializeError]: Message is not StreamIn");
@@ -249,6 +255,14 @@ int model::DeserializeServerStreamOut(Message* msg, std::string &data) {
 
     } else if (type == server_stream_out::kDisconnect) {
         msg = new server_stream_out::Disconnect();
+
+    } else if (type == server_stream_out::kPublicKey) {
+        std::string to = data_json.at("to");
+        std::string encoded_key = data_json.at("key");
+
+        std::string key_str = Base642Bin(encoded_key);
+
+        msg = new server_stream_out::PublicKey(to, key_str);
 
     } else {
         msg = new internal::EventError("[DeserializeError]: Message is not StreamOut");

@@ -5,7 +5,8 @@
 #include <event2/bufferevent.h>
 
 #include "secure-data-handler.h"
-#include "variants.h"
+#include "model/networking/utility/encode.h"
+#include "model/networking/utility/decode.h"
 
 using namespace model;
 
@@ -49,40 +50,15 @@ std::string SecureDataHandler::FormatSend(std::string &data) {
   }).dump();
 
   // encode packet with base64
-  const unsigned char* packet_ptr = reinterpret_cast<const unsigned char*>(packet.c_str());
-  unsigned long long packet_len = sizeof packet_ptr;
-
-  char encoded_packet[sodium_base64_ENCODED_LEN(packet_len, base64_VARIANT)];
-  sodium_bin2base64(
-    encoded_packet,
-    sizeof encoded_packet,
-    packet_ptr,
-    packet_len,
-    base64_VARIANT
-  );
-
-  return encoded_packet;
+  return Bin2Base64(packet);
 }
 
 std::string SecureDataHandler::FormatRead(std::string &data) {
   // decode packet with base64
-  const char* data_ptr = reinterpret_cast<const char*>(data.c_str());
-
-  size_t packet_len = data.length() / 4 * 3; // base64 encodes 3 bytes as 4 characters
-  unsigned char packet_ptr[packet_len];
-  sodium_base642bin(
-    packet_ptr,
-    packet_len,
-    data_ptr,
-    sizeof data_ptr,
-    NULL,
-    &packet_len,
-    NULL,
-    base64_VARIANT
-  );
+  std::string packet_str = Base642Bin(data);
   
   // check packet format
-  json packet = json::parse(std::string(reinterpret_cast<char const*>(packet_ptr), packet_len));
+  json packet = json::parse(packet_str);
   
   if (!packet.contains("nonce") || !packet.contains("payload")) {
     // invalid packet - network error

@@ -153,6 +153,7 @@ int NetworkManager::InitiateSecureConnection(const std::string &end_point_uuid, 
   // send our PK as plaintext
   if (service_conn->SendMessage(pk_msg.get()) < 0) {
     // failed to send PK
+    printf("[NetworkManager]: failed to send public key\n");
     return -1;
   }
 
@@ -188,6 +189,7 @@ int NetworkManager::CreateConnection(
     printf("[NetworkManager]: connection failed to initiate\n");
     return -1;
   }
+  //conn->Initiate();
 
   connections.insert(std::pair<std::string, std::shared_ptr<Connection>>(uuid, conn));
   
