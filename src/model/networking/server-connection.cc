@@ -77,7 +77,7 @@ std::shared_ptr<Connection> ServerConnection::Create(
 
 int ServerConnection::SendMessage(Message *message) {
   if (
-    message->GetStreamType() != StreamType::ServerStreamOut ||
+    message->GetStreamType() != StreamType::ServerStreamOut &&
     message->GetStreamType() != StreamType::NetworkStreamOut
   ) {
     // message must be a server stream out or network stream out
