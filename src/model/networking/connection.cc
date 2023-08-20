@@ -9,6 +9,7 @@
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 #include <event2/util.h>
+#include <iostream>
 #include "msd/channel.hpp"
 
 #include "connection.h"
@@ -168,6 +169,8 @@ void Connection::Listen(std::shared_ptr<event_base> base) {
   );
 
   evconnlistener_set_error_cb(listener, AcceptErrorCbHandler);
+
+  printf("[Connection]: listener started\n");
 }
 
 int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
@@ -216,7 +219,7 @@ void Connection::AcceptConnectionCb(evutil_socket_t sockfd, struct sockaddr *add
     return;
   }
 
-  printf("[Connection]: connecting to %s\n", address);
+  std::cout << "[Connection]: connecting to " << ip_address << std::endl;
 }
 
 void Connection::AcceptErrorCbHandler(struct evconnlistener *listener, void *ptr) {
