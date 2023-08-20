@@ -84,6 +84,8 @@ set(SOURCES
     
     model/networking/messages/stream-out/client/send-message.cc
 
+    model/networking/utility/encode.cc
+    model/networking/utility/decode.cc
     model/networking/utility/buffer-reader.cc
     model/networking/utility/buffer-writer.cc
     model/networking/utility/insecure-data-handler.cc
