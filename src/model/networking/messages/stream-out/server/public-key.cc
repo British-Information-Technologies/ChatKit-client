@@ -20,5 +20,5 @@ std::string PublicKey::GetKey() {
 }
 
 model::StreamType PublicKey::GetStreamType() {
-    return model::StreamType::ServerStreamIn;
+    return model::StreamType::ServerStreamOut;
 }
