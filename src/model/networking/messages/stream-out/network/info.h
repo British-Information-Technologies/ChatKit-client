@@ -6,8 +6,6 @@
 #include "./network-stream-out.h"
 
 namespace network_stream_out {
-    const std::string kInfo = "Info";
-    
     class Info: public model::NetworkStreamOut {
         public:
             Info();

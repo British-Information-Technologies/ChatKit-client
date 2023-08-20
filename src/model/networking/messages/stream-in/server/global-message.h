@@ -6,15 +6,13 @@
 #include <string>
 
 namespace server_stream_in {
-    const std::string kGlobalMessage = "GlobalMessage";
-    
     class GlobalMessage: public model::ServerStreamIn {
         private:
-            std::string from;
-            std::string content;
+            const std::string from;
+            const std::string content;
         
         public:
-            GlobalMessage(std::string from, std::string content);
+            GlobalMessage(const std::string &from, const std::string &content);
 
             std::string Serialize();
             

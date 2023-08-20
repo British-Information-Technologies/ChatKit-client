@@ -6,15 +6,13 @@
 #include "./network-stream-in.h"
 
 namespace network_stream_in {
-    const std::string kGotInfo = "GotInfo";
-    
     class GotInfo: public model::NetworkStreamIn {
         private:
-            std::string server_name;
-            std::string server_owner;
+            const std::string server_name;
+            const std::string server_owner;
 
         public:
-            GotInfo(std::string server_name, std::string server_owner);
+            GotInfo(const std::string &server_name, const std::string &server_owner);
 
             std::string Serialize();
             

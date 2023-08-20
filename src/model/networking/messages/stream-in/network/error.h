@@ -6,8 +6,6 @@
 #include "./network-stream-in.h"
 
 namespace network_stream_in {
-    const std::string kError = "Error";
-    
     class Error: public model::NetworkStreamIn {
         public:
             Error();

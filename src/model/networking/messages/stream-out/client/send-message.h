@@ -6,19 +6,17 @@
 #include "model/networking/messages/stream-out/client/client-stream-out.h"
 
 namespace client_stream_out {
-    const std::string kSendMessage = "SendMessage";
-    
     class SendMessage: public model::ClientStreamOut {
         private:
-            std::string time;
-            std::string date;
-            std::string content;
+            const std::string time;
+            const std::string date;
+            const std::string content;
 
         public:
             SendMessage(
-                std::string time,
-                std::string date,
-                std::string content
+                const std::string &time,
+                const std::string &date,
+                const std::string &content
             );
 
             std::string Serialize();

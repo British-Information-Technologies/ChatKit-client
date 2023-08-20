@@ -5,9 +5,7 @@
 
 #include "./server-stream-out.h"
 
-namespace server_stream_out {
-    const std::string kDisconnect = "Disconnect";
-    
+namespace server_stream_out {    
     class Disconnect: public model::ServerStreamOut {
         public:
             Disconnect();

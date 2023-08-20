@@ -2,15 +2,16 @@
 
 #include <string>
 #include <fmt/core.h>
+#include <magic_enum.hpp>
 
 using namespace server_stream_in;
 
 Disconnected::Disconnected() {
-    this->type = kDisconnected;
+    this->type = model::Type::Disconnected;
 }
 
 std::string Disconnected::Serialize() {
-    return fmt::format("{{ \"type\": {} }}", type);
+    return fmt::format("{{ \"type\": {} }}", magic_enum::enum_name(type));
 }
 
 model::StreamType Disconnected::GetStreamType() {

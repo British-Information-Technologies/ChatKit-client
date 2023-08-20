@@ -5,9 +5,7 @@
 
 #include "./server-stream-out.h"
 
-namespace server_stream_out {
-    const std::string kGetClients = "GetClients";
-    
+namespace server_stream_out {    
     class GetClients: public model::ServerStreamOut {
         public:
             GetClients();

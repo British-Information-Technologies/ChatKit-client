@@ -6,16 +6,14 @@
 #include "./network-stream-out.h"
 
 namespace network_stream_out {
-    const std::string kConnect = "Connect";
-    
     class Connect: public model::NetworkStreamOut {
         private:
-            std::string uuid;
-            std::string username;
-            std::string address;
+            const std::string uuid;
+            const std::string username;
+            const std::string address;
 
         public:
-            Connect(std::string uuid, std::string username, std::string address);
+            Connect(const std::string &uuid, const std::string &username, const std::string &address);
 
             std::string Serialize();
             

@@ -5,16 +5,14 @@
 
 #include "./server-stream-in.h"
 
-namespace server_stream_in {
-    const std::string kClientConnected = "ClientConnected";
-    
+namespace server_stream_in {    
     class ClientConnected: public model::ServerStreamIn {
         private:
-            std::string id;
-            std::string username;
+            const std::string id;
+            const std::string username;
         
         public:
-            ClientConnected(std::string id, std::string username);
+            ClientConnected(const std::string &id, const std::string &username);
 
             std::string Serialize();
             

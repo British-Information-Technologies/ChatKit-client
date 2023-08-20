@@ -5,20 +5,18 @@
 
 #include "model/networking/messages/stream-in/client/client-stream-in.h"
 
-namespace client_stream_in {
-    const std::string kSendMessage = "SendMessage";
-    
+namespace client_stream_in {    
     class SendMessage: public model::ClientStreamIn {
         private:
-            std::string time;
-            std::string date;
-            std::string content;
+            const std::string time;
+            const std::string date;
+            const std::string content;
 
         public:
             SendMessage(
-                std::string time,
-                std::string date,
-                std::string content
+                const std::string &time,
+                const std::string &date,
+                const std::string &content
             );
 
             std::string Serialize();

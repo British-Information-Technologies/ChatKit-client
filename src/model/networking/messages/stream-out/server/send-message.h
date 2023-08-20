@@ -5,16 +5,14 @@
 
 #include "./server-stream-out.h"
 
-namespace server_stream_out {
-    const std::string kSendMessage = "SendMessage";
-    
+namespace server_stream_out {    
     class SendMessage: public model::ServerStreamOut {
         private:
-            std::string to;
-            std::string content;
+            const std::string to;
+            const std::string content;
 
         public:
-            SendMessage(std::string to, std::string content);
+            SendMessage(const std::string &to, const std::string &content);
 
             std::string Serialize();
             

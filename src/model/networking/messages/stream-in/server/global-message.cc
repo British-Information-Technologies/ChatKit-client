@@ -2,17 +2,16 @@
 
 #include <string>
 #include <fmt/core.h>
+#include <magic_enum.hpp>
 
 using namespace server_stream_in;
 
-GlobalMessage::GlobalMessage(std::string from, std::string content) {
-    this->type = kGlobalMessage;
-    this->from = from;
-    this->content = content;
+GlobalMessage::GlobalMessage(const std::string &from, const std::string &content): from(from), content(content) {
+    this->type = model::Type::GlobalMessage;
 }
 
 std::string GlobalMessage::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"from\": {}, \"content\": {} }}", type, from, content);
+    return fmt::format("{{ \"type\": {}, \"from\": {}, \"content\": {} }}", magic_enum::enum_name(type), from, content);
 }
 
 model::StreamType GlobalMessage::GetStreamType() {

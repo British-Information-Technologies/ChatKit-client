@@ -3,6 +3,7 @@
 #include <string>
 #include <fmt/core.h>
 #include <sodium.h>
+#include <magic_enum.hpp>
 
 #include "model/networking/utility/encode.h"
 
@@ -13,11 +14,11 @@ PublicKey::PublicKey(
     const std::string &key
 ): to(to), key(key)
 {
-    this->type = kPublicKey;
+    this->type = model::Type::PublicKey;
 }
 
 std::string PublicKey::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"to\": {}, \"key\": {} }}", type, to, model::Bin2Base64(key));
+    return fmt::format("{{ \"type\": {}, \"to\": {}, \"key\": {} }}", magic_enum::enum_name(type), to, model::Bin2Base64(key));
 }
 
 std::string PublicKey::GetKey() {

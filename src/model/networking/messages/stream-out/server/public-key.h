@@ -6,8 +6,6 @@
 #include <string>
 
 namespace server_stream_out {
-    const std::string kPublicKey = "PublicKey";
-    
     class PublicKey: public model::ServerStreamOut {
         private:
             const std::string to;

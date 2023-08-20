@@ -5,9 +5,7 @@
 
 #include <string>
 
-namespace server_stream_in {
-    const std::string kPublicKey = "PublicKey";
-    
+namespace server_stream_in {    
     class PublicKey: public model::ServerStreamIn {
         private:
             const std::string key;

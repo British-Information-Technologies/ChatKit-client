@@ -5,7 +5,7 @@
 #include <memory>
 
 namespace model {
-    enum StreamType {
+    enum class StreamType {
         StreamIn,
         ClientStreamIn,
         ServerStreamIn,
@@ -19,16 +19,45 @@ namespace model {
         Internal
     };
 
+    enum class Type {
+        EventError,
+
+        Error,
+        PublicKey,
+        SendMessage,
+
+        Connecting,
+        GotInfo,
+        Request,
+
+        ClientConnected,
+        ClientRemoved,
+        ConnectedClients,
+        Connected,
+        Disconnected,
+        GlobalChatMessages,
+        GlobalMessage,
+        UserMessage,
+
+        Connect,
+        Info,
+
+        Disconnect,
+        GetClients,
+        GetMessages,
+        SendGlobalMessage
+    };
+
     class Message {
         protected:
-            std::string type;
+            Type type;
 
         public:
             virtual std::string Serialize() = 0;
 
             virtual StreamType GetStreamType() = 0;
 
-            std::string GetType();
+            Type GetType();
     };
 
     std::unique_ptr<Message> CreateClientStreamOutSendMessage(

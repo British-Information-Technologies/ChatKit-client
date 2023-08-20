@@ -6,8 +6,6 @@
 #include <string>
 
 namespace server_stream_in {
-    const std::string kDisconnected = "Disconnected";
-    
     class Disconnected: public model::ServerStreamIn {
         public:
             Disconnected();

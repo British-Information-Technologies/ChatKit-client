@@ -6,15 +6,13 @@
 #include <string>
 
 namespace server_stream_in {
-    const std::string kUserMessage = "UserMessage";
-    
     class UserMessage: public model::ServerStreamIn {
         private:
-            std::string from;
-            std::string content;
+            const std::string from;
+            const std::string content;
 
         public:
-            UserMessage(std::string from, std::string content);
+            UserMessage(const std::string &from, const std::string &content);
 
             std::string Serialize();
             

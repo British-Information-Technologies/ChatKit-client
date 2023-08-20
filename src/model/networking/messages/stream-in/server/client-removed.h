@@ -5,15 +5,13 @@
 
 #include "./server-stream-in.h"
 
-namespace server_stream_in {
-    const std::string kClientRemoved = "ClientRemoved";
-    
+namespace server_stream_in {   
     class ClientRemoved: public model::ServerStreamIn {
         private:
-            std::string id;
+            const std::string id;
         
         public:
-            ClientRemoved(std::string id);
+            ClientRemoved(const std::string &id);
 
             std::string Serialize();
             
