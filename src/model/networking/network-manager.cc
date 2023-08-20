@@ -115,6 +115,7 @@ int NetworkManager::LaunchListener(const std::string &uuid) {
 
   auto conn = connections.at(uuid);
   
+  printf("[NetworkManager]: starting connection listener\n");
   conn->Listen(connection_base);
 
   return 0;
