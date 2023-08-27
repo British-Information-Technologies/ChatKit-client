@@ -9,12 +9,16 @@
 
 using namespace server_stream_in;
 
-PublicKey::PublicKey(const std::string &key): key(key) {
+PublicKey::PublicKey(const std::string &from, const std::string &key): from(from), key(key) {
     this->type = model::Type::PublicKey;
 }
 
 std::string PublicKey::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"key\": {} }}", magic_enum::enum_name(type), model::Bin2Base64(key));
+    return fmt::format("{{ \"type\": {}, \"from\": {}, \"key\": {} }}", magic_enum::enum_name(type), from, model::Bin2Base64(key));
+}
+
+std::string PublicKey::GetFrom() {
+    return this->from;
 }
 
 std::string PublicKey::GetKey() {

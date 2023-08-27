@@ -8,12 +8,15 @@
 namespace server_stream_in {    
     class PublicKey: public model::ServerStreamIn {
         private:
+            const std::string from;
             const std::string key;
         
         public:
-            PublicKey(const std::string &key);
+            PublicKey(const std::string &from, const std::string &key);
 
             std::string Serialize();
+
+            std::string GetFrom();
 
             std::string GetKey();
             
