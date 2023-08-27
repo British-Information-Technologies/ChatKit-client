@@ -20,6 +20,7 @@ namespace model {
       std::mutex connections_mutex;
 
       std::unique_ptr<std::jthread> connection_base_thread;
+      std::unique_ptr<std::jthread> channel_thread;
 
       std::shared_ptr<struct event_base> connection_base;
       
@@ -33,6 +34,8 @@ namespace model {
       ~NetworkManager();
 
       void LaunchConnectionBase();
+
+      void LaunchInputChannel();
 
       int LaunchListener(const std::string &uuid);
 

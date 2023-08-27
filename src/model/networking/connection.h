@@ -15,7 +15,11 @@
 namespace model {
   class Connection {
     private:
+      const std::string uuid;
+
       evconnlistener *listener;
+
+      msd::channel<std::shared_ptr<Data>> &out_chann;
 
     protected:
       const std::string ip_address;
@@ -27,8 +31,6 @@ namespace model {
       std::unique_ptr<unsigned char[]> sk;
       
       std::unique_ptr<DataHandler> data_handler;
-
-      msd::channel<std::shared_ptr<Data>> &out_chann;
  
     private:
       void *GetInAddr(struct sockaddr *);
@@ -60,8 +62,11 @@ namespace model {
       void SetState(DataHandler *);
       
       static std::tuple<unsigned char*, unsigned char*> GenerateKeyPair();
+
+      void SendChannelMessage(std::shared_ptr<Message> message);
       
       Connection(
+        const std::string &uuid,
         std::shared_ptr<struct event_base> base,
         msd::channel<std::shared_ptr<Data>> &network_manager_chann,
         const std::string &ip_address,
@@ -75,14 +80,14 @@ namespace model {
     public:
       bool IsSecure();
 
-      const std::string GetPublicKey();
+      std::string GetPublicKey();
       
       int Initiate();
 
       void Listen(std::shared_ptr<event_base> base);
 
       int EstablishSecureConnection(const unsigned char *recv_pk);
-
+      
       virtual int SendMessage(Message *message) = 0;
   };
 }  // namespace model_networking

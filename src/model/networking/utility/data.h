@@ -7,6 +7,7 @@
 
 namespace model{
     struct Data {
+        const std::string &uuid;
         int sockfd;
         std::shared_ptr<Message> message;
     };

@@ -5,6 +5,8 @@
 #include <event2/event.h>
 #include <mutex>
 #include <thread>
+#include <iostream>
+#include <functional>
 #include "msd/channel.hpp"
 
 #include "network-manager.h"
@@ -23,45 +25,48 @@ namespace {
     event_base_loop(connection_base.get(), EVLOOP_NO_EXIT_ON_EMPTY);
   }
 
-  void LaunchChannelHandler(std::mutex &connections_mutex, msd::channel<std::shared_ptr<Data>> &in_chann, std::unordered_map<int, std::shared_ptr<Connection>> &connections) {
+  void LaunchInputChannelHandler(
+    std::mutex &connections_mutex,
+    msd::channel<std::shared_ptr<Data>> &in_chann,
+    std::unordered_map<std::string, std::shared_ptr<Connection>> &connections,
+    std::function<int(const std::string&, std::string&)> SendMessage
+  ) {
     // read incoming channel data from connection callbacks
-    for (const std::shared_ptr<Data> data: in_chann) { // blocks forever waiting for channel items
-      /*printf("<data read from in_chann: %s>", data);
+    for (const std::shared_ptr<Data> data: in_chann) { // blocks waiting for channel items
+      std::cout << "[NetworkManager]: recv channel data = " << data->message->Serialize() << std::endl;
 
-      std::unique_ptr<Message> message;
-      if (data.contains("plaintext") && DeserializeStreamIn(message.get(), data.at("plaintext")) != 0) {
-        // failed to deserialize data
-        continue;
-        
-      } else if (data.contains("internal") && DeserializeInternal(message.get(), data.at("internal")) != 0) {
-        // failed to deserialize data
-        continue;
-        
-      } else {
-        // invalid data
-        continue;
-      }
+      switch (data->message->GetType()) {
+        case Type::PublicKey: {
+          server_stream_in::PublicKey *recv_pk = dynamic_cast<server_stream_in::PublicKey*>(data->message.get());
+          const unsigned char* recv_pk_ptr = reinterpret_cast<const unsigned char*>(recv_pk->GetKey().c_str());
 
-      int sockfd = data.at("sockfd");
+          auto conn = connections.at(data->uuid);
 
-      connections_mutex.lock();
+          std::string pk = conn->GetPublicKey();
+          SendMessage(data->uuid, pk);
 
-      if (message->GetType() == server_stream_in::kPublicKey) {
-        std::unique_ptr<server_stream_in::PublicKey> recv_pk(dynamic_cast<server_stream_in::PublicKey*>(message.get()));
-        const unsigned char* recv_pk_ptr = reinterpret_cast<const unsigned char*>(recv_pk->GetKey().c_str());
+          if (conn->EstablishSecureConnection(recv_pk_ptr) != 0) {
+            std::cout << "[NetworkManager]: secure connection with " << data->sockfd << " failed" << std::endl;
+            // panic! failed to create secure connection
+            continue;
+          }
 
-        auto conn = connections.at(sockfd);
-        
-        connections_mutex.unlock();
-        
-        if (conn->EstablishSecureConnection(recv_pk_ptr) != 0) {
-          // panic! failed to create secure connection
-          continue;
+          std::cout << "[NetworkManager]: secure connection with " << data->sockfd << " established" << std::endl;
+          break;
         }
 
-        printf("<secure sockfd connection established: %d>", sockfd);
+        default: {
+        }
+      }
 
-      } else if (message->GetType() == internal::kEventError) {
+
+
+
+
+
+
+
+      /* if (message->GetType() == internal::kEventError) {
         std::unique_ptr<internal::EventError> err(dynamic_cast<internal::EventError*>(message.get()));
 
         printf("<EventError msg: %s>", err->GetMsg());
@@ -97,14 +102,22 @@ void NetworkManager::LaunchConnectionBase() {
     LaunchConnectionBaseHandler,
     this->connection_base
   );
+}
 
+void NetworkManager::LaunchInputChannel() {
   // start channel loop for reading incoming data from connection callbacks
-  /*std::jthread channel_handler(
-    LaunchChannelHandler,
+  channel_thread = std::make_unique<std::jthread>(
+    LaunchInputChannelHandler,
     std::ref(this->connections_mutex),
     std::ref(this->in_chann),
-    std::ref(this->connections)
-  );*/
+    std::ref(this->connections),
+    std::bind(
+      &NetworkManager::SendMessage,
+      this,
+      std::placeholders::_1,
+      std::placeholders::_2
+    )
+  );
 }
 
 int NetworkManager::LaunchListener(const std::string &uuid) {
@@ -174,6 +187,7 @@ int NetworkManager::CreateConnection(
  
   auto conn = GetConnection(
     type,
+    uuid,
     connection_base,
     std::ref(in_chann),
     ip_address,

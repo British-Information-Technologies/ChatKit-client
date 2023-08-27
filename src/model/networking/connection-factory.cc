@@ -12,6 +12,7 @@
 
 std::shared_ptr<model::Connection> model::GetConnection(
     model::ConnectionType type,
+    const std::string &uuid,
     std::shared_ptr<event_base> base,
     msd::channel<std::shared_ptr<model::Data>> &network_manager_chann,
     const std::string &ip_address,
@@ -19,8 +20,8 @@ std::shared_ptr<model::Connection> model::GetConnection(
 ) 
 {
     if (type == model::ConnectionType::Client) {
-        return model::ClientConnection::Create(base, network_manager_chann, ip_address, port);
+        return model::ClientConnection::Create(uuid, base, network_manager_chann, ip_address, port);
     }
 
-    return model::ServerConnection::Create(base, network_manager_chann, ip_address, port);
+    return model::ServerConnection::Create(uuid, base, network_manager_chann, ip_address, port);
 }

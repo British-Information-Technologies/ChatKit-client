@@ -18,6 +18,7 @@ namespace model {
     
     std::shared_ptr<model::Connection> GetConnection(
         ConnectionType type,
+        const std::string &uuid,
         std::shared_ptr<struct event_base> base,
         msd::channel<std::shared_ptr<model::Data>> &network_manager_chann,
         const std::string &ip_address,

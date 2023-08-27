@@ -43,15 +43,17 @@ int ServerConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
 }
 
 ServerConnection::ServerConnection(
+  const std::string &uuid,
   std::shared_ptr<event_base> base,
   msd::channel<std::shared_ptr<Data>> &network_manager_chann,
   const std::string &ip_address,
   const std::string &port,
   unsigned char *pk,
   unsigned char *sk
-): Connection(base, network_manager_chann, ip_address, port, pk, sk) {}
+): Connection(uuid, base, network_manager_chann, ip_address, port, pk, sk) {}
 
 std::shared_ptr<Connection> ServerConnection::Create(
+  const std::string &uuid,
   std::shared_ptr<struct event_base> base,
   msd::channel<std::shared_ptr<Data>> &network_manager_chann,
   const std::string &ip_address,
@@ -64,6 +66,7 @@ std::shared_ptr<Connection> ServerConnection::Create(
   }
 
   std::shared_ptr<Connection> conn(new ServerConnection(
+    uuid,
     base,
     network_manager_chann,
     ip_address,
@@ -117,10 +120,5 @@ void ServerConnection::ReadMessageCb() {
   }
 
   // send data to network manager
-  std::shared_ptr<Data> data(new Data {
-    sockfd: bufferevent_getfd(bev.get()),
-    message: message,
-  });
-
-  //TODO: data >> out_chann;
+  SendChannelMessage(message);
 }
