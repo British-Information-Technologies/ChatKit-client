@@ -11,13 +11,17 @@ async def handle(conn, address, index):
     other_client = connections[(index + 1) % 2]
     
     while(True):
-        data = conn.recv(1024)
-        
-        print(address[0] + ' recv: ' + data.decode())
+        try:
+            data = conn.recv(1024)
 
-        other_client.sendall(data)
+            print(address[0] + ' recv: ' + data.decode())
 
-        await asyncio.sleep(1)
+            other_client.sendall(data)
+
+            await asyncio.sleep(1)
+        except:
+            await asyncio.sleep(1)
+
 
         
 
@@ -59,6 +63,7 @@ async def main():
     soc.listen(9)
 
     conn, address = soc.accept()
+    conn.setblocking(False)
 
     print('Connected with ' + address[0] + ':' + str(address[1]))
 
@@ -69,6 +74,7 @@ async def main():
     connections.append(conn)
 
     conn, address = soc.accept()
+    conn.setblocking(False)
 
     print('Connected with ' + address[0] + ':' + str(address[1]))
 
