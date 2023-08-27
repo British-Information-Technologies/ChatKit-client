@@ -42,6 +42,11 @@ namespace {
 
           auto conn = connections.at(data->uuid);
 
+          if (conn->IsSecure()) {
+            std::cout << "[NetworkManager]: connection " << data->sockfd << " already secure" << std::endl;
+            continue;
+          }
+
           std::string pk = conn->GetPublicKey();
           SendMessage(data->uuid, pk);
 
