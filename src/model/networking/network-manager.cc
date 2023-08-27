@@ -30,6 +30,8 @@ namespace {
     msd::channel<std::shared_ptr<Data>> &in_chann,
     std::unordered_map<std::string, std::shared_ptr<Connection>> &connections
   ) {
+    std::cout << "[NetworkManager]: input channel handler launched" << std::endl;
+
     // read incoming channel data from connection callbacks
     for (const std::shared_ptr<Data> data: in_chann) { // blocks waiting for channel items
       std::cout << "[NetworkManager]: recv channel data = " << data->message->Serialize() << std::endl;
