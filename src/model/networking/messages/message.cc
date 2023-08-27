@@ -171,11 +171,12 @@ int model::DeserializeServerStreamIn(Message* msg, std::string &data) {
         }
 
         case Type::PublicKey: {
+            std::string from = data_json.at("from");
             std::string encoded_key = data_json.at("key");
 
             std::string key_str = Base642Bin(encoded_key);
 
-            msg = new server_stream_in::PublicKey(key_str);
+            msg = new server_stream_in::PublicKey(from, key_str);
             break;
         }
 
