@@ -28,8 +28,7 @@ namespace {
   void LaunchInputChannelHandler(
     std::mutex &connections_mutex,
     msd::channel<std::shared_ptr<Data>> &in_chann,
-    std::unordered_map<std::string, std::shared_ptr<Connection>> &connections,
-    std::function<int(const std::string&, std::string&)> SendMessage
+    std::unordered_map<std::string, std::shared_ptr<Connection>> &connections
   ) {
     // read incoming channel data from connection callbacks
     for (const std::shared_ptr<Data> data: in_chann) { // blocks waiting for channel items
@@ -38,25 +37,28 @@ namespace {
       switch (data->message->GetType()) {
         case Type::PublicKey: {
           server_stream_in::PublicKey *recv_pk = dynamic_cast<server_stream_in::PublicKey*>(data->message.get());
-          const unsigned char* recv_pk_ptr = reinterpret_cast<const unsigned char*>(recv_pk->GetKey().c_str());
 
-          auto conn = connections.at(data->uuid);
+          std::string end_point_uuid = recv_pk->GetFrom();
 
-          if (conn->IsSecure()) {
-            std::cout << "[NetworkManager]: connection " << data->sockfd << " already secure" << std::endl;
+          auto end_point_conn = connections.at(end_point_uuid);
+
+          if (end_point_conn->IsSecure()) {
+            std::cout << "[NetworkManager]: connection " << end_point_uuid << " already secure" << std::endl;
             continue;
           }
 
-          std::string pk = conn->GetPublicKey();
-          SendMessage(data->uuid, pk);
+          auto pk = CreateServerStreamOutPublicKey(end_point_uuid, end_point_conn->GetPublicKey());
 
-          if (conn->EstablishSecureConnection(recv_pk_ptr) != 0) {
-            std::cout << "[NetworkManager]: secure connection with " << data->sockfd << " failed" << std::endl;
+          connections.at(data->uuid)->SendMessage(pk.get());
+
+          const unsigned char* recv_pk_ptr = reinterpret_cast<const unsigned char*>(recv_pk->GetKey().c_str());
+          if (end_point_conn->EstablishSecureConnection(recv_pk_ptr) != 0) {
+            std::cout << "[NetworkManager]: secure connection with " << end_point_uuid << " failed" << std::endl;
             // panic! failed to create secure connection
             continue;
           }
 
-          std::cout << "[NetworkManager]: secure connection with " << data->sockfd << " established" << std::endl;
+          std::cout << "[NetworkManager]: secure connection with " << end_point_uuid << " established" << std::endl;
           break;
         }
 
@@ -115,13 +117,7 @@ void NetworkManager::LaunchInputChannel() {
     LaunchInputChannelHandler,
     std::ref(this->connections_mutex),
     std::ref(this->in_chann),
-    std::ref(this->connections),
-    std::bind(
-      &NetworkManager::SendMessage,
-      this,
-      std::placeholders::_1,
-      std::placeholders::_2
-    )
+    std::ref(this->connections)
   );
 }
 
