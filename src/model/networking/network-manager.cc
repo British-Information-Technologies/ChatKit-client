@@ -100,6 +100,7 @@ NetworkManager::NetworkManager() {
 
 NetworkManager::~NetworkManager() {
   connection_base_thread->request_stop();
+  channel_thread->request_stop();
   connections.clear();
 }
 
@@ -201,8 +202,8 @@ int NetworkManager::CreateConnection(
   }
   
   if (conn->Initiate()) {
-    printf("[NetworkManager]: connection failed to initiate\n");
-    return -1;
+  printf("[NetworkManager]: connection failed to initiate\n");
+  return -1;
   }
   //conn->Initiate();
 
