@@ -15,6 +15,7 @@ NetworkModel::NetworkModel(
 
 int NetworkModel::Run() {
   network_manager->LaunchConnectionBase();
+  network_manager->LaunchInputChannel();
   
   CreateServiceServerConnection(); // TODO: move to connect on login and retry automatically if fail
 
@@ -41,7 +42,7 @@ int NetworkModel::CreateClientConnection(
    * client must listen). must comment out Initiate function call
    * inside CreateConnection and line below. */
   //if (network_manager->LaunchListener(uuid)) {
-  //  return -1;
+    //  return -1;
   //}
   // return 0;
   
