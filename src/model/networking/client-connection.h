@@ -21,7 +21,7 @@ namespace model {
             ClientConnection(
                 const std::string &uuid,
                 std::shared_ptr<struct event_base> base,
-                msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+                msd::channel<Data> &network_manager_chann,
                 const std::string &ip_address,
                 const std::string &port,
                 unsigned char *pk,
@@ -32,7 +32,7 @@ namespace model {
             static std::shared_ptr<Connection> Create(
                 const std::string &uuid,
                 std::shared_ptr<struct event_base> base,
-                msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+                msd::channel<Data> &network_manager_chann,
                 const std::string &ip_address,
                 const std::string &port
             );

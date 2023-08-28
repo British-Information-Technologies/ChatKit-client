@@ -23,22 +23,23 @@ namespace {
   void LaunchConnectionBaseHandler(std::shared_ptr<event_base> connection_base) {
     printf("[NetworkManager]: connection base launched\n");
     event_base_loop(connection_base.get(), EVLOOP_NO_EXIT_ON_EMPTY);
+    printf("[NetworkManager]: connection base shutting down\n");
   }
 
   void LaunchInputChannelHandler(
     std::mutex &connections_mutex,
-    msd::channel<std::shared_ptr<Data>> &in_chann,
+    msd::channel<Data> &in_chann,
     std::unordered_map<std::string, std::shared_ptr<Connection>> &connections
   ) {
     std::cout << "[NetworkManager]: input channel handler launched" << std::endl;
 
     // read incoming channel data from connection callbacks
-    for (const std::shared_ptr<Data> data: in_chann) { // blocks waiting for channel items
-      std::cout << "[NetworkManager]: recv channel data = " << data->message->Serialize() << std::endl;
+    for (auto data: in_chann) { // blocks waiting for channel items
+      std::cout << "[NetworkManager]: recv channel data from sockfd " << data.sockfd << std::endl;
 
-      switch (data->message->GetType()) {
+      switch (data.message->GetType()) {
         case Type::PublicKey: {
-          server_stream_in::PublicKey *recv_pk = dynamic_cast<server_stream_in::PublicKey*>(data->message.get());
+          server_stream_in::PublicKey *recv_pk = dynamic_cast<server_stream_in::PublicKey*>(data.message.get());
 
           std::string end_point_uuid = recv_pk->GetFrom();
 
@@ -51,8 +52,10 @@ namespace {
 
           auto pk = CreateServerStreamOutPublicKey(end_point_uuid, end_point_conn->GetPublicKey());
 
-          connections.at(data->uuid)->SendMessage(pk.get());
+          // ask service connection to send our pk to end point connection
+          connections.at(data.uuid)->SendMessage(pk.get());
 
+          // use received public key to create shared secret
           const unsigned char* recv_pk_ptr = reinterpret_cast<const unsigned char*>(recv_pk->GetKey().c_str());
           if (end_point_conn->EstablishSecureConnection(recv_pk_ptr) != 0) {
             std::cout << "[NetworkManager]: secure connection with " << end_point_uuid << " failed" << std::endl;
@@ -64,29 +67,19 @@ namespace {
           break;
         }
 
+        case Type::EventError: {
+          std::unique_ptr<internal::EventError> err(dynamic_cast<internal::EventError*>(data.message.get()));
+
+          std::cout << "[NetworkManager]: EventError msg " << err->GetMsg() << std::endl;
+          break;
+        }
+
         default: {
         }
       }
-
-
-
-
-
-
-
-
-      /* if (message->GetType() == internal::kEventError) {
-        std::unique_ptr<internal::EventError> err(dynamic_cast<internal::EventError*>(message.get()));
-
-        printf("<EventError msg: %s>", err->GetMsg());
-
-        connections.erase(sockfd);
-      
-        connections_mutex.unlock();
-      } else {
-        connections_mutex.unlock();
-      }*/
     }
+
+    std::cout << "[NetworkManager]: input channel handler shutting down" << std::endl;
   }
 } // namespace
 
@@ -220,10 +213,7 @@ int NetworkManager::SendMessage(const std::string &uuid, std::string &data) {
     return -1;
   }
 
-  std::unique_ptr<Message> message;
-  if (DeserializeStreamOut(message.get(), data) != 0) {
-    return -1;
-  }
+  std::unique_ptr<Message> message(DeserializeStreamOut(data));
 
   int sent_bytes = connections.at(uuid)->SendMessage(message.get());
 

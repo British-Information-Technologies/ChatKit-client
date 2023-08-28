@@ -6,7 +6,7 @@
 #include <event2/listener.h>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
-#include "msd/channel.hpp"
+#include <msd/channel.hpp>
 
 #include "messages/message.h"
 #include "utility/data-handler.h"
@@ -19,7 +19,7 @@ namespace model {
 
       evconnlistener *listener;
 
-      msd::channel<std::shared_ptr<Data>> &out_chann;
+      msd::channel<Data> &out_chann;
 
     protected:
       const std::string ip_address;
@@ -68,7 +68,7 @@ namespace model {
       Connection(
         const std::string &uuid,
         std::shared_ptr<struct event_base> base,
-        msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+        msd::channel<Data> &network_manager_chann,
         const std::string &ip_address,
         const std::string &port,
         unsigned char *pk,

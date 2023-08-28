@@ -71,18 +71,18 @@ namespace model {
         const std::string &pk
     );
     
-    int DeserializeStreamIn(Message* msg, std::string &data);
-    int DeserializeClientStreamIn(Message* msg, std::string &data);
-    int DeserializeServerStreamIn(Message* msg, std::string &data);
-    int DeserializeNetworkStreamIn(Message* msg, std::string &data);
+    Message* DeserializeStreamIn(std::string &data);
+    Message* DeserializeClientStreamIn(std::string &data);
+    Message* DeserializeServerStreamIn(std::string &data);
+    Message* DeserializeNetworkStreamIn(std::string &data);
 
-    int DeserializeStreamOut(Message* msg, std::string &data);
-    int DeserializeClientStreamOut(Message* msg, std::string &data);
-    int DeserializeServerStreamOut(Message* msg, std::string &data);
-    int DeserializeNetworkStreamOut(Message* msg, std::string &data);
+    Message* DeserializeStreamOut(std::string &data);
+    Message* DeserializeClientStreamOut(std::string &data);
+    Message* DeserializeServerStreamOut(std::string &data);
+    Message* DeserializeNetworkStreamOut(std::string &data);
 
 
-    int DeserializeInternal(Message* msg, std::string &data);
+    Message* DeserializeInternal(std::string &data);
 }
 
 #endif

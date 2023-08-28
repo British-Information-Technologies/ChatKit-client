@@ -27,7 +27,7 @@ int ClientConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
 ClientConnection::ClientConnection(
     const std::string &uuid,
     std::shared_ptr<event_base> base,
-    msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+    msd::channel<Data> &network_manager_chann,
     const std::string &ip_address,
     const std::string &port,
     unsigned char *pk,
@@ -37,7 +37,7 @@ ClientConnection::ClientConnection(
 std::shared_ptr<Connection> ClientConnection::Create(
   const std::string &uuid,
   std::shared_ptr<struct event_base> base,
-  msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+  msd::channel<Data> &network_manager_chann,
   const std::string &ip_address,
   const std::string &port
 ) {
@@ -85,15 +85,14 @@ void ClientConnection::ReadMessageCb() {
   // decode or decode and decrypt data
   std::string plaintext = data_handler->FormatRead(encoded_packet);
 
-  std::cout << "[ClientConnection]: " << plaintext << std::endl;
-
   if (!plaintext.length()) {
     // plaintext is empty, failed to format encoded packet
     return;
   }
 
-  std::shared_ptr<Message> message;
-  DeserializeClientStreamIn(message.get(), plaintext);
+  std::cout << "[ClientConnection]: " << plaintext << std::endl;
+
+  std::shared_ptr<Message> message(DeserializeClientStreamIn(plaintext));
 
   // send data to network manager
   SendChannelMessage(message);

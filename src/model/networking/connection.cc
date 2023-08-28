@@ -52,19 +52,13 @@ void Connection::SetState(DataHandler *next_handler) {
 
 
 void Connection::SendChannelMessage(std::shared_ptr<Message> message) {
-  std::shared_ptr<Data> data(new Data {
-    uuid:     uuid,
-    sockfd:   bufferevent_getfd(bev.get()),
-    message:  message,
-  });
-
-  data >> out_chann;
+  std::move(Data{ uuid, bufferevent_getfd(bev.get()), message }) >> out_chann;
 }
 
 Connection::Connection(
   const std::string &uuid,
   std::shared_ptr<event_base> base,
-  msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+  msd::channel<Data> &network_manager_chann,
   const std::string &ip_address, 
   const std::string &port,
   unsigned char *pk,

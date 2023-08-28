@@ -3,6 +3,7 @@
 #include <memory>
 #include <sodium.h>
 #include <magic_enum.hpp>
+#include <iostream>
 
 #include "message.h"
 
@@ -45,19 +46,17 @@ using namespace model;
 using json = nlohmann::json;
 
 namespace {
-    json isValidJson(Message* msg, const std::string &data) {
+    json isValidJson(const std::string &data) {
         try {
             json data_json = json::parse(data);
-            
+
             if (!data_json.contains("type")) {
                 // data is invalid, must have a type
-                msg = new internal::EventError("[DeserializeError]: Missing type, message is not valid json");
                 return nullptr;
             }
             
             return data_json;
         } catch (std::exception _) {
-            msg = new internal::EventError("[DeserializeError]: Parse error, message is not json");
             return nullptr;
         }
     }
@@ -87,87 +86,78 @@ std::unique_ptr<Message> model::CreateServerStreamOutPublicKey(
 }
 
 // Stream In
-int model::DeserializeStreamIn(Message* msg, std::string &data) {
+Message* model::DeserializeStreamIn(std::string &data) {
     // convert to message object
-    if (
-        model::DeserializeClientStreamIn(msg, data) &&
-        model::DeserializeServerStreamIn(msg, data) &&
-        model::DeserializeNetworkStreamIn(msg, data)
-    ) {
-        // data is invalid, non-existent stream in message type
-        return -1;
-    }
-
-    // stream in message successfully created from data
-    return 0;
-}
-
-
-int model::DeserializeServerStreamIn(Message* msg, std::string &data) {
-    json data_json = isValidJson(msg, data);
-    if (data_json.is_null()) {
-        return -1;
+    Message* msg = model::DeserializeClientStreamIn(data);
+    if (msg->GetType() != Type::EventError) {
+        return msg;
     }
     
-    auto type = magic_enum::enum_cast<Type>(data_json.at("type"));
-    if (!type.has_value()) {
-        return -1;
-    }
+    delete msg;
 
-    switch (type.value()) {
+    msg = model::DeserializeServerStreamIn(data);
+    if (msg->GetType() != Type::EventError) {
+        return msg;
+    }
+    
+    delete msg;
+
+    return model::DeserializeNetworkStreamIn(data);
+}
+
+Message* model::DeserializeServerStreamIn(std::string &data) {
+    json data_json = isValidJson(data);
+    if (data_json.is_null()) {
+        return new internal::EventError("[DeserializeError]: message is not valid json");
+    }
+    
+    auto type = magic_enum::enum_cast<Type>((std::string) data_json.at("type")).value_or(Type::EventError);
+
+    switch (type) {
         case Type::Connected: {
-            msg = new server_stream_in::Connected();
-            break;
+            return new server_stream_in::Connected();
         }
         
         case Type::ConnectedClients: {
             json clients = data_json.at("clients");
-            msg = new server_stream_in::ConnectedClients(clients);
-            break;
+            return new server_stream_in::ConnectedClients(clients);
         }
 
         case Type::GlobalChatMessages: {
             json messages = data_json.at("messages");
-            msg = new server_stream_in::GlobalChatMessages(messages);
-            break;
+            return new server_stream_in::GlobalChatMessages(messages);
         }
 
         case Type::UserMessage: {
             std::string from = data_json.at("from");
             std::string content = data_json.at("content");
-            msg = new server_stream_in::UserMessage(from, content);
-            break;
+            return new server_stream_in::UserMessage(from, content);
         }
 
         case Type::GlobalMessage: {
             std::string from = data_json.at("from");
             std::string content = data_json.at("content");
-            msg = new server_stream_in::GlobalMessage(from, content);
-            break;
+            return new server_stream_in::GlobalMessage(from, content);
         }
 
         case Type::ClientConnected: {
             std::string id = data_json.at("id");
             std::string username = data_json.at("username");
-            msg = new server_stream_in::ClientConnected(id, username);
-            break;
+            return new server_stream_in::ClientConnected(id, username);
         }
 
         case Type::ClientRemoved: {
             std::string id = data_json.at("id");
-            msg = new server_stream_in::ClientRemoved(id);
-            break;
+            return new server_stream_in::ClientRemoved(id);
         }
 
         case Type::Disconnected: {
-            msg = new server_stream_in::Disconnected();
-            break;
+            return new server_stream_in::Disconnected();
         }
 
         case Type::Error: {
             std::string err_msg = data_json.at("msg");
-            msg = new server_stream_in::Error(err_msg);
-            break;
+            return new server_stream_in::Error(err_msg);
         }
 
         case Type::PublicKey: {
@@ -176,146 +166,121 @@ int model::DeserializeServerStreamIn(Message* msg, std::string &data) {
 
             std::string key_str = Base642Bin(encoded_key);
 
-            msg = new server_stream_in::PublicKey(from, key_str);
-            break;
+            return new server_stream_in::PublicKey(from, key_str);
         }
 
         default: {
-            msg = new internal::EventError("[DeserializeError]: Message is not StreamIn");
-            return -1;
+            return new internal::EventError("[DeserializeError]: Message is not StreamIn");
         }
     }
-
-    return 0;
 }
 
-int model::DeserializeNetworkStreamIn(Message* msg, std::string &data) {
-    json data_json = isValidJson(msg, data);
+Message* model::DeserializeNetworkStreamIn(std::string &data) {
+    json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return -1;
+        return new internal::EventError("[DeserializeError]: message is not valid json");
     }
 
-    auto type = magic_enum::enum_cast<Type>(data_json.at("type"));
-    if (!type.has_value()) {
-        return -1;
-    }
+    auto type = magic_enum::enum_cast<Type>((std::string) data_json.at("type")).value_or(Type::EventError);
 
-    switch (type.value()) {
+    switch (type) {
         case Type::Request: {
-            msg = new network_stream_in::Request();
-            break;
+            return new network_stream_in::Request();
         }
 
         case Type::GotInfo: {
             std::string server_name = data_json.at("server_name");
             std::string server_owner = data_json.at("server_owner");
-            msg = new network_stream_in::GotInfo(server_name, server_owner);
-            break;
+            return new network_stream_in::GotInfo(server_name, server_owner);
         }
 
         case Type::Connecting: {
-            msg = new network_stream_in::Connecting();
-            break;
+            return new network_stream_in::Connecting();
         }
 
         case Type::Error: {
-            msg = new network_stream_in::Error();
-            break;
+            return new network_stream_in::Error();
         }
 
         default: {
-            msg = new internal::EventError("[DeserializeError]: Message is not StreamIn");
-            return -1;
+            return new internal::EventError("[DeserializeError]: Message is not StreamIn");
         }
     }
-
-    return 0;
 }
 
-int model::DeserializeClientStreamIn(Message* msg, std::string &data) {
-    json data_json = isValidJson(msg, data);
+Message* model::DeserializeClientStreamIn(std::string &data) {
+    json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return -1;
+        return new internal::EventError("[DeserializeError]: message is not valid json");
     }
     
-    auto type = magic_enum::enum_cast<Type>(data_json.at("type"));
-    if (!type.has_value()) {
-        return -1;
-    }
+    auto type = magic_enum::enum_cast<Type>((std::string) data_json.at("type")).value_or(Type::EventError);
 
-    switch (type.value()) {
+    switch (type) {
         case Type::SendMessage: {
             std::string time = data_json.at("time");
             std::string date = data_json.at("date");
             std::string content = data_json.at("content");
-            msg = new client_stream_in::SendMessage(time, date, content);
-            break;
+            return new client_stream_in::SendMessage(time, date, content);
         }
 
         default: {
-            msg = new internal::EventError("[DeserializeError]: Message is not StreamIn");
-            return -1;
+            return new internal::EventError("[DeserializeError]: Message is not StreamIn");
         }
     }
-    
-    return 0;
 }
 
 
 // Stream Out
-int model::DeserializeStreamOut(Message* msg, std::string &data) {
+Message* model::DeserializeStreamOut(std::string &data) {
     // convert to message object
-    if (
-        model::DeserializeClientStreamOut(msg, data) &&
-        model::DeserializeServerStreamOut(msg, data) &&
-        model::DeserializeNetworkStreamOut(msg, data)
-    ) {
-        // data is invalid, non-existent stream out message type
-        return -1;
-    }
-
-    // stream out message successfully created from data
-    return 0;
-}
-
-int model::DeserializeServerStreamOut(Message* msg, std::string &data) {
-    json data_json = isValidJson(msg, data);
-    if (data_json.is_null()) {
-        return -1;
+    Message* msg = model::DeserializeClientStreamOut(data);
+    if (msg->GetType() != Type::EventError) {
+        return msg;
     }
     
-    auto type = magic_enum::enum_cast<Type>(data_json.at("type"));
-    if (!type.has_value()) {
-        return -1;
-    }
+    delete msg;
 
-    switch (type.value()) {
+    msg = model::DeserializeServerStreamOut(data);
+    if (msg->GetType() != Type::EventError) {
+        return msg;
+    }
+    
+    delete msg;
+
+    return model::DeserializeNetworkStreamOut(data);
+}
+
+Message* model::DeserializeServerStreamOut(std::string &data) {
+    json data_json = isValidJson(data);
+    if (data_json.is_null()) {
+        return new internal::EventError("[DeserializeError]: message is not valid json");
+    }
+    
+    auto type = magic_enum::enum_cast<Type>((std::string) data_json.at("type")).value_or(Type::EventError);
+
+    switch (type) {
         case Type::GetClients: {
-            msg = new server_stream_out::GetClients();
-            break;
+            return new server_stream_out::GetClients();
         }
 
         case Type::GetMessages: {
-            msg = new server_stream_out::GetMessages();
-            break;
+            return new server_stream_out::GetMessages();
         }
 
         case Type::SendMessage: {
             std::string to = data_json.at("to");
             std::string content = data_json.at("content");
-            msg = new server_stream_out::SendMessage(to, content);
-            break;
+            return new server_stream_out::SendMessage(to, content);
         }
 
         case Type::SendGlobalMessage: {
             std::string content = data_json.at("content");
-            msg = new server_stream_out::SendGlobalMessage(content);
-            break;
+            return new server_stream_out::SendGlobalMessage(content);
         }
 
         case Type::Disconnect: {
-            msg = new server_stream_out::Disconnect();
-            break;
+            return new server_stream_out::Disconnect();
         }
 
         case Type::PublicKey: {
@@ -324,107 +289,82 @@ int model::DeserializeServerStreamOut(Message* msg, std::string &data) {
 
             std::string key_str = Base642Bin(encoded_key);
 
-            msg = new server_stream_out::PublicKey(to, key_str);
-            break;
+            return new server_stream_out::PublicKey(to, key_str);
         }
 
         default: {
-            msg = new internal::EventError("[DeserializeError]: Message is not StreamOut");
-            return -1;
+            return new internal::EventError("[DeserializeError]: Message is not StreamOut");
         }
     }
-
-    return 0;
 }
 
-int model::DeserializeNetworkStreamOut(Message* msg, std::string &data) {
-    json data_json = isValidJson(msg, data);
+Message* model::DeserializeNetworkStreamOut(std::string &data) {
+    json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return -1;
+        return new internal::EventError("[DeserializeError]: message is not valid json");
     }
     
-    auto type = magic_enum::enum_cast<Type>(data_json.at("type"));
-    if (!type.has_value()) {
-        return -1;
-    }
+    auto type = magic_enum::enum_cast<Type>((std::string) data_json.at("type")).value_or(Type::EventError);
 
-    switch (type.value()) {
+    switch (type) {
         case Type::Info: {
-            msg = new network_stream_out::Info();
-            break;
+            return new network_stream_out::Info();
         }
 
         case Type::Connect: {
             std::string uuid = data_json.at("uuid");
             std::string username = data_json.at("username");
             std::string address = data_json.at("address");
-            msg = new network_stream_out::Connect(uuid, username, address);
+            return new network_stream_out::Connect(uuid, username, address);
             break;
         }
 
         default: {
-            msg = new internal::EventError("[DeserializeError]: Message is not StreamOut");
-            return -1;
+            return new internal::EventError("[DeserializeError]: Message is not StreamOut");
         }
     }
-
-    return 0;
 }
 
-int model::DeserializeClientStreamOut(Message* msg, std::string &data) {
-    json data_json = isValidJson(msg, data);
+Message* model::DeserializeClientStreamOut(std::string &data) {
+    json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return -1;
+        return new internal::EventError("[DeserializeError]: message is not valid json");
     }
     
-    auto type = magic_enum::enum_cast<Type>(data_json.at("type"));
-    if (!type.has_value()) {
-        return -1;
-    }
+    auto type = magic_enum::enum_cast<Type>((std::string) data_json.at("type")).value_or(Type::EventError);
 
-    switch (type.value()) {
+    switch (type) {
         case Type::SendMessage: {
             std::string time = data_json.at("time");
             std::string date = data_json.at("date");
             std::string content = data_json.at("content");
-            msg = new client_stream_out::SendMessage(time, date, content);
-            break;
+            return new client_stream_out::SendMessage(time, date, content);
         }
 
         default: {
-            msg = new internal::EventError("[DeserializeError]: Message is not StreamOut");
-            return -1;
+            return new internal::EventError("[DeserializeError]: Message is not StreamOut");
         }
     }
-    
-    return 0;
 }
 
 
 // Internal
-int model::DeserializeInternal(Message* msg, std::string &data) {
-    json data_json = isValidJson(msg, data);
+Message* model::DeserializeInternal(std::string &data) {
+    json data_json = isValidJson(data);
     if (data_json.is_null()) {
-        return -1;
+        return new internal::EventError("[DeserializeError]: message is not valid json");
     }
     
-    auto type = magic_enum::enum_cast<Type>(data_json.at("type"));
-    if (!type.has_value()) {
-        return -1;
-    }
+    auto type = magic_enum::enum_cast<Type>((std::string) data_json.at("type")).value();
 
-    switch (type.value()) {
+    switch (type) {
         case Type::EventError: {
             std::string err_msg = data_json.at("msg");
-            msg = new internal::EventError(err_msg);
-            break;
+            return new internal::EventError(err_msg);
         }
 
         default: {
-            msg = new internal::EventError("[DeserializeError]: Message is not Internal");
-            return -1;
+            return new internal::EventError("[DeserializeError]: Message is not Internal");
         }
     }
-
-    return 0;
 }

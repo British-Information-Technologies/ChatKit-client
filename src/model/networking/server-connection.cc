@@ -45,7 +45,7 @@ int ServerConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
 ServerConnection::ServerConnection(
   const std::string &uuid,
   std::shared_ptr<event_base> base,
-  msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+  msd::channel<Data> &network_manager_chann,
   const std::string &ip_address,
   const std::string &port,
   unsigned char *pk,
@@ -55,7 +55,7 @@ ServerConnection::ServerConnection(
 std::shared_ptr<Connection> ServerConnection::Create(
   const std::string &uuid,
   std::shared_ptr<struct event_base> base,
-  msd::channel<std::shared_ptr<Data>> &network_manager_chann,
+  msd::channel<Data> &network_manager_chann,
   const std::string &ip_address,
   const std::string &port
 ) {
@@ -106,17 +106,18 @@ void ServerConnection::ReadMessageCb() {
   // decode or decode and decrypt data
   std::string plaintext = data_handler->FormatRead(encoded_packet);
 
-  std::cout << "[ServerConnection]: " << plaintext << std::endl;
-
   if (!plaintext.length()) {
     // plaintext is empty, failed to format encoded packet
     return;
   }
 
-  std::shared_ptr<Message> message;
-  if (DeserializeServerStreamIn(message.get(), plaintext)) {
+  std::cout << "[ServerConnection]: " << plaintext << std::endl;
+
+  std::shared_ptr<Message> message(DeserializeServerStreamIn(plaintext));
+  
+  if (message->GetType() == Type::EventError) {
     // message is not a server message, check if network message
-    DeserializeNetworkStreamIn(message.get(), plaintext);
+    message.reset(DeserializeNetworkStreamIn(plaintext));
   }
 
   // send data to network manager

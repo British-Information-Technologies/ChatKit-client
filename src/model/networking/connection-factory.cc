@@ -14,7 +14,7 @@ std::shared_ptr<model::Connection> model::GetConnection(
     model::ConnectionType type,
     const std::string &uuid,
     std::shared_ptr<event_base> base,
-    msd::channel<std::shared_ptr<model::Data>> &network_manager_chann,
+    msd::channel<model::Data> &network_manager_chann,
     const std::string &ip_address,
     const std::string &port
 ) 

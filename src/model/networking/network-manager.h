@@ -24,7 +24,7 @@ namespace model {
 
       std::shared_ptr<struct event_base> connection_base;
       
-      msd::channel<std::shared_ptr<Data>> in_chann;
+      msd::channel<Data> in_chann{};
 
       std::unordered_map<std::string, std::shared_ptr<Connection>> connections;
       
