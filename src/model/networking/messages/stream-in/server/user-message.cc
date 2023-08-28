@@ -11,7 +11,7 @@ UserMessage::UserMessage(const std::string &from, const std::string &content): f
 }
 
 std::string UserMessage::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"from\": {}, \"content\": {} }}", magic_enum::enum_name(type), from, content);
+    return fmt::format(R"({{ "type": "{}", "from": "{}", "content": "{}" }})", magic_enum::enum_name(type), from, content);
 }
 
 model::StreamType UserMessage::GetStreamType() {

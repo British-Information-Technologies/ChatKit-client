@@ -11,7 +11,7 @@ Connected::Connected() {
 }
 
 std::string Connected::Serialize() {
-    return fmt::format("{{ \"type\": {} }}", magic_enum::enum_name(type));
+    return fmt::format(R"({{ "type": "{}" }})", magic_enum::enum_name(type));
 }
 
 model::StreamType Connected::GetStreamType() {

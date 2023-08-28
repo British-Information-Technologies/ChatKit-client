@@ -11,7 +11,7 @@ ClientRemoved::ClientRemoved(const std::string &id): id(id) {
 }
 
 std::string ClientRemoved::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"id\": {} }}", magic_enum::enum_name(type), id);
+    return fmt::format(R"({{ "type": "{}", "id": "{}" }})", magic_enum::enum_name(type), id);
 }
 
 model::StreamType ClientRemoved::GetStreamType() {

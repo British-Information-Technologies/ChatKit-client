@@ -15,7 +15,7 @@ GotInfo::GotInfo(
 }
 
 std::string GotInfo::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"server_name\": {}, \"server_owner\": {} }}", magic_enum::enum_name(type), server_name, server_owner);
+    return fmt::format(R"({{ "type": "{}", "server_name": "{}", "server_owner": "{}" }})", magic_enum::enum_name(type), server_name, server_owner);
 }
 
 model::StreamType GotInfo::GetStreamType() {

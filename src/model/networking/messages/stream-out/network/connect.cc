@@ -16,7 +16,7 @@ Connect::Connect(
 }
 
 std::string Connect::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"uuid\": {}, \"username\": {}, \"address\": {} }}", magic_enum::enum_name(type), uuid, username, address);
+    return fmt::format(R"({{ "type": "{}", "uuid": "{}", "username": "{}", "address": "{}" }})", magic_enum::enum_name(type), uuid, username, address);
 }
             
 model::StreamType Connect::GetStreamType() {

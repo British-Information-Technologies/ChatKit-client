@@ -15,7 +15,7 @@ SendMessage::SendMessage(
 }
 
 std::string SendMessage::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"to\": {}, \"content\": {} }}", magic_enum::enum_name(type), to, content);
+    return fmt::format(R"({{ "type": "{}", "to": "{}", "content": "{}" }})", magic_enum::enum_name(type), to, content);
 }
 
 model::StreamType SendMessage::GetStreamType() {

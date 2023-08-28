@@ -15,7 +15,7 @@ ClientConnected::ClientConnected(
 }
 
 std::string ClientConnected::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"id\": {}, \"username\": {} }}", magic_enum::enum_name(type), id, username);
+    return fmt::format(R"({{ "type": "{}", "id": "{}", "username": "{}" }})", magic_enum::enum_name(type), id, username);
 }
 
 model::StreamType ClientConnected::GetStreamType() {

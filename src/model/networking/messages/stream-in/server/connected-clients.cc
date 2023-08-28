@@ -14,7 +14,7 @@ ConnectedClients::ConnectedClients(const json &clients): clients(clients) {
 }
 
 std::string ConnectedClients::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"clients\": {} }}", magic_enum::enum_name(type), clients.dump());
+    return fmt::format(R"({{ "type": "{}", "clients": "{}" }})", magic_enum::enum_name(type), clients.dump());
 }
 
 model::StreamType ConnectedClients::GetStreamType() {

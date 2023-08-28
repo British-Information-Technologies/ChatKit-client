@@ -18,7 +18,7 @@ PublicKey::PublicKey(
 }
 
 std::string PublicKey::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"to\": {}, \"key\": {} }}", magic_enum::enum_name(type), to, model::Bin2Base64(key));
+    return fmt::format(R"({{ "type": "{}", "to": "{}", "key": "{}" }})", magic_enum::enum_name(type), to, model::Bin2Base64(key));
 }
 
 std::string PublicKey::GetKey() {

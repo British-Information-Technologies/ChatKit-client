@@ -11,7 +11,7 @@ SendGlobalMessage::SendGlobalMessage(const std::string &content): content(conten
 }
 
 std::string SendGlobalMessage::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"content\": {} }}", magic_enum::enum_name(type), content);
+    return fmt::format(R"({{ "type": "{}", "content": "{}" }})", magic_enum::enum_name(type), content);
 }
 
 model::StreamType SendGlobalMessage::GetStreamType() {

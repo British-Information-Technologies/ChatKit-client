@@ -11,7 +11,7 @@ Error::Error(const std::string &msg): msg(msg) {
 }
 
 std::string Error::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"msg\": {} }}", magic_enum::enum_name(type), msg);
+    return fmt::format(R"({{ "type": "{}", "msg": "{}" }})", magic_enum::enum_name(type), msg);
 }
 
 model::StreamType Error::GetStreamType() {

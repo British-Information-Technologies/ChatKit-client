@@ -14,7 +14,7 @@ GlobalChatMessages::GlobalChatMessages(const json &messages): messages(messages)
 }
 
 std::string GlobalChatMessages::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"messages\": {} }}", magic_enum::enum_name(type), messages.dump());
+    return fmt::format(R"({{ "type": "{}", "messages": "{}" }})", magic_enum::enum_name(type), messages.dump());
 }
 
 model::StreamType GlobalChatMessages::GetStreamType() {
