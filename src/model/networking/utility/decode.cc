@@ -1,24 +1,26 @@
 #include <string>
+#include <memory>
 
 #include "decode.h"
 
 #include "model/networking/utility/variants.h"
 
-std::string model::Base642Bin(const std::string &encoded_data) {
-    const char* encoded_data_ptr = reinterpret_cast<const char*>(encoded_data.c_str());
+unsigned char* model::Base642Bin(const std::string &encoded_data) {
+    size_t encoded_data_len = encoded_data.length();
 
-    size_t data_len = encoded_data.length() / 4 * 3; // base64 encodes 3 bytes as 4 characters
-    unsigned char data_ptr[data_len];
+    size_t data_len = encoded_data_len / 4 * 3; // ( - padding) base64 encodes 3 bytes as 4 characters (= char is padding, could make better by removing padding)
+    unsigned char *data_ptr = (unsigned char*) malloc(sizeof(unsigned char) * data_len);
+
     sodium_base642bin(
         data_ptr,
         data_len,
-        encoded_data_ptr,
-        sizeof encoded_data_ptr,
+        encoded_data.c_str(),
+        encoded_data_len + 1,
         NULL,
         &data_len,
         NULL,
         base64_VARIANT
     );
-    
-    return std::string(reinterpret_cast<char const*>(data_ptr), data_len);
+
+    return data_ptr;
 }

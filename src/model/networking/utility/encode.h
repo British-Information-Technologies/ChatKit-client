@@ -4,7 +4,7 @@
 #include <string>
 
 namespace model {
-    std::string Bin2Base64(const std::string &data);
+    std::string Bin2Base64(const unsigned char *data);
 } // namespace model
 
 #endif
