@@ -12,10 +12,13 @@ class SecureDataHandlerTest : public ::testing::Test {
 
   void TearDown() override {
   }
+
+  protected:
+    unsigned char fake_secret[20] = "fake_shared_secret\0";
 };
 
 TEST_F(SecureDataHandlerTest, FormatSendTest) {
-  model::SecureDataHandler data_handler("fake_shared_secret");
+  model::SecureDataHandler data_handler(fake_secret);
 
   std::string data("this is test data");
 
@@ -28,7 +31,7 @@ TEST_F(SecureDataHandlerTest, FormatSendTest) {
 }
 
 TEST_F(SecureDataHandlerTest, FormatSendThenReadTest) {
-  model::SecureDataHandler data_handler("fake_shared_secret");
+  model::SecureDataHandler data_handler(fake_secret);
 
   std::string data("this is test data");
 
@@ -39,7 +42,7 @@ TEST_F(SecureDataHandlerTest, FormatSendThenReadTest) {
 
   EXPECT_STRNE(data.c_str(), packet.c_str());
 
-  std::string payload data_handler.FormatRead(packet);
+  std::string payload = data_handler.FormatRead(packet);
   
   EXPECT_STREQ(data.c_str(), payload.c_str());
 }
