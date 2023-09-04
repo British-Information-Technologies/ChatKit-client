@@ -5,6 +5,7 @@ set(SOURCES
     
     model/networking/utility/encode-decode_test.cc
     model/networking/utility/insecure-data-handler_test.cc
+    model/networking/utility/secure-data-handler_test.cc
 )
 
 add_executable(${BINARY} ${SOURCES})
