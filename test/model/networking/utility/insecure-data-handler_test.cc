@@ -7,7 +7,16 @@
 
 class InsecureDataHandlerTest : public ::testing::Test {
  protected:
+  model::InsecureDataHandler data_handler;
+  
+  std::string data;
+  
+  std::string packet_correct;
+  
   void SetUp() override {
+    data = "this is test data";
+
+    packet_correct = R"({"payload":"this is test data"})";
   }
 
   void TearDown() override {
@@ -15,37 +24,19 @@ class InsecureDataHandlerTest : public ::testing::Test {
 };
 
 TEST_F(InsecureDataHandlerTest, FormatSendTest) {
-  model::InsecureDataHandler data_handler;
-
-  std::string data("this is test data");
-
   std::string packet = data_handler.FormatSend(data);
-
-  std::string packet_correct(R"({"payload":"this is test data"})");
 
   EXPECT_STREQ(packet_correct.c_str(), packet.c_str());
 }
 
 TEST_F(InsecureDataHandlerTest, FormatReadTest) {
-  model::InsecureDataHandler data_handler;
-
-  std::string packet(R"({"payload":"this is test data"})");
-
-  std::string payload = data_handler.FormatRead(packet);
-  
-  std::string data("this is test data");
+  std::string payload = data_handler.FormatRead(packet_correct);
   
   EXPECT_STREQ(data.c_str(), payload.c_str());
 }
 
 TEST_F(InsecureDataHandlerTest, FormatSendThenReadTest) {
-  model::InsecureDataHandler data_handler;
-
-  std::string data("this is test data");
-
   std::string packet = data_handler.FormatSend(data);
-
-  std::string packet_correct(R"({"payload":"this is test data"})");
 
   EXPECT_STREQ(packet_correct.c_str(), packet.c_str());
 
