@@ -10,28 +10,41 @@ using namespace model;
 
 using json = nlohmann::json;
 
+namespace {
+  struct Packet {
+      std::string payload;
+  };
+
+  void to_json(json &j, const Packet &p) {
+      j = json{{"payload", p.payload}};
+  }
+
+  void from_json(const json &j, Packet &p) {
+      j.at("payload").get_to(p.payload);
+  }
+} // namespace
+
 DataHandlerType InsecureDataHandler::GetType() {
   return type;
 }
 
 std::string InsecureDataHandler::FormatSend(std::string &data) {
   // create packet
-  std::string packet = json({
-    { "payload", data },
-  }).dump();
+  json packet = Packet { data };
 
-  return packet;
+  return packet.dump();
 }
 
 std::string InsecureDataHandler::FormatRead(std::string &data) {
-  // check packet format
-  json packet = json::parse(data);
-  
-  if (!packet.contains("payload")) {
-    // invalid packet, payload missing - KISS
+  try {
+    // check packet format
+    auto packet = json::parse(data).template get<Packet>();
+    
+    // extract plaintext from packet
+    return packet.payload;
+    
+  } catch (std::exception _) {
+    // invalid packet - KISS
     return "";
   }
-
-  // extract plaintext from packet
-  return packet.at("payload");
 }

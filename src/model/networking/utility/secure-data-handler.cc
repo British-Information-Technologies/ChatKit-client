@@ -12,6 +12,22 @@ using namespace model;
 
 using json = nlohmann::json;
 
+namespace {
+  struct Packet {
+      std::string nonce;
+      std::string payload;
+  };
+
+  void to_json(json &j, const Packet &p) {
+      j = json{{"nonce", p.nonce}, {"payload", p.payload}};
+  }
+
+  void from_json(const json &j, Packet &p) {
+      j.at("nonce").get_to(p.nonce);
+      j.at("payload").get_to(p.payload);
+  }
+} // namespace
+
 SecureDataHandler::SecureDataHandler(
   unsigned char *ss
 ): ss(ss) 
@@ -49,52 +65,53 @@ std::string SecureDataHandler::FormatSend(std::string &data) {
   ciphertext[ciphertext_len] = '\0';
 
   // create packet
-  std::string packet = json({
-    {"payload", Bin2Base64(ciphertext)},
-    {"nonce", Bin2Base64(nonce)}
-  }).dump();
+  json packet = Packet { Bin2Base64(nonce), Bin2Base64(ciphertext) };
 
   // encode packet with base64
-  return packet;
+  return packet.dump();
 }
 
-std::string SecureDataHandler::FormatRead(std::string &data) { 
-  // check packet format
-  json packet = json::parse(data);
-  
-  if (!packet.contains("nonce") || !packet.contains("payload")) {
-    // invalid packet - network error
+std::string SecureDataHandler::FormatRead(std::string &data) {
+  try {
+    // check packet format
+    auto packet = json::parse(data).template get<Packet>();
+    
+    // decode packet with base64
+    unsigned char *nonce = Base642Bin(packet.nonce);
+
+    unsigned char *ciphertext = Base642Bin(packet.payload);
+    unsigned long long ciphertext_len = std::strlen((char*) ciphertext);
+
+    // decrypt ciphertext with shared secret
+    unsigned long long plaintext_len = ciphertext_len - crypto_box_MACBYTES;
+    unsigned char plaintext[plaintext_len + 1];
+
+    if (crypto_box_open_easy_afternm(
+      plaintext,
+      ciphertext,
+      ciphertext_len,
+      nonce,
+      ss.get()
+    ) != 0) {
+      free(nonce);
+      free(ciphertext);
+      
+      return "";
+    }
+
+    plaintext[plaintext_len] = '\0';
+
+    free(nonce);
+    free(ciphertext);
+    
+    // cast to string with length specified to avoid losing data from array conversion
+    char plaintext_str[plaintext_len + 1];
+    strcpy(plaintext_str, (char *) plaintext);
+
+    return plaintext_str;
+
+  } catch (std::exception _) {
+    // invalid packet - KISS
     return "";
   }
-
-  // decode packet with base64
-  unsigned char *nonce = Base642Bin(packet.at("nonce"));  
-
-  unsigned char *ciphertext = Base642Bin(packet.at("payload"));  
-  unsigned long long ciphertext_len = std::strlen((char*) ciphertext);
-
-  // decrypt ciphertext with shared secret
-  unsigned long long plaintext_len = ciphertext_len - crypto_box_MACBYTES;
-  unsigned char plaintext[plaintext_len + 1];
-
-  if (crypto_box_open_easy_afternm(
-    plaintext,
-    ciphertext,
-    ciphertext_len,
-    nonce,
-    ss.get()
-  ) != 0) {
-    return "";
-  }
-
-  plaintext[plaintext_len] = '\0';
-
-  free(nonce);
-  free(ciphertext);
-  
-  // cast to string with length specified to avoid losing data from array conversion
-  char plaintext_str[plaintext_len + 1];
-  strcpy(plaintext_str, (char *) plaintext);
-
-  return plaintext_str;
 }
