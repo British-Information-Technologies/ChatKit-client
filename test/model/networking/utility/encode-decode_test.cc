@@ -16,9 +16,9 @@ class EncodeDecodeTest : public ::testing::Test {
 };
 
 TEST_F(EncodeDecodeTest, EncodeDataTest) {
-    unsigned char data[] = "This is my encode test\0";
+    unsigned char data[] = "This is my encode test";
     
-    std::string data_encoded = model::Bin2Base64(data);
+    std::string data_encoded = model::Bin2Base64(data, 22);
     
     std::cout << "Data: " << data << std::endl;
     std::cout << "Encoded Data: " << data_encoded << std::endl;
@@ -30,9 +30,9 @@ TEST_F(EncodeDecodeTest, EncodeDataTest) {
 }
 
 TEST_F(EncodeDecodeTest, DecodeDataTest) {
-    unsigned char data[] = "This is my encode test\0";
+    unsigned char data[] = "This is my encode test";
     
-    std::string data_encoded = model::Bin2Base64(data);
+    std::string data_encoded = model::Bin2Base64(data, 22);
     
     std::cout << "Data: " << data << std::endl;
     std::cout << "Encoded Data: " << data_encoded << std::endl;
@@ -42,9 +42,9 @@ TEST_F(EncodeDecodeTest, DecodeDataTest) {
     
     EXPECT_STRNE(data_str, data_encoded.c_str());
     
-    unsigned char *data_original = model::Base642Bin(data_encoded);
+    auto [data_original, data_original_len] = model::Base642Bin(data_encoded);
     
-    std::cout << "Original Data: " << data_original << std::endl;
+    std::cout << "Original Data: " << data_original << "(" << data_original_len << ")" << std::endl;
     
     EXPECT_STREQ((char*) data, (char*) data_original);
     
