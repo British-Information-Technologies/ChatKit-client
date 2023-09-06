@@ -39,9 +39,8 @@ DataHandlerType SecureDataHandler::GetType() {
 
 std::string SecureDataHandler::FormatSend(std::string &data) {
   // create nonce
-  unsigned char nonce[crypto_box_NONCEBYTES + 1];
+  unsigned char nonce[crypto_box_NONCEBYTES];
   randombytes_buf(nonce, crypto_box_NONCEBYTES);
-  nonce[crypto_box_NONCEBYTES] = '\0';
 
   // encrypt message with shared secret
   unsigned long long data_len = data.length();
@@ -49,7 +48,7 @@ std::string SecureDataHandler::FormatSend(std::string &data) {
   strcpy((char*) data_ptr, data.c_str());
   
   unsigned long long ciphertext_len = crypto_box_MACBYTES + data_len;
-  unsigned char ciphertext[ciphertext_len + 1];
+  unsigned char ciphertext[ciphertext_len];
 
   if (crypto_box_easy_afternm(
     ciphertext,
@@ -62,10 +61,8 @@ std::string SecureDataHandler::FormatSend(std::string &data) {
     return "";
   }
 
-  ciphertext[ciphertext_len] = '\0';
-
   // create packet
-  json packet = Packet { Bin2Base64(nonce), Bin2Base64(ciphertext) };
+  json packet = Packet { Bin2Base64(nonce, crypto_box_NONCEBYTES), Bin2Base64(ciphertext, ciphertext_len) };
 
   // encode packet with base64
   return packet.dump();
@@ -75,18 +72,17 @@ std::string SecureDataHandler::FormatRead(std::string &data) {
   try {
     // check packet format
     auto packet = json::parse(data).template get<Packet>();
-    
+
     // decode packet with base64
-    unsigned char *nonce = Base642Bin(packet.nonce);
+    auto [nonce, _] = Base642Bin(packet.nonce);
 
-    unsigned char *ciphertext = Base642Bin(packet.payload);
-    unsigned long long ciphertext_len = std::strlen((char*) ciphertext);
-
+    auto [ciphertext, ciphertext_len] = Base642Bin(packet.payload);
+    
     // decrypt ciphertext with shared secret
     unsigned long long plaintext_len = ciphertext_len - crypto_box_MACBYTES;
-    unsigned char plaintext[plaintext_len + 1];
+    unsigned char plaintext[plaintext_len];
 
-    if (crypto_box_open_easy_afternm(
+    if (int a = crypto_box_open_easy_afternm(
       plaintext,
       ciphertext,
       ciphertext_len,
@@ -99,16 +95,11 @@ std::string SecureDataHandler::FormatRead(std::string &data) {
       return "";
     }
 
-    plaintext[plaintext_len] = '\0';
-
     free(nonce);
     free(ciphertext);
     
     // cast to string with length specified to avoid losing data from array conversion
-    char plaintext_str[plaintext_len + 1];
-    strcpy(plaintext_str, (char *) plaintext);
-
-    return plaintext_str;
+    return std::string((char*) plaintext, plaintext_len);
 
   } catch (std::exception _) {
     // invalid packet - KISS
