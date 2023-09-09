@@ -103,7 +103,7 @@ void ServerConnection::ReadMessageCb() {
   // read encoded packet
   std::string encoded_packet = ReadBufferLine(bev);
 
-  // decode or decode and decrypt data
+  // get plaintext
   std::string plaintext = data_handler->FormatRead(encoded_packet);
 
   if (!plaintext.length()) {

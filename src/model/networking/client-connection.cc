@@ -67,26 +67,26 @@ int ClientConnection::SendMessage(Message *message) {
   }
 
   std::string msg_str = message->Serialize();
-  std::string encoded_packet = data_handler->FormatSend(msg_str);
+  std::string packet = data_handler->FormatSend(msg_str);
   
-  if (!encoded_packet.length()) {
-    // encoded packet is empty, failed to format message
+  if (!packet.length()) {
+    // packet is empty, failed to format message
     return -1;
   }
 
-  // send encoded packet
-  return WriteBufferLine(bev, encoded_packet);
+  // send packet
+  return WriteBufferLine(bev, packet);
 }
 
 void ClientConnection::ReadMessageCb() {
-  // read encoded packet
-  std::string encoded_packet = ReadBufferLine(bev);
+  // read packet
+  std::string packet = ReadBufferLine(bev);
 
   // decode or decode and decrypt data
-  std::string plaintext = data_handler->FormatRead(encoded_packet);
+  std::string plaintext = data_handler->FormatRead(packet);
 
   if (!plaintext.length()) {
-    // plaintext is empty, failed to format encoded packet
+    // plaintext is empty, failed to format packet
     return;
   }
 
