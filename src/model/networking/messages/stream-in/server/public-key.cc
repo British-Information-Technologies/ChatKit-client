@@ -5,7 +5,7 @@
 #include <sodium.h>
 #include <magic_enum.hpp>
 
-#include "model/networking/utility/encode.h"
+#include "model/networking/utility/decode.h"
 
 using namespace server_stream_in;
 
@@ -18,15 +18,16 @@ PublicKey::PublicKey(
 }
 
 std::string PublicKey::Serialize() {
-    return fmt::format(R"({{ "type": "{}", "from": "{}", "key": "{}" }})", magic_enum::enum_name(type), from, model::Bin2Base64(key));
+    return fmt::format(R"({{ "type": "{}", "from": "{}", "key": "{}" }})", magic_enum::enum_name(type), from, key);
 }
 
 std::string PublicKey::GetFrom() {
     return this->from;
 }
 
-std::string PublicKey::GetKey() {
-    return this->key;
+unsigned char* PublicKey::GetKey() {
+    auto [key, _] = model::Base642Bin(this->key);
+    return key;
 }
 
 model::StreamType PublicKey::GetStreamType() {

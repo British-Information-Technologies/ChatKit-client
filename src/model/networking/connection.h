@@ -80,7 +80,7 @@ namespace model {
     public:
       bool IsSecure();
 
-      std::string GetPublicKey();
+      const std::string GetPublicKey();
       
       int Initiate();
 

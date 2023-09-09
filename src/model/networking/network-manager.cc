@@ -56,13 +56,17 @@ namespace {
           connections.at(data.uuid)->SendMessage(pk.get());
 
           // use received public key to create shared secret
-          const unsigned char* recv_pk_ptr = reinterpret_cast<const unsigned char*>(recv_pk->GetKey().c_str());
-          if (end_point_conn->EstablishSecureConnection(recv_pk_ptr) != 0) {
-            std::cout << "[NetworkManager]: secure connection with " << end_point_uuid << " failed" << std::endl;
+          unsigned char * decode_pk = recv_pk->GetKey();
+
+          if (end_point_conn->EstablishSecureConnection(decode_pk) != 0) {
+            std::cout << "[NetworkManager]: secure connection with " << end_point_uuid << " failed" << std::endl;  
+            free(decode_pk);
+            
             // panic! failed to create secure connection
             continue;
           }
 
+          free(decode_pk);
           std::cout << "[NetworkManager]: secure connection with " << end_point_uuid << " established" << std::endl;
           break;
         }
@@ -153,11 +157,9 @@ int NetworkManager::InitiateSecureConnection(const std::string &end_point_uuid, 
   //  return -1;
   //}
 
-  const std::string end_point_pk = end_point_conn->GetPublicKey();
-  
   std::unique_ptr<Message> pk_msg = CreateServerStreamOutPublicKey(
     end_point_uuid,
-    end_point_pk
+    end_point_conn->GetPublicKey()
   );
 
   // send our PK as plaintext

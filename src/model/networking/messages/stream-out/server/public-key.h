@@ -16,7 +16,7 @@ namespace server_stream_out {
 
             std::string Serialize();
 
-            std::string GetKey();
+            unsigned char* GetKey();
             
             model::StreamType GetStreamType();
     };

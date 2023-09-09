@@ -164,9 +164,7 @@ Message* model::DeserializeServerStreamIn(std::string &data) {
             std::string from = data_json.at("from");
             std::string encoded_key = data_json.at("key");
 
-            std::string key_str = Base642Bin(encoded_key);
-
-            return new server_stream_in::PublicKey(from, key_str);
+            return new server_stream_in::PublicKey(from, encoded_key);
         }
 
         default: {
@@ -287,9 +285,7 @@ Message* model::DeserializeServerStreamOut(std::string &data) {
             std::string to = data_json.at("to");
             std::string encoded_key = data_json.at("key");
 
-            std::string key_str = Base642Bin(encoded_key);
-
-            return new server_stream_out::PublicKey(to, key_str);
+            return new server_stream_out::PublicKey(to, encoded_key);
         }
 
         default: {

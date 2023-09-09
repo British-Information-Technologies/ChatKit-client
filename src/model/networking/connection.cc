@@ -17,6 +17,7 @@
 #include "utility/data-handler.h"
 #include "utility/insecure-data-handler.h"
 #include "utility/secure-data-handler.h"
+#include "utility/encode.h"
 
 #include "messages/message.h"
 #include "messages/internal/event-error.h"
@@ -40,6 +41,9 @@ std::tuple<unsigned char*, unsigned char*> Connection::GenerateKeyPair() {
   unsigned char *sk = (unsigned char*) malloc(sizeof(unsigned char[crypto_box_SECRETKEYBYTES]));
   if(crypto_box_keypair(pk, sk) != 0) {
     // keypair generation failed
+    free(pk);
+    free(sk);
+
     return std::make_tuple(nullptr, nullptr);
   }
   
@@ -86,8 +90,8 @@ bool Connection::IsSecure() {
   return data_handler->GetType() == DataHandlerType::Secure;
 }
 
-std::string Connection::GetPublicKey() {
-  return std::string(reinterpret_cast<char const*>(pk.get()), crypto_box_PUBLICKEYBYTES);
+const std::string Connection::GetPublicKey() {
+  return Bin2Base64(pk.get(), crypto_box_PUBLICKEYBYTES);
 }
 
 int Connection::Initiate() {
@@ -188,11 +192,15 @@ int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
   }
 
   // create shared secret with recipient PK and our SK
-  unsigned char *ss = (unsigned char*) malloc(sizeof(unsigned char[crypto_box_BEFORENMBYTES]));
+  unsigned char *ss = (unsigned char*) malloc(sizeof(unsigned char[crypto_box_BEFORENMBYTES + 1]));
   if(crypto_box_beforenm(ss, recv_pk, sk.get()) != 0) {
     // shared secret creation failed
+    free(ss);
+    
     return -1;
   }
+
+  ss[crypto_box_BEFORENMBYTES] = '\0';
 
   SetState(new SecureDataHandler(ss));
 

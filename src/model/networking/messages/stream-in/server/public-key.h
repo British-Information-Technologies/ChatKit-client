@@ -18,7 +18,7 @@ namespace server_stream_in {
 
             std::string GetFrom();
 
-            std::string GetKey();
+            unsigned char* GetKey();
             
             model::StreamType GetStreamType();
     };
