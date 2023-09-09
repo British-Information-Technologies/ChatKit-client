@@ -12,8 +12,8 @@ class SecureDataHandlerTest : public ::testing::Test {
     std::string data;
 
     void SetUp() override {
-      unsigned char *fake_secret = (unsigned char*) malloc(sizeof(unsigned char) * 20);
-      fake_secret = (unsigned char*)"fake_shared_secret\0";
+      unsigned char *fake_secret = (unsigned char*) malloc(sizeof(unsigned char) * 19);
+      fake_secret = (unsigned char*)"fake_shared_secret";
   
       data_handler = new model::SecureDataHandler(fake_secret);
 

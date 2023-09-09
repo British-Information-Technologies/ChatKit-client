@@ -192,15 +192,13 @@ int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
   }
 
   // create shared secret with recipient PK and our SK
-  unsigned char *ss = (unsigned char*) malloc(sizeof(unsigned char[crypto_box_BEFORENMBYTES + 1]));
+  unsigned char *ss = (unsigned char*) malloc(sizeof(unsigned char[crypto_box_BEFORENMBYTES]));
   if(crypto_box_beforenm(ss, recv_pk, sk.get()) != 0) {
     // shared secret creation failed
     free(ss);
     
     return -1;
   }
-
-  ss[crypto_box_BEFORENMBYTES] = '\0';
 
   SetState(new SecureDataHandler(ss));
 
