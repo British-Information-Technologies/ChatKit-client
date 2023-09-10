@@ -3,6 +3,7 @@ set(BINARY ${CMAKE_PROJECT_NAME}_test)
 set(SOURCES
     main.cc
     
+    model/networking/utility/buffer-writer-reader_test.cc
     model/networking/utility/encode-decode_test.cc
     model/networking/utility/insecure-data-handler_test.cc
     model/networking/utility/secure-data-handler_test.cc
