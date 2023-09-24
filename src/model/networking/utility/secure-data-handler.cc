@@ -29,8 +29,9 @@ namespace {
 } // namespace
 
 SecureDataHandler::SecureDataHandler(
-  unsigned char *ss
-): ss(ss) 
+  unsigned char *session_key_rx,
+  unsigned char *session_key_tx
+): session_key_rx(session_key_rx), session_key_tx(session_key_tx)
 {}
 
 DataHandlerType SecureDataHandler::GetType() {
@@ -39,27 +40,31 @@ DataHandlerType SecureDataHandler::GetType() {
 
 std::string SecureDataHandler::FormatSend(std::string &data) {
   // create nonce
-  unsigned char nonce[crypto_box_NONCEBYTES];
-  randombytes_buf(nonce, crypto_box_NONCEBYTES);
+  unsigned char nonce[crypto_aead_xchacha20poly1305_ietf_NPUBBYTES];
+  randombytes_buf(nonce, sizeof(nonce));
 
   // encrypt message with shared secret
   unsigned long long data_len = data.length();
   unsigned char data_ptr[data_len + 1];
   strcpy((char*) data_ptr, data.c_str());
   
-  unsigned long long ciphertext_len = crypto_box_MACBYTES + data_len;
-  unsigned char ciphertext[ciphertext_len];
+  unsigned char ciphertext[data_len + crypto_aead_xchacha20poly1305_ietf_ABYTES];
+  unsigned long long ciphertext_len;
 
-  if (crypto_box_easy_afternm(
+  if (crypto_aead_xchacha20poly1305_ietf_encrypt(
     ciphertext,
+    &ciphertext_len,
     data_ptr,
     data_len,
+    NULL,
+    0,
+    NULL,
     nonce,
-    ss.get()
-  ) != 0) {
+    session_key_tx.get()
+  )) {
     // message encryption failed - KISS
     return "";
-  }
+  } 
 
   // create packet
   json packet = Packet { Bin2Base64(nonce, crypto_box_NONCEBYTES), Bin2Base64(ciphertext, ciphertext_len) };
@@ -79,16 +84,21 @@ std::string SecureDataHandler::FormatRead(std::string &data) {
     auto [ciphertext, ciphertext_len] = Base642Bin(packet.payload);
     
     // decrypt ciphertext with shared secret
-    unsigned long long plaintext_len = ciphertext_len - crypto_box_MACBYTES;
-    unsigned char plaintext[plaintext_len];
+    unsigned char plaintext[ciphertext_len - crypto_aead_xchacha20poly1305_ietf_ABYTES];
+    unsigned long long plaintext_len;
 
-    if (int a = crypto_box_open_easy_afternm(
+    if (crypto_aead_xchacha20poly1305_ietf_decrypt(
       plaintext,
+      &plaintext_len,
+      NULL,
       ciphertext,
       ciphertext_len,
+      NULL,
+      0,
       nonce,
-      ss.get()
-    ) != 0) {
+      session_key_rx.get()
+    )) {
+      // message decryption failed - KISS
       free(nonce);
       free(ciphertext);
       

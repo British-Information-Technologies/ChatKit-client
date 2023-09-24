@@ -48,9 +48,9 @@ ServerConnection::ServerConnection(
   msd::channel<Data> &network_manager_chann,
   const std::string &ip_address,
   const std::string &port,
-  unsigned char *pk,
-  unsigned char *sk
-): Connection(uuid, base, network_manager_chann, ip_address, port, pk, sk) {}
+  unsigned char *public_key,
+  unsigned char *secret_key
+): Connection(uuid, base, network_manager_chann, ip_address, port, public_key, secret_key) {}
 
 std::shared_ptr<Connection> ServerConnection::Create(
   const std::string &uuid,
@@ -59,9 +59,9 @@ std::shared_ptr<Connection> ServerConnection::Create(
   const std::string &ip_address,
   const std::string &port
 ) {
-  auto [pk, sk] = GenerateKeyPair();
+  auto [public_key, secret_key] = GenerateKeyPair();
   
-  if (pk == nullptr || sk == nullptr) {
+  if (public_key == nullptr || public_key == nullptr) {
     return nullptr;
   }
 
@@ -71,8 +71,8 @@ std::shared_ptr<Connection> ServerConnection::Create(
     network_manager_chann,
     ip_address,
     port,
-    pk,
-    sk
+    public_key,
+    secret_key
   ));
 
   return conn;
@@ -88,15 +88,15 @@ int ServerConnection::SendMessage(Message *message) {
   }
   
   std::string msg_str = message->Serialize();
-  std::string encoded_packet = data_handler->FormatSend(msg_str);
+  std::string packet = data_handler->FormatSend(msg_str);
   
-  if (!encoded_packet.length()) {
+  if (!packet.length()) {
     // encoded packet is empty, failed to format message
     return -1;
   }
 
   // send encoded packet
-  return WriteBufferLine(bev, encoded_packet);
+  return WriteBufferLine(bev, packet);
 }
 
 void ServerConnection::ReadMessageCb() {

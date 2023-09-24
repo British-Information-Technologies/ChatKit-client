@@ -24,8 +24,8 @@ namespace model {
                 msd::channel<Data> &network_manager_chann,
                 const std::string &ip_address,
                 const std::string &port,
-                unsigned char *pk,
-                unsigned char *sk
+                unsigned char *public_key,
+                unsigned char *secret_key
             );
 
         public:

@@ -27,8 +27,8 @@ namespace model {
 
       std::shared_ptr<bufferevent> bev;
 
-      std::unique_ptr<unsigned char[]> pk;
-      std::unique_ptr<unsigned char[]> sk;
+      std::unique_ptr<unsigned char[]> public_key;
+      std::unique_ptr<unsigned char[]> secret_key;
       
       std::unique_ptr<DataHandler> data_handler;
  
@@ -71,8 +71,8 @@ namespace model {
         msd::channel<Data> &network_manager_chann,
         const std::string &ip_address,
         const std::string &port,
-        unsigned char *pk,
-        unsigned char *sk
+        unsigned char *public_key,
+        unsigned char *secret_key
       );
 
       virtual ~Connection();

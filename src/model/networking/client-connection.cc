@@ -30,9 +30,9 @@ ClientConnection::ClientConnection(
     msd::channel<Data> &network_manager_chann,
     const std::string &ip_address,
     const std::string &port,
-    unsigned char *pk,
-    unsigned char *sk
-): Connection(uuid, base, network_manager_chann, ip_address, port, pk, sk) {}
+    unsigned char *public_key,
+    unsigned char *secret_key
+): Connection(uuid, base, network_manager_chann, ip_address, port, public_key, secret_key) {}
 
 std::shared_ptr<Connection> ClientConnection::Create(
   const std::string &uuid,
@@ -41,9 +41,9 @@ std::shared_ptr<Connection> ClientConnection::Create(
   const std::string &ip_address,
   const std::string &port
 ) {
-  auto [pk, sk] = GenerateKeyPair();
+  auto [public_key, secret_key] = GenerateKeyPair();
 
-  if (pk == nullptr || sk == nullptr) {
+  if (public_key == nullptr || secret_key == nullptr) {
     return nullptr;
   }
 
@@ -53,8 +53,8 @@ std::shared_ptr<Connection> ClientConnection::Create(
     network_manager_chann,
     ip_address,
     port,
-    pk,
-    sk
+    public_key,
+    secret_key
   ));
 
   return conn;

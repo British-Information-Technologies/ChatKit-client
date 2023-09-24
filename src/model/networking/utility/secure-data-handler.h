@@ -11,10 +11,12 @@ class SecureDataHandler : public DataHandler {
  private:
   DataHandlerType type = DataHandlerType::Secure;
 
-  std::unique_ptr<unsigned char[]> ss;
+  std::unique_ptr<unsigned char[]> session_key_rx;
+
+  std::unique_ptr<unsigned char[]> session_key_tx;
 
  public:
-  SecureDataHandler(unsigned char *ss);
+  SecureDataHandler(unsigned char *session_key_rx, unsigned char *session_key_tx);
 
   DataHandlerType GetType();
 

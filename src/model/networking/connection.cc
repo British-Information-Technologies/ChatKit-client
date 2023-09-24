@@ -37,17 +37,17 @@ std::tuple<unsigned char*, unsigned char*> Connection::GenerateKeyPair() {
   }
 
   // generate keypair
-  unsigned char *pk = (unsigned char*) malloc(sizeof(unsigned char[crypto_box_PUBLICKEYBYTES]));
-  unsigned char *sk = (unsigned char*) malloc(sizeof(unsigned char[crypto_box_SECRETKEYBYTES]));
-  if(crypto_box_keypair(pk, sk) != 0) {
+  unsigned char public_key[crypto_kx_PUBLICKEYBYTES], secret_key[crypto_kx_SECRETKEYBYTES];
+
+  if(crypto_kx_keypair(public_key, secret_key) != 0) {
     // keypair generation failed
-    free(pk);
-    free(sk);
+    free(public_key);
+    free(secret_key);
 
     return std::make_tuple(nullptr, nullptr);
   }
   
-  return std::make_tuple(pk, sk);
+  return std::make_tuple(public_key, secret_key);
 }
 
 void Connection::SetState(DataHandler *next_handler) {
@@ -65,15 +65,15 @@ Connection::Connection(
   msd::channel<Data> &network_manager_chann,
   const std::string &ip_address, 
   const std::string &port,
-  unsigned char *pk,
-  unsigned char *sk
+  unsigned char *public_key,
+  unsigned char *secret_key
 ):uuid(uuid),
   out_chann(network_manager_chann),
   ip_address(ip_address),
   port(port),
   data_handler(new InsecureDataHandler),
-  pk(pk),
-  sk(sk)
+  public_key(public_key),
+  secret_key(secret_key)
 {
   this->bev.reset(bufferevent_socket_new(base.get(), -1, BEV_OPT_CLOSE_ON_FREE),
     [](bufferevent *b){
@@ -91,7 +91,7 @@ bool Connection::IsSecure() {
 }
 
 const std::string Connection::GetPublicKey() {
-  return Bin2Base64(pk.get(), crypto_box_PUBLICKEYBYTES);
+  return Bin2Base64(public_key.get(), crypto_kx_PUBLICKEYBYTES);
 }
 
 int Connection::Initiate() {
@@ -192,15 +192,22 @@ int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
   }
 
   // create shared secret with recipient PK and our SK
-  unsigned char *ss = (unsigned char*) malloc(sizeof(unsigned char[crypto_box_BEFORENMBYTES]));
-  if(crypto_box_beforenm(ss, recv_pk, sk.get()) != 0) {
+  unsigned char session_key_rx[crypto_kx_SESSIONKEYBYTES], session_key_tx[crypto_kx_SESSIONKEYBYTES];
+  
+  if(crypto_kx_client_session_keys(
+    session_key_rx,
+    session_key_tx,
+    public_key.get(),
+    secret_key.get(),
+    recv_pk
+  ) != 0) {
     // shared secret creation failed
-    free(ss);
+    //free(ss);
     
     return -1;
   }
 
-  SetState(new SecureDataHandler(ss));
+  SetState(new SecureDataHandler(session_key_rx, session_key_tx));
 
   return 0;
 }
