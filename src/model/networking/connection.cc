@@ -41,9 +41,6 @@ std::tuple<unsigned char*, unsigned char*> Connection::GenerateKeyPair() {
 
   if(crypto_kx_keypair(public_key, secret_key) != 0) {
     // keypair generation failed
-    free(public_key);
-    free(secret_key);
-
     return std::make_tuple(nullptr, nullptr);
   }
   
