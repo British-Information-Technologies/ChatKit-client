@@ -37,10 +37,14 @@ std::tuple<unsigned char*, unsigned char*> Connection::GenerateKeyPair() {
   }
 
   // generate keypair
-  unsigned char public_key[crypto_kx_PUBLICKEYBYTES], secret_key[crypto_kx_SECRETKEYBYTES];
+  unsigned char *public_key = (unsigned char*) malloc(sizeof(unsigned char[crypto_kx_PUBLICKEYBYTES]));
+  unsigned char *secret_key = (unsigned char*) malloc(sizeof(unsigned char[crypto_kx_SECRETKEYBYTES]));
 
   if(crypto_kx_keypair(public_key, secret_key) != 0) {
     // keypair generation failed
+    free(public_key);
+    free(secret_key);
+
     return std::make_tuple(nullptr, nullptr);
   }
   
@@ -189,7 +193,8 @@ int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
   }
 
   // create shared secret with recipient PK and our SK
-  unsigned char session_key_rx[crypto_kx_SESSIONKEYBYTES], session_key_tx[crypto_kx_SESSIONKEYBYTES];
+  unsigned char *session_key_rx = (unsigned char*) malloc(sizeof(unsigned char[crypto_kx_SESSIONKEYBYTES]));
+  unsigned char *session_key_tx = (unsigned char*) malloc(sizeof(unsigned char[crypto_kx_SESSIONKEYBYTES]));
   
   if(crypto_kx_client_session_keys(
     session_key_rx,
@@ -199,7 +204,8 @@ int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
     recv_pk
   ) != 0) {
     // shared secret creation failed
-    //free(ss);
+    free(session_key_rx);
+    free(session_key_tx);
     
     return -1;
   }
