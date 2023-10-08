@@ -6,9 +6,9 @@
 #include <event2/event.h>
 #include "msd/channel.hpp"
 
-#include "connection.h"
+#include "model/networking/connection/connection.h"
 
-#include "utility/data.h"
+#include "model/networking/utility/data.h"
 
 namespace model {
     enum class ConnectionType {

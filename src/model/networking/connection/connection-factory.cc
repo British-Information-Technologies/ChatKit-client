@@ -5,10 +5,10 @@
 
 #include "connection-factory.h"
 
-#include "client-connection.h"
-#include "server-connection.h"
+#include "model/networking/connection/client-connection.h"
+#include "model/networking/connection/server-connection.h"
 
-#include "utility/data.h"
+#include "model/networking/utility/data.h"
 
 std::shared_ptr<model::Connection> model::GetConnection(
     model::ConnectionType type,

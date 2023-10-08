@@ -1,5 +1,5 @@
-#ifndef MODEL_NETWORKING_SERVER_CONNECTION_H_
-#define MODEL_NETWORKING_SERVER_CONNECTION_H_
+#ifndef MODEL_NETWORKING_CLIENT_CONNECTION_H_
+#define MODEL_NETWORKING_CLIENT_CONNECTION_H_
 
 #include <memory>
 #include <string>
@@ -8,17 +8,17 @@
 #include "connection.h"
 
 #include "model/networking/messages/message.h"
-#include "utility/data.h"
+#include "model/networking/utility/data.h"
 
 namespace model {
-    class ServerConnection : public Connection {
+    class ClientConnection : public Connection {
         private:
             int GetRecipientPublicKey(unsigned char* recv_pk);
             
             void ReadMessageCb();
 
-        protected:        
-            ServerConnection(
+        protected:
+            ClientConnection(
                 const std::string &uuid,
                 std::shared_ptr<struct event_base> base,
                 msd::channel<Data> &network_manager_chann,
@@ -36,7 +36,7 @@ namespace model {
                 const std::string &ip_address,
                 const std::string &port
             );
-
+            
             int SendMessage(Message *message);
     };
 }  // namespace model

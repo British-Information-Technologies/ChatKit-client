@@ -14,13 +14,13 @@
 
 #include "connection.h"
 
-#include "utility/data-handler.h"
-#include "utility/insecure-data-handler.h"
-#include "utility/secure-data-handler.h"
-#include "utility/encode.h"
+#include "model/networking/utility/data-handler.h"
+#include "model/networking/utility/insecure-data-handler.h"
+#include "model/networking/utility/secure-data-handler.h"
+#include "model/networking/utility/encode.h"
 
-#include "messages/message.h"
-#include "messages/internal/event-error.h"
+#include "model/networking/messages/message.h"
+#include "model/networking/messages/internal/event-error.h"
 
 using namespace model;
 

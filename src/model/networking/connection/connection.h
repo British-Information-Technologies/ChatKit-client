@@ -8,9 +8,9 @@
 #include <event2/bufferevent.h>
 #include <msd/channel.hpp>
 
-#include "messages/message.h"
-#include "utility/data-handler.h"
-#include "utility/data.h"
+#include "model/networking/messages/message.h"
+#include "model/networking/utility/data-handler.h"
+#include "model/networking/utility/data.h"
 
 namespace model {
   class Connection {

@@ -44,11 +44,12 @@ set(SOURCES
     model/server-functionality/server-node.cc
     model/server-functionality/server-utility.cc
 
-    model/networking/connection-factory.cc
-    model/networking/connection.cc
     model/networking/network-manager.cc
-    model/networking/server-connection.cc
-    model/networking/client-connection.cc
+    
+    model/networking/connection/connection-factory.cc
+    model/networking/connection/connection.cc
+    model/networking/connection/server-connection.cc
+    model/networking/connection/client-connection.cc
     
     model/networking/messages/message.cc
 
