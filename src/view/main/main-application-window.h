@@ -28,7 +28,6 @@ class MainApplicationWindow : public Gtk::ApplicationWindow {
         MainApplicationWindow(
             BaseObjectType *cobject,
             const Glib::RefPtr<Gtk::Builder> &refBuilder,
-            std::shared_ptr<view_model::NetworkViewModel> network_vm,
             Glib::RefPtr<Gtk::Box> friend_list,
             Glib::RefPtr<Gtk::Box> server_list,
             Glib::RefPtr<Gtk::Box> profile_card,
@@ -37,6 +36,8 @@ class MainApplicationWindow : public Gtk::ApplicationWindow {
             Glib::RefPtr<Gtk::Box> add_friend
         );
         virtual ~MainApplicationWindow();
+
+        void SetNetworkViewModel(std::shared_ptr<view_model::NetworkViewModel> network_vm);
         
         void SetHomePageState();
         

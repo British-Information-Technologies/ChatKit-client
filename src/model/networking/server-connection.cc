@@ -7,18 +7,18 @@
 #include <sodium.h>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
-#include <nlohmann/json.hpp>
+#include <iostream>
 #include "msd/channel.hpp"
 
 #include "server-connection.h"
 
-#include "messages/message.h"
+#include "model/networking/messages/message.h"
 
-#include "utility/secure-data-handler.h"
+#include "model/networking/utility/data.h"
+#include "model/networking/utility/buffer-writer.h"
+#include "model/networking/utility/buffer-reader.h"
 
 using namespace model;
-
-using json = nlohmann::json;
 
 int ServerConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
   // read potential PK - todo
@@ -42,66 +42,84 @@ int ServerConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
   return 0;
 }
 
-ServerConnection::ServerConnection(std::shared_ptr<event_base> base,
-                                   msd::channel<json> &network_manager_chann,
-                                   const std::string &ip_address,
-                                   const std::string &port)
-    : Connection(base, network_manager_chann, ip_address, port) {
+ServerConnection::ServerConnection(
+  const std::string &uuid,
+  std::shared_ptr<event_base> base,
+  msd::channel<Data> &network_manager_chann,
+  const std::string &ip_address,
+  const std::string &port,
+  unsigned char *public_key,
+  unsigned char *secret_key
+): Connection(uuid, base, network_manager_chann, ip_address, port, public_key, secret_key) {}
+
+std::shared_ptr<Connection> ServerConnection::Create(
+  const std::string &uuid,
+  std::shared_ptr<struct event_base> base,
+  msd::channel<Data> &network_manager_chann,
+  const std::string &ip_address,
+  const std::string &port
+) {
+  auto [public_key, secret_key] = GenerateKeyPair();
+  
+  if (public_key == nullptr || public_key == nullptr) {
+    return nullptr;
+  }
+
+  std::shared_ptr<Connection> conn(new ServerConnection(
+    uuid,
+    base,
+    network_manager_chann,
+    ip_address,
+    port,
+    public_key,
+    secret_key
+  ));
+
+  return conn;
 }
 
-int ServerConnection::SendPublicKey() {
-  // ensures operations are thread safe
-  if (sodium_init() < 0) {
-    // sodium initialisation failed
+int ServerConnection::SendMessage(Message *message) {
+  if (
+    message->GetStreamType() != StreamType::ServerStreamOut &&
+    message->GetStreamType() != StreamType::NetworkStreamOut
+  ) {
+    // message must be a server stream out or network stream out
     return -1;
   }
   
-  // generate keypair
-  pk = std::unique_ptr<unsigned char[]>(new unsigned char[crypto_box_PUBLICKEYBYTES]);  
-  sk = std::unique_ptr<unsigned char[]>(new unsigned char[crypto_box_SECRETKEYBYTES]);  
-  if(crypto_box_keypair(pk.get(), sk.get()) != 0) {
-    // keypair generation failed
-    return -1;
-  }
+  std::string msg_str = message->Serialize();
+  std::string packet = data_handler->FormatSend(msg_str);
   
-  // convert pk into message format
-  std::string str_pk(reinterpret_cast<char const*>(pk.get()), crypto_box_PUBLICKEYBYTES);
-  std::unique_ptr<Message> msg_pk;
-  if (DeserializeStreamOut(msg_pk.get(), str_pk) != 0) {
-    // failed to create PK message
+  if (!packet.length()) {
+    // encoded packet is empty, failed to format message
     return -1;
   }
 
-  // send our PK as plaintext to server
-  if (SendMessage(msg_pk.get()) < 0) {
-    // failed to send PK
-    return -1;
-  }
-
-  return 0;
+  // send encoded packet
+  return WriteBufferLine(bev, packet);
 }
 
-int ServerConnection::EstablishSecureConnection(const unsigned char *recv_pk) {
-  // ensures operations are thread safe
-  if (sodium_init() < 0) {
-    // sodium initialisation failed
-    return -1;
+void ServerConnection::ReadMessageCb() {
+  // read encoded packet
+  std::string encoded_packet = ReadBufferLine(bev);
+
+  // get plaintext
+  std::string plaintext = data_handler->FormatRead(encoded_packet);
+
+  if (!plaintext.length()) {
+    // plaintext is empty, failed to format encoded packet
+    return;
   }
 
-  // ensure a pk and sk pair exist
-  if (!pk.get() || !sk.get()) {
-    // no pk and sk pair exist
-    return -1;
+  std::cout << "[ServerConnection]: " << plaintext << std::endl;
+
+  std::shared_ptr<Message> message(DeserializeServerStreamIn(plaintext));
+  
+  if (message->GetType() == Type::EventError) {
+    // message is not a server message, check if network message
+    message.reset(DeserializeNetworkStreamIn(plaintext));
   }
 
-  // create shared secret with servers PK and our SK
-  unsigned char ss[crypto_box_BEFORENMBYTES];
-  if(crypto_box_beforenm(ss, recv_pk, sk.get()) != 0) {
-    // shared secret creation failed
-    return -1;
-  }
-
-  SetState(new SecureDataHandler(ss));
-
-  return 0;
+  // send data to network manager
+  SendChannelMessage(message);
 }

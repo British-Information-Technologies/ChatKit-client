@@ -48,6 +48,7 @@ set(SOURCES
     model/networking/connection.cc
     model/networking/network-manager.cc
     model/networking/server-connection.cc
+    model/networking/client-connection.cc
     
     model/networking/messages/message.cc
 
@@ -68,6 +69,8 @@ set(SOURCES
     model/networking/messages/stream-in/server/global-message.cc
     model/networking/messages/stream-in/server/user-message.cc
     model/networking/messages/stream-in/server/public-key.cc
+    
+    model/networking/messages/stream-in/client/send-message.cc
 
     model/networking/messages/stream-out/network/connect.cc
     model/networking/messages/stream-out/network/info.cc
@@ -77,7 +80,12 @@ set(SOURCES
     model/networking/messages/stream-out/server/get-messages.cc
     model/networking/messages/stream-out/server/send-global-message.cc
     model/networking/messages/stream-out/server/send-message.cc
+    model/networking/messages/stream-out/server/public-key.cc
+    
+    model/networking/messages/stream-out/client/send-message.cc
 
+    model/networking/utility/encode.cc
+    model/networking/utility/decode.cc
     model/networking/utility/buffer-reader.cc
     model/networking/utility/buffer-writer.cc
     model/networking/utility/insecure-data-handler.cc
@@ -104,23 +112,19 @@ set(SOURCES
     main.cc
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -lsodium")
-
-# todo - must change as machine specific
-find_package(Libevent CONFIG REQUIRED) 
-#PATHS /home/mitchell/Documents/packages/libevent/build
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 add_definitions(${GTKMM_CFLAGS_OTHER})
 
 add_executable(${BINARY}_run ${SOURCES})
 target_link_directories(${BINARY}_run PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_run PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads msd_channel fmt)
+target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt magic_enum::magic_enum)
 
 add_library(${BINARY}_lib STATIC ${SOURCES})
 target_link_directories(${BINARY}_lib PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_lib PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json libevent::core libevent::extra libevent::pthreads msd_channel fmt)
+target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt magic_enum::magic_enum)
 
 # Don't want to copy if we're building in the source dir
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)

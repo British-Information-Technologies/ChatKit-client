@@ -18,7 +18,28 @@ namespace model {
             
             int Run();
 
-            int SendMessage(const int &, std::string &);
+            int CreateClientConnection(
+                const std::string &uuid,
+                const std::string &ip_address,
+                const std::string &port
+            );
+
+            int CreateServerConnection(
+                const std::string &uuid,
+                const std::string &ip_address,
+                const std::string &port
+            );
+            
+            int CreateServiceServerConnection();
+
+            int SendMessage(const std::string &uuid, std::string &data);
+            
+            int SendClientMessage(
+                const std::string &uuid,
+                const std::string &time,
+                const std::string &date,
+                const std::string &data
+            );
     };
 }  // namespace model
 

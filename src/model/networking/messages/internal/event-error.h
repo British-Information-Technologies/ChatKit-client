@@ -6,18 +6,18 @@
 #include <string>
 
 namespace internal {
-    const std::string kEventError = "EventError";
-
     class EventError: public model::Internal {
         private:
-            std::string msg;
+            const std::string msg;
 
         public:
-            EventError(std::string msg);
+            EventError(const std::string &msg);
 
             std::string Serialize();
 
             std::string GetMsg();
+            
+            model::StreamType GetStreamType();
     };
 }
 

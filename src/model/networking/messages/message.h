@@ -2,23 +2,87 @@
 #define MODEL_NETWORKING_MESSAGES_H_
 
 #include <string>
+#include <memory>
 
 namespace model {
+    enum class StreamType {
+        StreamIn,
+        ClientStreamIn,
+        ServerStreamIn,
+        NetworkStreamIn,
+
+        StreamOut,
+        ClientStreamOut,
+        ServerStreamOut,
+        NetworkStreamOut,
+
+        Internal
+    };
+
+    enum class Type {
+        EventError,
+
+        Error,
+        PublicKey,
+        SendMessage,
+
+        Connecting,
+        GotInfo,
+        Request,
+
+        ClientConnected,
+        ClientRemoved,
+        ConnectedClients,
+        Connected,
+        Disconnected,
+        GlobalChatMessages,
+        GlobalMessage,
+        UserMessage,
+
+        Connect,
+        Info,
+
+        Disconnect,
+        GetClients,
+        GetMessages,
+        SendGlobalMessage
+    };
+
     class Message {
         protected:
-            std::string type;
+            Type type;
 
         public:
             virtual std::string Serialize() = 0;
 
-            std::string GetType();
+            virtual StreamType GetStreamType() = 0;
+
+            Type GetType();
     };
 
-    int DeserializeStreamOut(Message* msg, std::string data);
+    std::unique_ptr<Message> CreateClientStreamOutSendMessage(
+        const std::string &time,
+        const std::string &date,
+        const std::string &data
+    );
+    
+    std::unique_ptr<Message> CreateServerStreamOutPublicKey(
+        const std::string &to,
+        const std::string &pk
+    );
+    
+    Message* DeserializeStreamIn(std::string &data);
+    Message* DeserializeClientStreamIn(std::string &data);
+    Message* DeserializeServerStreamIn(std::string &data);
+    Message* DeserializeNetworkStreamIn(std::string &data);
 
-    int DeserializeStreamIn(Message* msg, std::string data);
+    Message* DeserializeStreamOut(std::string &data);
+    Message* DeserializeClientStreamOut(std::string &data);
+    Message* DeserializeServerStreamOut(std::string &data);
+    Message* DeserializeNetworkStreamOut(std::string &data);
 
-    int DeserializeInternal(Message* msg, std::string data);
+
+    Message* DeserializeInternal(std::string &data);
 }
 
 #endif

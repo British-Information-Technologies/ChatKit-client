@@ -2,15 +2,18 @@
 
 #include <string>
 #include <fmt/core.h>
+#include <magic_enum.hpp>
 
 using namespace server_stream_in;
 
-UserMessage::UserMessage(std::string from, std::string content) {
-    this->type = kUserMessage;
-    this->from = from;
-    this->content = content;
+UserMessage::UserMessage(const std::string &from, const std::string &content): from(from), content(content) {
+    this->type = model::Type::UserMessage;
 }
 
 std::string UserMessage::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"from\": {}, \"content\": {} }}", type, from, content);
+    return fmt::format(R"({{ "type": "{}", "from": "{}", "content": "{}" }})", magic_enum::enum_name(type), from, content);
+}
+
+model::StreamType UserMessage::GetStreamType() {
+    return model::StreamType::ServerStreamIn;
 }

@@ -3,9 +3,10 @@
 #include <unordered_map>
 #include <memory>
 #include <event2/event.h>
-#include <nlohmann/json.hpp>
-#include <thread>
 #include <mutex>
+#include <thread>
+#include <iostream>
+#include <functional>
 #include "msd/channel.hpp"
 
 #include "network-manager.h"
@@ -14,66 +15,75 @@
 #include "messages/message.h"
 #include "messages/stream-in/server/public-key.h"
 #include "messages/internal/event-error.h"
+#include "utility/data.h"
 
 using namespace model;
 
-using json = nlohmann::json;
-
 namespace {
-  void LaunchCallbackHandler(std::shared_ptr<event_base> connection_base) {
+  void LaunchConnectionBaseHandler(std::shared_ptr<event_base> connection_base) {
+    printf("[NetworkManager]: connection base launched\n");
     event_base_loop(connection_base.get(), EVLOOP_NO_EXIT_ON_EMPTY);
+    printf("[NetworkManager]: connection base shutting down\n");
   }
 
-  void LaunchChannelHandler(std::mutex &connections_mutex, msd::channel<json> &in_chann, std::unordered_map<int, std::shared_ptr<Connection>> &connections) {
+  void LaunchInputChannelHandler(
+    std::mutex &connections_mutex,
+    msd::channel<Data> &in_chann,
+    std::unordered_map<std::string, std::shared_ptr<Connection>> &connections
+  ) {
+    std::cout << "[NetworkManager]: input channel handler launched" << std::endl;
+
     // read incoming channel data from connection callbacks
-    for (const json data: in_chann) { // blocks forever waiting for channel items
-      printf("<data read from in_chann: %s>", data);
+    for (auto data: in_chann) { // blocks waiting for channel items
+      std::cout << "[NetworkManager]: recv channel data from sockfd " << data.sockfd << std::endl;
 
-      std::unique_ptr<Message> message;
-      if (data.contains("plaintext") && DeserializeStreamIn(message.get(), data.at("plaintext")) != 0) {
-        // failed to deserialize data
-        continue;
-        
-      } else if (data.contains("internal") && DeserializeInternal(message.get(), data.at("internal")) != 0) {
-        // failed to deserialize data
-        continue;
-        
-      } else {
-        // invalid data
-        continue;
-      }
+      switch (data.message->GetType()) {
+        case Type::PublicKey: {
+          server_stream_in::PublicKey *recv_pk = dynamic_cast<server_stream_in::PublicKey*>(data.message.get());
 
-      int sockfd = data.at("sockfd");
+          std::string end_point_uuid = recv_pk->GetFrom();
 
-      connections_mutex.lock();
+          auto end_point_conn = connections.at(end_point_uuid);
 
-      if (message->GetType() == server_stream_in::kPublicKey) {
-        std::unique_ptr<server_stream_in::PublicKey> recv_pk(dynamic_cast<server_stream_in::PublicKey*>(message.get()));
-        const unsigned char* recv_pk_ptr = reinterpret_cast<const unsigned char*>(recv_pk->GetKey().c_str());
+          if (end_point_conn->IsSecure()) {
+            std::cout << "[NetworkManager]: connection " << end_point_uuid << " already secure" << std::endl;
+            continue;
+          }
 
-        auto conn = connections.at(sockfd);
-        
-        connections_mutex.unlock();
-        
-        if (conn->EstablishSecureConnection(recv_pk_ptr) != 0) {
-          // panic! failed to create secure connection
-          continue;
+          auto pk = CreateServerStreamOutPublicKey(end_point_uuid, end_point_conn->GetPublicKey());
+
+          // ask service connection to send our pk to end point connection
+          connections.at(data.uuid)->SendMessage(pk.get());
+
+          // use received public key to create shared secret
+          unsigned char * decode_pk = recv_pk->GetKey();
+
+          if (end_point_conn->EstablishSecureConnection(decode_pk) != 0) {
+            std::cout << "[NetworkManager]: secure connection with " << end_point_uuid << " failed" << std::endl;  
+            free(decode_pk);
+            
+            // panic! failed to create secure connection
+            continue;
+          }
+
+          free(decode_pk);
+          std::cout << "[NetworkManager]: secure connection with " << end_point_uuid << " established" << std::endl;
+          break;
         }
 
-        printf("<secure sockfd connection established: %d>", sockfd);
+        case Type::EventError: {
+          std::unique_ptr<internal::EventError> err(dynamic_cast<internal::EventError*>(data.message.get()));
 
-      } else if (message->GetType() == internal::kEventError) {
-        std::unique_ptr<internal::EventError> err(dynamic_cast<internal::EventError*>(message.get()));
+          std::cout << "[NetworkManager]: EventError msg " << err->GetMsg() << std::endl;
+          break;
+        }
 
-        printf("<EventError msg: %s>", err->GetMsg());
-
-        connections.erase(sockfd);
-      
-        connections_mutex.unlock();
-      } else {
-        connections_mutex.unlock();
+        default: {
+        }
       }
     }
+
+    std::cout << "[NetworkManager]: input channel handler shutting down" << std::endl;
   }
 } // namespace
 
@@ -88,98 +98,150 @@ NetworkManager::NetworkManager() {
 }
 
 NetworkManager::~NetworkManager() {
+  connection_base_thread->request_stop();
+  channel_thread->request_stop();
   connections.clear();
 }
 
-void NetworkManager::Launch() {
-  // todo - might be good as a coroutine
-
+void NetworkManager::LaunchConnectionBase() {
   // start event base loop for connection callbacks
-  std::jthread callback_thread(
-    LaunchCallbackHandler,
+  connection_base_thread = std::make_unique<std::jthread>(
+    LaunchConnectionBaseHandler,
     this->connection_base
   );
+}
 
+void NetworkManager::LaunchInputChannel() {
   // start channel loop for reading incoming data from connection callbacks
-  std::jthread channel_handler(
-    LaunchChannelHandler,
+  channel_thread = std::make_unique<std::jthread>(
+    LaunchInputChannelHandler,
     std::ref(this->connections_mutex),
     std::ref(this->in_chann),
     std::ref(this->connections)
   );
 }
 
-int NetworkManager::ConnectToServiceServer() {
-  // fake ip address and port for testing
-  const std::string ip_address = "1234";
-  const std::string port = "1234";
-
-  if (sodium_init() < 0) {
-    /* panic! library wont initilise */
+int NetworkManager::LaunchListener(const std::string &uuid) {
+  if (!connections.contains(uuid)) {
+    printf("[NetworkManager]: connection does not exist\n");
     return -1;
   }
 
-  auto service = model_connection_factory::GetConnection(connection_base, std::ref(in_chann), ip_address, port);
+  auto conn = connections.at(uuid);
   
-  int sockfd = service->CreateConnection();
+  printf("[NetworkManager]: starting connection listener\n");
+  conn->Listen(connection_base);
 
-  // create a TCP connection
-  if (sockfd == -1) {
-    // TCP connection failed
-    return sockfd;
+  return 0;
+}
+
+
+int NetworkManager::InitiateSecureConnection(const std::string &end_point_uuid, const std::string &service_uuid) {
+  if (!connections.contains(end_point_uuid) || !connections.contains(service_uuid)) {
+    printf("[NetworkManager]: connections do not exist\n");
+    return -1;
+  }
+
+  auto end_point_conn = connections.at(end_point_uuid);  
+
+  if (end_point_conn->IsSecure()) {
+    printf("[NetworkManager]: end point already secure\n");
+    return -1;
   }
   
-  // store connection in map
-  std::pair<int, std::shared_ptr<Connection>> connection_pair(sockfd, service);
+  auto service_conn = connections.at(service_uuid);
 
-  connections_mutex.lock();
-  connections.insert(connection_pair);
-  connections_mutex.unlock();
+  // TODO Note: comment out for python test server
+  //if (!service_conn->IsSecure()) {
+  //  printf("[NetworkManager]: service not secure\n");
+  //  return -1;
+  //}
 
-  // request for secure connection with service server
-  if(InitiateSecureConnection(sockfd) != 0) {
-    // failed to initiate secure connection with service server
+  end_point_conn->SetIsListener(0);
+
+  std::unique_ptr<Message> pk_msg = CreateServerStreamOutPublicKey(
+    end_point_uuid,
+    end_point_conn->GetPublicKey()
+  );
+
+  // send our PK as plaintext
+  if (service_conn->SendMessage(pk_msg.get()) < 0) {
+    // failed to send PK
+    printf("[NetworkManager]: failed to send public key\n");
     return -1;
   }
 
   return 0;
 }
+  
+int NetworkManager::CreateConnection(
+  const ConnectionType type,
+  const std::string &uuid,
+  const std::string &ip_address,
+  const std::string &port
+) 
+{
+  if (connections.contains(uuid)) {
+    printf("[NetworkManager]: connection loaded\n");
+    return 0;
+  }
+ 
+  auto conn = GetConnection(
+    type,
+    uuid,
+    connection_base,
+    std::ref(in_chann),
+    ip_address,
+    port
+  );
 
-int NetworkManager::InitiateSecureConnection(const int &sockfd) {
-  connections_mutex.lock();
-
-  if (!connections.contains(sockfd)) {
+  if(conn == nullptr) {
+    printf("[NetworkManager]: connection failed to create\n");
     return -1;
   }
-
-  auto conn = connections.at(sockfd);
-
-  connections_mutex.unlock();
-
-  // send public key to sockfd connection
-  if (conn->SendPublicKey() != 0) {
-    // panic! failed to send public key to scokfd connection
+  
+  if (conn->Initiate()) {
+    printf("[NetworkManager]: connection failed to initiate\n");
     return -1;
   }
+  // invert ^^ for p2p test: conn->Initiate();
 
+  connections.insert(std::pair<std::string, std::shared_ptr<Connection>>(uuid, conn));
+  
+  printf("[NetworkManager]: connection created\n");
   return 0;
 }
 
-int NetworkManager::SendMessage(const int &id, std::string &data) {
-  connections_mutex.lock();
-
-  if (!connections.contains(id)) {
+int NetworkManager::SendMessage(const std::string &uuid, std::string &data) {
+  if (!connections.contains(uuid)) {
     return -1;
   }
 
-  std::unique_ptr<Message> message;
-  if (DeserializeStreamOut(message.get(), data) != 0) {
+  std::unique_ptr<Message> message(DeserializeStreamOut(data));
+
+  int sent_bytes = connections.at(uuid)->SendMessage(message.get());
+
+  return sent_bytes;
+}
+
+int NetworkManager::SendClientMessage(
+  const std::string &uuid,
+  const std::string &time,
+  const std::string &date,
+  const std::string &data
+)
+{
+  if (!connections.contains(uuid)) {
     return -1;
   }
 
-  int sent_bytes = connections.at(id)->SendMessage(message.get());
+  std::unique_ptr<Message> message = CreateClientStreamOutSendMessage(
+    time,
+    date,
+    data
+  );
 
-  connections_mutex.unlock();
+  int sent_bytes = connections.at(uuid)->SendMessage(message.get());
 
   return sent_bytes;
 }

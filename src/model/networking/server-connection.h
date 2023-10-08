@@ -3,26 +3,42 @@
 
 #include <memory>
 #include <string>
-#include <event2/event.h>
-#include <nlohmann/json.hpp>
 #include "msd/channel.hpp"
 
 #include "connection.h"
 
-using json = nlohmann::json;
+#include "model/networking/messages/message.h"
+#include "utility/data.h"
 
 namespace model {
     class ServerConnection : public Connection {
         private:
             int GetRecipientPublicKey(unsigned char* recv_pk);
+            
+            void ReadMessageCb();
+
+        protected:        
+            ServerConnection(
+                const std::string &uuid,
+                std::shared_ptr<struct event_base> base,
+                msd::channel<Data> &network_manager_chann,
+                const std::string &ip_address,
+                const std::string &port,
+                unsigned char *public_key,
+                unsigned char *secret_key
+            );
 
         public:
-            ServerConnection(std::shared_ptr<struct event_base> base, msd::channel<json> &network_manager_chann, const std::string &ip_address, const std::string &port);
+            static std::shared_ptr<Connection> Create(
+                const std::string &uuid,
+                std::shared_ptr<struct event_base> base,
+                msd::channel<Data> &network_manager_chann,
+                const std::string &ip_address,
+                const std::string &port
+            );
 
-            int SendPublicKey();
-            
-            int EstablishSecureConnection(const unsigned char *recv_pk);
+            int SendMessage(Message *message);
     };
-}  // namespace model_networking_server
+}  // namespace model
 
 #endif

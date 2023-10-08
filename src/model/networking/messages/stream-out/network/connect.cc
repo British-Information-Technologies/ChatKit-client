@@ -1,17 +1,24 @@
 #include <string>
 #include <fmt/core.h>
+#include <magic_enum.hpp>
 
 #include "connect.h"
 
 using namespace network_stream_out;
 
-Connect::Connect(std::string uuid, std::string username, std::string address) {
-    this->type = kConnect;
-    this->uuid = uuid;
-    this->username = username;
-    this->address = address;
+Connect::Connect(
+    const std::string &uuid,
+    const std::string &username,
+    const std::string &address
+): uuid(uuid), username(username), address(address)
+{
+    this->type = model::Type::Connect;
 }
 
 std::string Connect::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"uuid\": {}, \"username\": {}, \"address\": {} }}", type, uuid, username, address);
+    return fmt::format(R"({{ "type": "{}", "uuid": "{}", "username": "{}", "address": "{}" }})", magic_enum::enum_name(type), uuid, username, address);
+}
+            
+model::StreamType Connect::GetStreamType() {
+    return model::StreamType::NetworkStreamOut;
 }

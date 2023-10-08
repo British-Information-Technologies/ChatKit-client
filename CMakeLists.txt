@@ -15,6 +15,7 @@ find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 pkg_check_modules(Libevent REQUIRED libevent)
+pkg_check_modules(Libsodium REQUIRED libsodium)
 
 
 # --- FetchContents ---
@@ -53,19 +54,35 @@ FetchContent_MakeAvailable(gcr)
 list(APPEND CMAKE_MODULE_PATH ${gcr_SOURCE_DIR}/macros)
 include(GlibCompileResourcesSupport)
 
+# magic_enum library
+FetchContent_Declare(magic_enum
+    GIT_REPOSITORY https://github.com/Neargye/magic_enum
+    GIT_TAG v0.9.3
+)
+FetchContent_MakeAvailable(magic_enum)
+
+# GoogleTest
+FetchContent_Declare(googletest
+    GIT_REPOSITORY https://github.com/google/googletest
+    GIT_TAG v1.14.0
+)
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
 
 # --- setup src ---
 include_directories(src /usr/local/include)
 link_directories(/usr/local/lib)
 
 add_subdirectory(src)
-#add_subdirectory(lib/googletest)
 
 
-# --- enable GoogleTest ---
-#option(PACKAGE_TESTS "Build the tests" ON)
-#if(PACKAGE_TESTS)
- #   enable_testing()
- #   include(GoogleTest)
-    #add_subdirectory(test)
-#endif()
+# --- setup test ---
+option(PACKAGE_TESTS "Build the tests" ON)
+
+if(PACKAGE_TESTS)
+    enable_testing()
+    include(GoogleTest)
+    add_subdirectory(test)
+endif()

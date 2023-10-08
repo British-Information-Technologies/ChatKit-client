@@ -27,13 +27,15 @@ std::shared_ptr<DataModel> Injector::inject_data_model() {
 }
 
 std::shared_ptr<NetworkModel> Injector::inject_network_model() {
-  std::shared_ptr<NetworkManager> network_manager;
+  std::shared_ptr<NetworkManager> network_manager(new NetworkManager());
   
   std::shared_ptr<NetworkModel> network_model(
     new NetworkModel(
       network_manager
     )
   );
+  
+  network_model->Run();
 
-    return network_model;
+  return network_model;
 }

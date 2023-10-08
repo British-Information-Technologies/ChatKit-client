@@ -5,17 +5,17 @@
 
 #include "./server-stream-out.h"
 
-namespace server_stream_out {
-    const std::string kSendGlobalMessage = "SendGlobalMessage";
-    
+namespace server_stream_out {    
     class SendGlobalMessage: public model::ServerStreamOut {
         private:
-            std::string content;
+            const std::string content;
 
         public:
-            SendGlobalMessage(std::string content);
+            SendGlobalMessage(const std::string &content);
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

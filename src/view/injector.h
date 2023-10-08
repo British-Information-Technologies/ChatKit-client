@@ -5,6 +5,8 @@
 #include <memory>
 #include <gtkmm-4.0/gtkmm.h>
 
+#include "view-model/network-view-model.h"
+
 namespace view {
     class Injector {
         public:
@@ -15,7 +17,8 @@ namespace view {
             static std::shared_ptr<Gtk::ApplicationWindow> inject_main();
             
             static std::shared_ptr<Gtk::Button> inject_friend_profile_card(
-                std::function<void()> setDirectMessageState
+                std::shared_ptr<view_model::NetworkViewModel> network_vm,
+                const std::string &uuid
             );
 
         private:             

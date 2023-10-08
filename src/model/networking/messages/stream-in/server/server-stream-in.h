@@ -9,6 +9,8 @@ namespace model {
     class ServerStreamIn: public StreamIn {
         public:
             virtual std::string Serialize() = 0;
+            
+            virtual StreamType GetStreamType() = 0;
     };
 }
 

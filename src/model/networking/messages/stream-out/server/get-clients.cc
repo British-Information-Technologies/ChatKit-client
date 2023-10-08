@@ -1,14 +1,19 @@
 #include <string>
 #include <fmt/core.h>
+#include <magic_enum.hpp>
 
 #include "get-clients.h"
 
 using namespace server_stream_out;
 
 GetClients::GetClients() {
-    this->type = kGetClients;
+    this->type = model::Type::GetClients;
 }
 
 std::string GetClients::Serialize() {
-    return fmt::format("{{ \"type\": {} }}", type);
+    return fmt::format(R"({{ "type": "{}" }})", magic_enum::enum_name(type));
+}
+
+model::StreamType GetClients::GetStreamType() {
+    return model::StreamType::ServerStreamOut;
 }

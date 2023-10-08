@@ -2,18 +2,34 @@
 
 #include <string>
 #include <fmt/core.h>
+#include <sodium.h>
+#include <magic_enum.hpp>
+
+#include "model/networking/utility/decode.h"
 
 using namespace server_stream_in;
 
-PublicKey::PublicKey(std::string key) {
-    this->type = kPublicKey;
-    this->key = key;
+PublicKey::PublicKey(
+    const std::string &from,
+    const std::string &key
+): from(from), key(key)
+{
+    this->type = model::Type::PublicKey;
 }
 
 std::string PublicKey::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"key\": {} }}", type, key);
+    return fmt::format(R"({{ "type": "{}", "from": "{}", "key": "{}" }})", magic_enum::enum_name(type), from, key);
 }
 
-std::string PublicKey::GetKey() {
-    return this->key;
+std::string PublicKey::GetFrom() {
+    return this->from;
+}
+
+unsigned char* PublicKey::GetKey() {
+    auto [key, _] = model::Base642Bin(this->key);
+    return key;
+}
+
+model::StreamType PublicKey::GetStreamType() {
+    return model::StreamType::ServerStreamIn;
 }

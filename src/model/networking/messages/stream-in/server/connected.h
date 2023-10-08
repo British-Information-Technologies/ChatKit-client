@@ -5,14 +5,14 @@
 
 #include <string>
 
-namespace server_stream_in {
-    const std::string kConnected = "Connected";
-    
+namespace server_stream_in {    
     class Connected: public model::ServerStreamIn {
         public:
             Connected();
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

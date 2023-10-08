@@ -9,7 +9,6 @@
 MainApplicationWindow::MainApplicationWindow(
     BaseObjectType *cobject, 
     const Glib::RefPtr<Gtk::Builder> &refBuilder,
-    std::shared_ptr<view_model::NetworkViewModel> network_vm,
     Glib::RefPtr<Gtk::Box> friend_list,
     Glib::RefPtr<Gtk::Box> server_list,
     Glib::RefPtr<Gtk::Box> profile_card,
@@ -18,8 +17,6 @@ MainApplicationWindow::MainApplicationWindow(
     Glib::RefPtr<Gtk::Box> add_friend
 ): Glib::ObjectBase("MainApplicationWindow"), Gtk::ApplicationWindow(cobject)
 {
-    this->network_vm = network_vm;
-
     this->refBuilder = refBuilder;
 
     this->refProvider = Gtk::CssProvider::create();
@@ -89,6 +86,10 @@ void MainApplicationWindow::on_parsing_error(
     std::cerr << "  start_position = " << start_location.get_line_chars()
               << ", end_position = " << end_location.get_line_chars() << std::endl;
   }
+}
+
+void MainApplicationWindow::SetNetworkViewModel(std::shared_ptr<view_model::NetworkViewModel> network_vm) {
+    this->network_vm = network_vm;
 }
 
 void MainApplicationWindow::SetHomePageState() {

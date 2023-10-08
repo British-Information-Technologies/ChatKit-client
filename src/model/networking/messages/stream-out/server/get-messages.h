@@ -6,13 +6,13 @@
 #include "./server-stream-out.h"
 
 namespace server_stream_out {
-    const std::string kGetMessages = "GetMessages";
-
     class GetMessages: public model::ServerStreamOut {
         public:
             GetMessages();
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

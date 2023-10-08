@@ -6,16 +6,16 @@
 #include <string>
 
 namespace server_stream_in {
-    const std::string kError = "Error";
-
     class Error: public model::ServerStreamIn {
         private:
-            std::string msg;
+            const std::string msg;
 
         public:
-            Error(std::string msg);
+            Error(const std::string &msg);
 
             std::string Serialize();
+            
+            model::StreamType GetStreamType();
     };
 }
 

@@ -1,55 +1,70 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
 
-#include "../temporary-client.h"
-#include "../temporary-server.h"
+#include <memory>
+#include <event2/event.h>
+
 #include "model/networking/utility/buffer-reader.h"
 #include "model/networking/utility/buffer-writer.h"
 
 #define IP "localhost"
 #define PORT "3490"
 
-using namespace model_networking_utility;
+using namespace model;
 
 class BufferWriterTest : public ::testing::Test {
+  protected:
+    int fd;
+
+    std::shared_ptr<struct event_base> base;
+    
+    std::shared_ptr<bufferevent> bev;
+
  protected:
-  TemporaryServer *server;
-  TemporaryClient *client;
-
-  BufferReader *server_reader;
-  BufferWriter *client_writer;
-
   void SetUp() override {
-    server = new TemporaryServer(IP, PORT);
-    client = new TemporaryClient(IP, PORT);
+    base.reset(event_base_new(),
+      [](event_base *b){
+        event_base_loopexit(b, NULL);
+        event_base_free(b);
+      }
+    );
 
-    server->SetUp();
-    int client_sockfd = client->SetUp();
-    pthread_join(server->listener_id, NULL);
+    bev.reset(bufferevent_socket_new(base.get(), -1, BEV_OPT_CLOSE_ON_FREE),
+      [](bufferevent *b){
+        bufferevent_free(b);
+      }
+    );
+    
+    fd = open("tmp_buffer_file_test.txt", O_WRONLY | O_RDONLY | O_CREAT, S_IRWXU | S_IRWXG | S_IRWXO);
+    if (fd == -1) {
+      std::cout << "ERR: file error! fd = " << fd << std::endl;
+    }
+    
+    bufferevent_setfd(bev.get(), fd);
 
-    server_reader = new BufferReader(server->new_fd);
-    client_writer = new BufferWriter(client_sockfd);
+    bufferevent_setcb(bev.get(), nullptr, nullptr, nullptr, nullptr);
+    
+    bufferevent_enable(bev.get(), EV_READ|EV_WRITE);
   }
 
   void TearDown() override {
-    server->TearDown();
-    client->TearDown();
-
-    free(server);
-    free(client);
+    close(fd);
   }
 };
 
 TEST_F(BufferWriterTest, SendAndReadManyMessagesTest) {
-  std::string message = "success";
+  std::string message("this is a test message");
 
-  for (int i = 0; i < 250; ++i) {
-    client_writer->WriteLine(message);
+  for (int i = 0; i < 1000; ++i) {
+    WriteBufferLine(bev, message);
   }
 
-  for (int i = 0; i < 250; ++i) {
-    std::string result = server_reader->ReadLine();
-    EXPECT_EQ(message, result);
+  for (int i = 0; i < 1000; ++i) {
+    std::string result = ReadBufferLine(bev);
+    ASSERT_EQ(message, result);
   }
 }

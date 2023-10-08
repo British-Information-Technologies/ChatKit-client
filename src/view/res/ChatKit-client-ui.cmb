@@ -123,8 +123,8 @@
 	(11,3,"GtkBox",None,2,None,None,None,None,None),
 	(11,4,"GtkImage",None,3,None,None,None,None,None),
 	(11,5,"GtkBox",None,3,None,None,None,1,None),
-	(11,6,"GtkLabel",None,5,None,None,None,None,None),
-	(11,7,"GtkLabel",None,5,None,None,None,1,None)
+	(11,6,"GtkLabel","openChatUsernameLabel",5,None,None,None,None,None),
+	(11,7,"GtkLabel","openChatTypeLabel",5,None,None,None,1,None)
   </object>
   <object_property>
 	(1,24,"GtkWindow","default-height","500",None,None,None,None,None,None,None,None,None),
@@ -359,6 +359,7 @@
 	(8,9,"GtkWidget","vexpand","True",None,None,None,None,None,None,None,None,None),
 	(8,10,"GtkWidget","height-request","32",None,None,None,None,None,None,None,None,None),
 	(8,10,"GtkWidget","width-request","32",None,None,None,None,None,None,None,None,None),
+	(8,11,"GtkEntry","max-length","250",None,None,None,None,None,None,None,None,None),
 	(8,11,"GtkEntry","placeholder-text","Message",None,None,None,None,None,None,None,None,None),
 	(8,11,"GtkEntry","show-emoji-icon","True",None,None,None,None,None,None,None,None,None),
 	(8,11,"GtkWidget","hexpand","True",None,None,None,None,None,None,None,None,None),

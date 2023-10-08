@@ -2,17 +2,22 @@
 
 #include <string>
 #include <fmt/core.h>
+#include <magic_enum.hpp>
 
 using namespace internal;
 
-EventError::EventError(std::string msg) {
-    this->msg = msg;
+EventError::EventError(const std::string &msg): msg(msg) {
+    this->type = model::Type::EventError;
 }
 
 std::string EventError::Serialize() {
-    return fmt::format("{{ \"type\": {}, \"msg\": {} }}", type, msg);
+    return fmt::format("{{ \"type\": {}, \"msg\": {} }}", magic_enum::enum_name(type), msg);
 }
 
 std::string EventError::GetMsg() {
     return this->msg;
+}
+
+model::StreamType EventError::GetStreamType() {
+    return model::StreamType::Internal;
 }

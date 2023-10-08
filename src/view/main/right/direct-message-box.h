@@ -14,6 +14,6 @@ static void direct_message_class_init(DirectMessageClass *klass);
 
 static void direct_message_init(DirectMessage *self);
 
-void set_message_entry(std::function<void()> func);
+void set_message_entry(std::function<void(std::string &)> func);
 
 #endif
