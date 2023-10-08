@@ -71,7 +71,7 @@ int NetworkModel::CreateServerConnection(
 int NetworkModel::CreateServiceServerConnection() {
   // TODO: load ip addresses and ports (currently faked)
   const std::string uuid = "some higher hierarchy server";
-  const std::string ip_address = "localhost";
+  const std::string ip_address = "192.168.0.59";
   const std::string port = "5790";
 
   if (network_manager->CreateConnection(

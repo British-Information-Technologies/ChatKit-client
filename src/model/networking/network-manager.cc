@@ -201,10 +201,10 @@ int NetworkManager::CreateConnection(
   }
   
   if (conn->Initiate()) {
-  printf("[NetworkManager]: connection failed to initiate\n");
-  return -1;
+    printf("[NetworkManager]: connection failed to initiate\n");
+    return -1;
   }
-  //conn->Initiate();
+  // invert ^^ for p2p test: conn->Initiate();
 
   connections.insert(std::pair<std::string, std::shared_ptr<Connection>>(uuid, conn));
   
