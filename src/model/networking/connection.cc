@@ -74,7 +74,8 @@ Connection::Connection(
   port(port),
   data_handler(new InsecureDataHandler),
   public_key(public_key),
-  secret_key(secret_key)
+  secret_key(secret_key),
+  is_listener(0)
 {
   this->bev.reset(bufferevent_socket_new(base.get(), -1, BEV_OPT_CLOSE_ON_FREE),
     [](bufferevent *b){
@@ -179,7 +180,8 @@ void Connection::Listen(std::shared_ptr<event_base> base) {
     (struct sockaddr*)&sin,
     sizeof(sin)
   );
-
+  
+  SetIsListener(1);
   evconnlistener_set_error_cb(listener, AcceptErrorCbHandler);
 
   printf("[Connection]: listener started\n");
@@ -196,13 +198,23 @@ int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
   unsigned char *session_key_rx = (unsigned char*) malloc(sizeof(unsigned char[crypto_kx_SESSIONKEYBYTES]));
   unsigned char *session_key_tx = (unsigned char*) malloc(sizeof(unsigned char[crypto_kx_SESSIONKEYBYTES]));
   
-  if(crypto_kx_client_session_keys(
-    session_key_rx,
-    session_key_tx,
-    public_key.get(),
-    secret_key.get(),
-    recv_pk
-  ) != 0) {
+  int res = (is_listener) ?
+    crypto_kx_server_session_keys(
+      session_key_rx,
+      session_key_tx,
+      public_key.get(),
+      secret_key.get(),
+      recv_pk
+    ) :
+    crypto_kx_client_session_keys(
+      session_key_rx,
+      session_key_tx,
+      public_key.get(),
+      secret_key.get(),
+      recv_pk
+    );
+
+  if(res) {
     // shared secret creation failed
     free(session_key_rx);
     free(session_key_tx);
@@ -213,6 +225,10 @@ int Connection::EstablishSecureConnection(const unsigned char *recv_pk) {
   SetState(new SecureDataHandler(session_key_rx, session_key_tx));
 
   return 0;
+}
+
+void Connection::SetIsListener(int state) {
+  is_listener = state;
 }
       
 void Connection::AcceptConnectionCbHandler(

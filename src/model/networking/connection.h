@@ -18,6 +18,7 @@ namespace model {
       const std::string uuid;
 
       evconnlistener *listener;
+      int is_listener;
 
       msd::channel<Data> &out_chann;
 
@@ -89,6 +90,8 @@ namespace model {
       int EstablishSecureConnection(const unsigned char *recv_pk);
       
       virtual int SendMessage(Message *message) = 0;
+
+      void SetIsListener(int state);
   };
 }  // namespace model_networking
 

@@ -157,6 +157,8 @@ int NetworkManager::InitiateSecureConnection(const std::string &end_point_uuid, 
   //  return -1;
   //}
 
+  end_point_conn->SetIsListener(0);
+
   std::unique_ptr<Message> pk_msg = CreateServerStreamOutPublicKey(
     end_point_uuid,
     end_point_conn->GetPublicKey()
