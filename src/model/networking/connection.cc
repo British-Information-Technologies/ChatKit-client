@@ -77,6 +77,7 @@ Connection::Connection(
   data_handler(new InsecureDataHandler),
   public_key(public_key),
   secret_key(secret_key),
+  listener(nullptr),
   is_listener(0)
 {
   this->bev.reset(bufferevent_socket_new(base.get(), -1, BEV_OPT_CLOSE_ON_FREE),
@@ -87,7 +88,9 @@ Connection::Connection(
 }
 
 Connection::~Connection() {
-  evconnlistener_free(listener);
+  if (listener != nullptr) {
+    evconnlistener_free(listener);
+  }
 }
 
 bool Connection::IsSecure() {
