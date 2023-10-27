@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <sys/select.h>
 #include <memory>
 #include <string>
 #include <algorithm>
@@ -121,9 +122,11 @@ int Connection::Initiate() {
   int sockfd;
   fd_set fdset;
   struct timeval tv;
-  for (p = servinfo; p != NULL; p = p->ai_next) {
+  p = servinfo;
+
+  while (p != nullptr) {
     if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-      perror("[Connection]: socket creation failed\n");
+      printf("[Connection]: socket creation failed\n");
       continue;
     }
 
@@ -137,12 +140,12 @@ int Connection::Initiate() {
     FD_ZERO(&fdset);
     FD_SET(sockfd, &fdset);
     // set timeout in sec and microsec
-    tv.tv_sec = 2;
-    tv.tv_usec = 0;
+    tv.tv_sec = 1;
+    tv.tv_usec = 50;
 
     // `select` will return whenever any file descriptor in the set is writeable from the connect function (or ready for any other I/O operations),
     // we have a `timevalue` struct given to define a timeout.
-    if (select(sockfd + 1, NULL, &fdset, NULL, &tv) == 1) {
+    if (select(sockfd + 1, NULL, &fdset, NULL, &tv) != 0) {
         int so_error;
         socklen_t len = sizeof so_error;
         // get the socket options to determine outcome of `select`.
@@ -152,17 +155,18 @@ int Connection::Initiate() {
         getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &so_error, &len);
         // if we timeout, then `select` has set this option
         // in the socket file descriptors options.
+        std::cout << "hi" << std::endl;
         if (so_error) {
           close(sockfd);
           perror("[Connection]: open socket failed\n");
-          continue;
+          break;
         }
     }
 
-    break;
+    p = p->ai_next;
   }
 
-  if (p == NULL) {
+  if (p == nullptr) {
     fprintf(stderr, "[Connection]: failed to connect\n");
     return -1;
   }
