@@ -11,6 +11,7 @@ namespace model_friend_functionality {
 
 class FriendList {
  public:
+  virtual ~FriendList() {};
   virtual std::map<const std::string, std::shared_ptr<FriendNode>>::iterator GetBegin() = 0;
   virtual std::map<const std::string, std::shared_ptr<FriendNode>>::iterator GetEnd() = 0;
 

@@ -11,6 +11,7 @@ namespace model_server_functionality {
 
 class ServerList {
  public:
+  virtual ~ServerList() {};
   virtual std::map<const std::string, std::shared_ptr<ServerNode>>::iterator GetBegin() = 0;
   virtual std::map<const std::string, std::shared_ptr<ServerNode>>::iterator GetEnd() = 0;
 
