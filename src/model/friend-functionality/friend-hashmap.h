@@ -8,6 +8,7 @@
 #include "friend-list.h"
 #include "friend-node.h"
 
+
 namespace model_friend_functionality {
 class FriendHashmap : public FriendList {
  private:

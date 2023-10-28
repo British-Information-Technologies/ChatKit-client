@@ -53,6 +53,7 @@ namespace model {
             Type type;
 
         public:
+            virtual ~Message() {};
             virtual std::string Serialize() = 0;
 
             virtual StreamType GetStreamType() = 0;
