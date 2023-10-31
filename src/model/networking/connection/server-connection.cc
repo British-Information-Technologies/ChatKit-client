@@ -50,7 +50,7 @@ ServerConnection::ServerConnection(
   const std::string &port,
   unsigned char *public_key,
   unsigned char *secret_key
-): Connection(uuid, base, network_manager_chann, ip_address, port, public_key, secret_key) {}
+): Connection(ConnectionType::Server, uuid, base, network_manager_chann, ip_address, port, public_key, secret_key) {}
 
 std::shared_ptr<Connection> ServerConnection::Create(
   const std::string &uuid,

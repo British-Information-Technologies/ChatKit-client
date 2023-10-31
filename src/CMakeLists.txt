@@ -50,6 +50,14 @@ set(SOURCES
     model/networking/connection/connection.cc
     model/networking/connection/server-connection.cc
     model/networking/connection/client-connection.cc
+
+    model/networking/connection/listener/event-listener.cc
+    
+    model/networking/connection/callback/io-callbacks.cc
+    model/networking/connection/callback/listener-callbacks.cc
+    
+    model/networking/connection/callback/client/client-callbacks.cc
+    model/networking/connection/callback/server/server-callbacks.cc
     
     model/networking/messages/message.cc
 
