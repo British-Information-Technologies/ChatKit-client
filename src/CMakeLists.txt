@@ -55,9 +55,8 @@ set(SOURCES
     
     model/networking/connection/callback/io-callbacks.cc
     model/networking/connection/callback/listener-callbacks.cc
-    
-    model/networking/connection/callback/client/client-callbacks.cc
-    model/networking/connection/callback/server/server-callbacks.cc
+   
+    model/networking/connection/channel/channel-handler.cc
     
     model/networking/messages/message.cc
 
