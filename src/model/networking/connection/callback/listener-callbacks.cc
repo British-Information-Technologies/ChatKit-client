@@ -5,6 +5,7 @@
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 #include <iostream>
+#include <memory>
 
 #include "model/networking/connection/connection.h"
 #include "model/networking/connection/callback/io-callbacks.h"
@@ -26,19 +27,16 @@ void ListenerCallbacks::AcceptConnectionCbHandler(
     BEV_OPT_CLOSE_ON_FREE
   );
   
-  // free the listener, no longer needed as bev created
-  evconnlistener_free(listener);
-
-  // cast connection object
+  // cast connection
   Connection *connection = static_cast<Connection*>(ptr);
-
-  // set connection callbacks
-  switch (connection->GetType()) {
-    case ConnectionType::Client:
+  
+  // set tunnel callbacks
+  switch (connection->tunnel->GetType()) {
+    case TunnelType::Client:
       IOCallbacks::SetClientConnectionCallbacks(bev, connection);
       break;
 
-    case ConnectionType::Server:
+    case TunnelType::Server:
       IOCallbacks::SetServerConnectionCallbacks(bev, connection);
   }
 
@@ -49,7 +47,10 @@ void ListenerCallbacks::AcceptConnectionCbHandler(
   }
   
   // set connection bev
-  connection->SetBev(bev);
+  connection->tunnel->SetBev(bev);
+
+  // free the listener, no longer needed as bev created
+  connection->listener->SetState(EventListenerState::Idle);
   
   // finished listen
   std::cout << "[ListenerCallbacks]: connecting to " << address->sa_data << std::endl;

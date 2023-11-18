@@ -38,8 +38,8 @@ void EventListener::Listen()
 
   sin.sin_family = AF_INET; // add 6 for ipv6
   
-  sin.sin_addr.s_addr = inet_addr(connection->GetIpAddress()); // listen on ip_address
-  sin.sin_port = htons(connection->GetPort()); // listen on port
+  sin.sin_addr.s_addr = inet_addr(connection->tunnel->GetIpAddress()); // listen on ip_address
+  sin.sin_port = htons(connection->tunnel->GetPort()); // listen on port
 
   if (listener) { evconnlistener_free(listener); }
 
@@ -61,10 +61,16 @@ void EventListener::Listen()
 
 void EventListener::SetState(EventListenerState state)
 {
-    this->state = state;
+  if (listener && state == EventListenerState::Idle) { evconnlistener_free(listener); }
+  this->state = state;
 }
 
 const EventListenerState EventListener::GetState()
 {
     return state;
+}
+
+const bool EventListener::IsListening()
+{
+  return GetState() == EventListenerState::Listening;
 }

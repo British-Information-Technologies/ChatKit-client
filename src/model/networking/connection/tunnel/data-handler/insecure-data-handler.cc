@@ -4,7 +4,8 @@
 #include <event2/bufferevent.h>
 
 #include "insecure-data-handler.h"
-#include "variants.h"
+
+#include "model/networking/utility/variants.h"
 
 using namespace model;
 

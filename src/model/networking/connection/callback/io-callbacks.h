@@ -4,7 +4,7 @@
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 
-#include "model/networking/utility/data-handler.h"
+#include "model/networking/connection/connection.h"
 
 namespace model {
     class IOCallbacks {

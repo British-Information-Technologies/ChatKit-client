@@ -10,8 +10,10 @@
 #include "msd/channel.hpp"
 
 #include "network-manager.h"
-#include "connection-factory.h"
-#include "connection.h"
+
+#include "model/networking/connection/connection.h"
+#include "model/networking/connection/tunnel/tunnel-factory.h"
+#include "model/networking/connection/injector.h"
 #include "messages/message.h"
 #include "messages/stream-in/server/public-key.h"
 #include "messages/internal/event-error.h"
@@ -43,22 +45,25 @@ namespace {
 
           std::string end_point_uuid = recv_pk->GetFrom();
 
-          auto end_point_conn = connections.at(end_point_uuid);
+          auto end_point = connections.at(end_point_uuid);
 
-          if (end_point_conn->IsSecure()) {
+          if (end_point->tunnel->IsSecure()) {
             std::cout << "[NetworkManager]: connection " << end_point_uuid << " already secure" << std::endl;
             continue;
           }
 
-          auto pk = CreateServerStreamOutPublicKey(end_point_uuid, end_point_conn->GetPublicKey());
+          auto pk = CreateServerStreamOutPublicKey(end_point_uuid, end_point->tunnel->GetPublicKey());
 
           // ask service connection to send our pk to end point connection
-          connections.at(data.uuid)->SendMessage(pk.get());
+          connections.at(data.uuid)->tunnel->SendMessage(pk.get());
 
           // use received public key to create shared secret
           unsigned char * decode_pk = recv_pk->GetKey();
 
-          if (end_point_conn->EstablishSecureConnection(decode_pk) != 0) {
+          if (end_point->tunnel->EstablishSecureTunnel(
+            end_point->listener->IsListening() ? Party::One : Party::Two,
+            decode_pk
+          ) != 0) {
             std::cout << "[NetworkManager]: secure connection with " << end_point_uuid << " failed" << std::endl;  
             free(decode_pk);
             
@@ -130,7 +135,7 @@ int NetworkManager::LaunchListener(const std::string &uuid) {
   auto conn = connections.at(uuid);
   
   printf("[NetworkManager]: starting connection listener\n");
-  conn->Listen(connection_base);
+  conn->listener->Listen();
 
   return 0;
 }
@@ -142,30 +147,28 @@ int NetworkManager::InitiateSecureConnection(const std::string &end_point_uuid, 
     return -1;
   }
 
-  auto end_point_conn = connections.at(end_point_uuid);  
+  auto end_point = connections.at(end_point_uuid);  
 
-  if (end_point_conn->IsSecure()) {
+  if (end_point->tunnel->IsSecure()) {
     printf("[NetworkManager]: end point already secure\n");
     return -1;
   }
   
-  auto service_conn = connections.at(service_uuid);
+  auto service = connections.at(service_uuid);
 
   // TODO Note: comment out for python test server
-  //if (!service_conn->IsSecure()) {
+  //if (!service->tunnel->IsSecure()) {
   //  printf("[NetworkManager]: service not secure\n");
   //  return -1;
   //}
 
-  end_point_conn->SetIsListener(0);
-
   std::unique_ptr<Message> pk_msg = CreateServerStreamOutPublicKey(
     end_point_uuid,
-    end_point_conn->GetPublicKey()
+    end_point->tunnel->GetPublicKey()
   );
 
   // send our PK as plaintext
-  if (service_conn->SendMessage(pk_msg.get()) < 0) {
+  if (service->tunnel->SendMessage(pk_msg.get()) < 0) {
     // failed to send PK
     printf("[NetworkManager]: failed to send public key\n");
     return -1;
@@ -185,28 +188,27 @@ int NetworkManager::CreateConnection(
     printf("[NetworkManager]: connection loaded\n");
     return 0;
   }
- 
-  auto conn = GetConnection(
+
+  auto connection = Injector::inject_connection(
     type,
     uuid,
     connection_base,
-    std::ref(in_chann),
     ip_address,
-    port
+    port,
+    in_chann
   );
 
-  if(conn == nullptr) {
+  if(!connection) {
     printf("[NetworkManager]: connection failed to create\n");
     return -1;
   }
   
-  if (conn->Initiate()) {
+  if (connection->tunnel->Initiate()) {
     printf("[NetworkManager]: connection failed to initiate\n");
     return -1;
   }
-  // invert ^^ for p2p test: conn->Initiate();
 
-  connections.insert(std::pair<std::string, std::shared_ptr<Connection>>(uuid, conn));
+  connections.insert(std::pair<std::string, std::shared_ptr<Connection>>(uuid, connection));
   
   printf("[NetworkManager]: connection created\n");
   return 0;
@@ -219,7 +221,7 @@ int NetworkManager::SendMessage(const std::string &uuid, std::string &data) {
 
   std::unique_ptr<Message> message(DeserializeStreamOut(data));
 
-  int sent_bytes = connections.at(uuid)->SendMessage(message.get());
+  int sent_bytes = connections.at(uuid)->tunnel->SendMessage(message.get());
 
   return sent_bytes;
 }
@@ -241,7 +243,7 @@ int NetworkManager::SendClientMessage(
     data
   );
 
-  int sent_bytes = connections.at(uuid)->SendMessage(message.get());
+  int sent_bytes = connections.at(uuid)->tunnel->SendMessage(message.get());
 
   return sent_bytes;
 }

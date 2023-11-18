@@ -46,18 +46,24 @@ set(SOURCES
 
     model/networking/network-manager.cc
     
-    model/networking/connection/connection-factory.cc
-    model/networking/connection/connection.cc
-    model/networking/connection/server-connection.cc
-    model/networking/connection/client-connection.cc
+    model/networking/connection/injector.cc
+    
+    model/networking/connection/tunnel/tunnel-factory.cc
+    model/networking/connection/tunnel/tunnel.cc
+    model/networking/connection/tunnel/server-tunnel.cc
+    model/networking/connection/tunnel/client-tunnel.cc
+    
+    model/networking/connection/tunnel/data-handler/insecure-data-handler.cc
+    model/networking/connection/tunnel/data-handler/secure-data-handler.cc
 
     model/networking/connection/listener/event-listener.cc
     
     model/networking/connection/callback/io-callbacks.cc
     model/networking/connection/callback/listener-callbacks.cc
    
-    model/networking/connection/channel/channel-handler.cc
-    
+    model/networking/connection/channel/channel-writer.cc
+    model/networking/connection/channel/channel-reader.cc
+     
     model/networking/messages/message.cc
 
     model/networking/messages/internal/event-error.cc
@@ -96,8 +102,6 @@ set(SOURCES
     model/networking/utility/decode.cc
     model/networking/utility/buffer-reader.cc
     model/networking/utility/buffer-writer.cc
-    model/networking/utility/insecure-data-handler.cc
-    model/networking/utility/secure-data-handler.cc
 
     # view
     view/injector.cc

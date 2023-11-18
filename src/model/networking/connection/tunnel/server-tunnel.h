@@ -1,27 +1,21 @@
-#ifndef MODEL_NETWORKING_CLIENT_CONNECTION_H_
-#define MODEL_NETWORKING_CLIENT_CONNECTION_H_
+#ifndef MODEL_NETWORKING_CONNECTION_TUNNEL_SERVER_H_
+#define MODEL_NETWORKING_CONNECTION_TUNNEL_SERVER_H_
 
 #include <memory>
 #include <string>
 #include "msd/channel.hpp"
 
-#include "connection.h"
+#include "tunnel.h"
 
 #include "model/networking/messages/message.h"
-#include "model/networking/utility/data.h"
 
 namespace model {
-    class ClientConnection : public Connection {
-        private:
-            int GetRecipientPublicKey(unsigned char* recv_pk);
-            
-            void ReadMessageCb();
-
-        protected:
-            ClientConnection(
+    class ServerTunnel : public Tunnel {
+        protected:        
+            ServerTunnel(
+                std::shared_ptr<Connection> connection,
                 const std::string &uuid,
                 std::shared_ptr<struct event_base> base,
-                msd::channel<Data> &network_manager_chann,
                 const std::string &ip_address,
                 const std::string &port,
                 unsigned char *public_key,
@@ -29,14 +23,14 @@ namespace model {
             );
 
         public:
-            static std::shared_ptr<Connection> Create(
+            static std::unique_ptr<Tunnel> Create(
+                std::shared_ptr<Connection> connection,
                 const std::string &uuid,
                 std::shared_ptr<struct event_base> base,
-                msd::channel<Data> &network_manager_chann,
                 const std::string &ip_address,
                 const std::string &port
             );
-            
+
             int SendMessage(Message *message);
     };
 }  // namespace model

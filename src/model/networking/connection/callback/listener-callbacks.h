@@ -4,9 +4,6 @@
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 
-#include "model/networking/connection/connection.h"
-#include "model/networking/connection/callback/io-callbacks.h"
-
 namespace model {
     class ListenerCallbacks {
         public:

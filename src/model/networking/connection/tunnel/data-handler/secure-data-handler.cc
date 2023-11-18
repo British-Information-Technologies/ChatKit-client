@@ -5,6 +5,7 @@
 #include <event2/bufferevent.h>
 
 #include "secure-data-handler.h"
+
 #include "model/networking/utility/encode.h"
 #include "model/networking/utility/decode.h"
 

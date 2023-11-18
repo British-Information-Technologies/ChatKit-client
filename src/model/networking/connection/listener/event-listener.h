@@ -12,8 +12,7 @@
 namespace model {
     enum class EventListenerState {
         Idle,
-        Listening,
-        Finished
+        Listening
     };
 
     class EventListener {
@@ -39,6 +38,8 @@ namespace model {
             void SetState(EventListenerState state);
 
             const EventListenerState GetState();
+
+            const bool IsListening();
     };
 }
 

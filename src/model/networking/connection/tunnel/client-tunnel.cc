@@ -10,57 +10,57 @@
 #include "msd/channel.hpp"
 #include <iostream>
 
-#include "client-connection.h"
+#include "client-tunnel.h"
+
+#include "model/networking/connection/tunnel/tunnel.h"
 
 #include "model/networking/messages/message.h"
 
-#include "model/networking/utility/data.h"
 #include "model/networking/utility/buffer-writer.h"
 #include "model/networking/utility/buffer-reader.h"
 
 using namespace model;
 
-int ClientConnection::GetRecipientPublicKey(unsigned char* recv_pk) {
-  return 0;
-}
-
-ClientConnection::ClientConnection(
+ClientTunnel::ClientTunnel(
+    std::shared_ptr<Connection> connection,
     const std::string &uuid,
     std::shared_ptr<event_base> base,
-    msd::channel<Data> &network_manager_chann,
     const std::string &ip_address,
     const std::string &port,
     unsigned char *public_key,
     unsigned char *secret_key
-): Connection(ConnectionType::Client, uuid, base, network_manager_chann, ip_address, port, public_key, secret_key) {}
+): Tunnel(TunnelType::Client, connection, uuid, base, ip_address, port, public_key, secret_key)
+{}
 
-std::shared_ptr<Connection> ClientConnection::Create(
+std::unique_ptr<Tunnel> ClientTunnel::Create(
+  std::shared_ptr<Connection> connection,
   const std::string &uuid,
   std::shared_ptr<struct event_base> base,
-  msd::channel<Data> &network_manager_chann,
   const std::string &ip_address,
   const std::string &port
-) {
+)
+{
   auto [public_key, secret_key] = GenerateKeyPair();
 
   if (public_key == nullptr || secret_key == nullptr) {
     return nullptr;
   }
 
-  std::shared_ptr<Connection> conn(new ClientConnection(
+  std::unique_ptr<Tunnel> tunnel(new ClientTunnel(
+    connection,
     uuid,
     base,
-    network_manager_chann,
     ip_address,
     port,
     public_key,
     secret_key
   ));
 
-  return conn;
+  return tunnel;
 }
 
-int ClientConnection::SendMessage(Message *message) {
+int ClientTunnel::SendMessage(Message *message)
+{
   if (message->GetStreamType() != StreamType::ClientStreamOut) {
     // message must be a client stream out
     return -1;
@@ -76,24 +76,4 @@ int ClientConnection::SendMessage(Message *message) {
 
   // send packet
   return WriteBufferLine(bev, packet);
-}
-
-void ClientConnection::ReadMessageCb() {
-  // read packet
-  std::string packet = ReadBufferLine(bev);
-
-  // decode or decode and decrypt data
-  std::string plaintext = data_handler->FormatRead(packet);
-
-  if (!plaintext.length()) {
-    // plaintext is empty, failed to format packet
-    return;
-  }
-
-  std::cout << "[ClientConnection]: " << plaintext << std::endl;
-
-  std::shared_ptr<Message> message(DeserializeClientStreamIn(plaintext));
-
-  // send data to network manager
-  SendChannelMessage(message);
 }

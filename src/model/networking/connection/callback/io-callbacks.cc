@@ -21,7 +21,7 @@ void IOCallbacks::ReadMessageClientCbHandler(
   std::string packet = ReadBufferLine(bev);
 
   // decode or decode and decrypt data
-  std::string plaintext = connection->ReadMessage(packet);
+  std::string plaintext = connection->tunnel->ReadMessage(packet);
 
   if (!plaintext.length()) {
     // plaintext is empty, failed to format packet
@@ -33,7 +33,10 @@ void IOCallbacks::ReadMessageClientCbHandler(
   std::shared_ptr<Message> message(DeserializeClientStreamIn(plaintext));
 
   // send data to network manager
-  connection->SendChannelMessage(message);
+  connection->channel->SendData(
+    bufferevent_getfd(bev),
+    message
+  );
 }
 
 void IOCallbacks::ReadMessageServerCbHandler(
@@ -48,7 +51,7 @@ void IOCallbacks::ReadMessageServerCbHandler(
   std::string encoded_packet = ReadBufferLine(bev);
 
   // get plaintext
-  std::string plaintext = connection->ReadMessage(encoded_packet);
+  std::string plaintext = connection->tunnel->ReadMessage(encoded_packet);
 
   if (!plaintext.length()) {
     // plaintext is empty, failed to format encoded packet
@@ -65,7 +68,10 @@ void IOCallbacks::ReadMessageServerCbHandler(
   }
 
   // send data to network manager
-  connection->SendChannelMessage(message);
+  connection->channel->SendData(
+    bufferevent_getfd(bev),
+    message
+  );
 }
 
 void IOCallbacks::WriteMessageCbHandler(

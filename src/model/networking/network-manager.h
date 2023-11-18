@@ -9,8 +9,7 @@
 #include <thread>
 #include "msd/channel.hpp"
 
-#include "connection.h"
-#include "connection-factory.h"
+#include "model/networking/connection/connection.h"
 #include "messages/message.h"
 #include "utility/data.h"
 
