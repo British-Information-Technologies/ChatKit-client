@@ -21,79 +21,12 @@
 
 using namespace model;
 
-namespace {
-  void LaunchConnectionBaseHandler(std::shared_ptr<event_base> connection_base) {
-    printf("[NetworkManager]: connection base launched\n");
-    event_base_loop(connection_base.get(), EVLOOP_NO_EXIT_ON_EMPTY);
-    printf("[NetworkManager]: connection base shutting down\n");
-  }
-
-  void LaunchInputChannelHandler(
-    std::mutex &connections_mutex,
-    msd::channel<Data> &in_chann,
-    std::unordered_map<std::string, std::shared_ptr<Connection>> &connections
-  ) {
-    std::cout << "[NetworkManager]: input channel handler launched" << std::endl;
-
-    // read incoming channel data from connection callbacks
-    for (auto data: in_chann) { // blocks waiting for channel items
-      std::cout << "[NetworkManager]: recv channel data from sockfd " << data.sockfd << std::endl;
-
-      switch (data.message->GetType()) {
-        case Type::PublicKey: {
-          server_stream_in::PublicKey *recv_pk = dynamic_cast<server_stream_in::PublicKey*>(data.message.get());
-
-          std::string end_point_uuid = recv_pk->GetFrom();
-
-          auto end_point = connections.at(end_point_uuid);
-
-          if (end_point->tunnel->IsSecure()) {
-            std::cout << "[NetworkManager]: connection " << end_point_uuid << " already secure" << std::endl;
-            continue;
-          }
-
-          auto pk = CreateServerStreamOutPublicKey(end_point_uuid, end_point->tunnel->GetPublicKey());
-
-          // ask service connection to send our pk to end point connection
-          connections.at(data.uuid)->tunnel->SendMessage(pk.get());
-
-          // use received public key to create shared secret
-          unsigned char * decode_pk = recv_pk->GetKey();
-
-          if (end_point->tunnel->EstablishSecureTunnel(
-            end_point->listener->IsListening() ? Party::One : Party::Two,
-            decode_pk
-          ) != 0) {
-            std::cout << "[NetworkManager]: secure connection with " << end_point_uuid << " failed" << std::endl;  
-            free(decode_pk);
-            
-            // panic! failed to create secure connection
-            continue;
-          }
-
-          free(decode_pk);
-          std::cout << "[NetworkManager]: secure connection with " << end_point_uuid << " established" << std::endl;
-          break;
-        }
-
-        case Type::EventError: {
-          std::unique_ptr<internal::EventError> err(dynamic_cast<internal::EventError*>(data.message.get()));
-
-          std::cout << "[NetworkManager]: EventError msg " << err->GetMsg() << std::endl;
-          break;
-        }
-
-        default: {
-        }
-      }
-    }
-
-    std::cout << "[NetworkManager]: input channel handler shutting down" << std::endl;
-  }
-} // namespace
-
-
-NetworkManager::NetworkManager() {
+NetworkManager::NetworkManager(
+  std::unique_ptr<NetworkThreadManager> thread_manager,
+  std::shared_ptr<ChannelWriter> buffer_writer
+)
+: thread_manager(std::move(thread_manager)), buffer_writer(buffer_writer)
+{
   connection_base.reset(event_base_new(),
     [](event_base *b){
       event_base_loopexit(b, NULL);
@@ -103,27 +36,15 @@ NetworkManager::NetworkManager() {
 }
 
 NetworkManager::~NetworkManager() {
-  connection_base_thread->request_stop();
-  channel_thread->request_stop();
   connections.clear();
 }
 
-void NetworkManager::LaunchConnectionBase() {
+void NetworkManager::LaunchConnectionManagement()
+{
   // start event base loop for connection callbacks
-  connection_base_thread = std::make_unique<std::jthread>(
-    LaunchConnectionBaseHandler,
-    this->connection_base
-  );
-}
-
-void NetworkManager::LaunchInputChannel() {
+  thread_manager->LaunchConnectionBase(connection_base);
   // start channel loop for reading incoming data from connection callbacks
-  channel_thread = std::make_unique<std::jthread>(
-    LaunchInputChannelHandler,
-    std::ref(this->connections_mutex),
-    std::ref(this->in_chann),
-    std::ref(this->connections)
-  );
+  thread_manager->LaunchInputChannel(connections);
 }
 
 int NetworkManager::LaunchListener(const std::string &uuid) {
@@ -195,7 +116,7 @@ int NetworkManager::CreateConnection(
     connection_base,
     ip_address,
     port,
-    in_chann
+    buffer_writer
   );
 
   if(!connection) {

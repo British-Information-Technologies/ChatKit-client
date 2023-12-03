@@ -1,8 +1,7 @@
 #ifndef MODEL_NETWORKING_CONNECTION_CALLBACK_LISTENER_H_
 #define MODEL_NETWORKING_CONNECTION_CALLBACK_LISTENER_H_
 
-#include <event2/event.h>
-#include <event2/bufferevent.h>
+#include <event2/listener.h>
 
 namespace model {
     class ListenerCallbacks {

@@ -79,7 +79,6 @@ int Tunnel::GetPort()
 Tunnel::Tunnel(
   const TunnelType type,
   std::shared_ptr<Connection> connection,
-  const std::string &uuid,
   std::shared_ptr<event_base> base,
   const std::string &ip_address, 
   const std::string &port,
@@ -87,7 +86,6 @@ Tunnel::Tunnel(
   unsigned char *secret_key
 ):type(type),
   connection(connection),
-  uuid(uuid),
   ip_address(ip_address),
   port(port),
   data_handler(new InsecureDataHandler),
@@ -225,5 +223,5 @@ int Tunnel::EstablishSecureTunnel(Party party, const unsigned char *recv_pk) {
 
 std::string Tunnel::ReadMessage(std::string &data)
 {
-  data_handler->FormatRead(data);
+  return data_handler->FormatRead(data);
 }

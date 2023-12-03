@@ -14,9 +14,10 @@ namespace model {
     };
 
     struct Connection {
+        std::string uuid;
         std::unique_ptr<Tunnel> tunnel;
         std::unique_ptr<EventListener> listener;
-        std::unique_ptr<ChannelWriter> channel;
+        std::shared_ptr<ChannelWriter> channel;
     };
 }
 

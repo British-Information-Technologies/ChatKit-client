@@ -9,11 +9,11 @@
 namespace model {
     class NetworkModel {
         private:
-            std::shared_ptr<NetworkManager> network_manager;
+            std::unique_ptr<NetworkManager> network_manager;
 
         public:
             NetworkModel(
-                std::shared_ptr<NetworkManager> network_manager
+                std::unique_ptr<NetworkManager> network_manager
             );
             
             int Run();

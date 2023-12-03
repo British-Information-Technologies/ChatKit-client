@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
-#include "model/networking/connection/connection.h"
-
 namespace model {
+    class Connection;
+
     enum class EventListenerState {
         Idle,
         Listening
@@ -30,7 +30,7 @@ namespace model {
                 std::shared_ptr<event_base> base,
                 std::shared_ptr<Connection> connection
             );
-
+            
             virtual ~EventListener();
 
             void Listen();

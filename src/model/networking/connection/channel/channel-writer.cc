@@ -10,15 +10,15 @@
 using namespace model;
 
 ChannelWriter::ChannelWriter(
-    msd::channel<Data> &output,
-    const std::string &uuid
-): output(output), uuid(uuid)
+    std::shared_ptr<msd::channel<Data>> buffer
+): buffer(buffer)
 {}
 
 void ChannelWriter::SendData(
+    const std::string &uuid,
     const int fd,
     std::shared_ptr<Message> message
 )
 {
-    std::move(Data{ uuid, fd, message }) >> output;
+    std::move(Data{ uuid, fd, message }) >> *buffer;
 }

@@ -15,6 +15,8 @@
 #include "model/networking/connection/listener/event-listener.h"
 
 namespace model {
+  class Connection;
+
   enum class TunnelType {
     Client,
     Server,
@@ -30,8 +32,6 @@ namespace model {
       const TunnelType type;
   
       std::shared_ptr<Connection> connection;
-
-      const std::string uuid;
 
     protected:
       const std::string ip_address;
@@ -55,7 +55,6 @@ namespace model {
       Tunnel(
         const TunnelType type,
         std::shared_ptr<Connection> connection,
-        const std::string &uuid,
         std::shared_ptr<struct event_base> base,
         const std::string &ip_address,
         const std::string &port,
@@ -63,7 +62,7 @@ namespace model {
         unsigned char *secret_key
       );
 
-      virtual ~Tunnel() {}
+      //virtual ~Tunnel() {}
     
     public:
       void SetBev(bufferevent *bev);

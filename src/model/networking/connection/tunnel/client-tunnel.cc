@@ -23,18 +23,16 @@ using namespace model;
 
 ClientTunnel::ClientTunnel(
     std::shared_ptr<Connection> connection,
-    const std::string &uuid,
     std::shared_ptr<event_base> base,
     const std::string &ip_address,
     const std::string &port,
     unsigned char *public_key,
     unsigned char *secret_key
-): Tunnel(TunnelType::Client, connection, uuid, base, ip_address, port, public_key, secret_key)
+): Tunnel(TunnelType::Client, connection, base, ip_address, port, public_key, secret_key)
 {}
 
 std::unique_ptr<Tunnel> ClientTunnel::Create(
   std::shared_ptr<Connection> connection,
-  const std::string &uuid,
   std::shared_ptr<struct event_base> base,
   const std::string &ip_address,
   const std::string &port
@@ -46,9 +44,9 @@ std::unique_ptr<Tunnel> ClientTunnel::Create(
     return nullptr;
   }
 
+  // todo: refactor GenerateKeyPair and unique_ptr below to be more efficient
   std::unique_ptr<Tunnel> tunnel(new ClientTunnel(
     connection,
-    uuid,
     base,
     ip_address,
     port,

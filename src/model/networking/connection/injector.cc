@@ -17,29 +17,27 @@ std::shared_ptr<Connection> Injector::inject_connection(
     std::shared_ptr<event_base> base,
     const std::string &ip_address,
     const std::string &port,
-    msd::channel<model::Data> &output
+    std::shared_ptr<ChannelWriter> buffer_writer
 )
 {
     std::shared_ptr<Connection> connection = std::make_shared<Connection>();
-    
+
+    connection->uuid;
+
     connection->tunnel = GetTunnel(
         type == ConnectionType::Client ? TunnelType::Client : TunnelType::Server,
         connection,
-        uuid,
         base,
         ip_address,
         port
     );
 
-    connection->listener = std::make_unique<EventListener>(new EventListener(
+    connection->listener.reset(new EventListener(
         base,
         connection
     ));
 
-    connection->channel = std::make_unique<ChannelWriter>(new ChannelWriter(
-        output,
-        uuid
-    ));
+    connection->channel = buffer_writer;
     
     return connection;
 }

@@ -34,6 +34,7 @@ void IOCallbacks::ReadMessageClientCbHandler(
 
   // send data to network manager
   connection->channel->SendData(
+    connection->uuid,
     bufferevent_getfd(bev),
     message
   );
@@ -69,6 +70,7 @@ void IOCallbacks::ReadMessageServerCbHandler(
 
   // send data to network manager
   connection->channel->SendData(
+    connection->uuid,
     bufferevent_getfd(bev),
     message
   );

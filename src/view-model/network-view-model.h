@@ -9,14 +9,14 @@
 namespace view_model {
   class NetworkViewModel {
     private:
-      std::shared_ptr<model::NetworkModel> model;
+      std::unique_ptr<model::NetworkModel> model;
 
       // Bindings
       std::function<void()> showDirectMessage;
 
     public:
       NetworkViewModel(
-        std::shared_ptr<model::NetworkModel> model,
+        std::unique_ptr<model::NetworkModel> model,
         std::function<void()> showDirectMessage
       );
 

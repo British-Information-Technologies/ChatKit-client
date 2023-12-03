@@ -9,32 +9,31 @@
 #include <thread>
 #include "msd/channel.hpp"
 
+#include "model/networking/network-thread-manager.h"
 #include "model/networking/connection/connection.h"
-#include "messages/message.h"
-#include "utility/data.h"
+#include "model/networking/messages/message.h"
+#include "model/networking/utility/data.h"
+#include "model/networking/connection/channel/channel-writer.h"
 
 namespace model {
   class NetworkManager {
     private:
-      std::mutex connections_mutex;
-
-      std::unique_ptr<std::jthread> connection_base_thread;
-      std::unique_ptr<std::jthread> channel_thread;
+      std::unique_ptr<NetworkThreadManager> thread_manager;
 
       std::shared_ptr<struct event_base> connection_base;
       
-      msd::channel<Data> in_chann{};
+      std::shared_ptr<ChannelWriter> buffer_writer;
 
       std::unordered_map<std::string, std::shared_ptr<Connection>> connections;
-      
 
     public:
-      NetworkManager();
+      NetworkManager(
+        std::unique_ptr<NetworkThreadManager> thread_manager,
+        std::shared_ptr<ChannelWriter> buffer_writer
+      );
       ~NetworkManager();
 
-      void LaunchConnectionBase();
-
-      void LaunchInputChannel();
+      void LaunchConnectionManagement();
 
       int LaunchListener(const std::string &uuid);
 

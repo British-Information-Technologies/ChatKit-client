@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <msd/channel.hpp>
+#include <optional>
 
 #include "model/networking/utility/data.h"
 #include "model/networking/messages/message.h"
@@ -10,14 +11,16 @@
 namespace model {
     class ChannelReader {
         private:
-            msd::channel<Data> &buffer;
+            std::shared_ptr<msd::channel<Data>> buffer;
             
         public:
-            ChannelReader(msd::channel<Data> &buffer);
+            ChannelReader(
+                std::shared_ptr<msd::channel<Data>> buffer
+            );
 
             virtual ~ChannelReader() {}
 
-            Data ReadData();
+            std::optional<Data> ReadData();
     };
 }
 

@@ -11,10 +11,10 @@
 
 namespace model {
     class ServerTunnel : public Tunnel {
-        protected:        
+        //protected:        
+        public:
             ServerTunnel(
                 std::shared_ptr<Connection> connection,
-                const std::string &uuid,
                 std::shared_ptr<struct event_base> base,
                 const std::string &ip_address,
                 const std::string &port,
@@ -22,10 +22,9 @@ namespace model {
                 unsigned char *secret_key
             );
 
-        public:
+        //public:
             static std::unique_ptr<Tunnel> Create(
                 std::shared_ptr<Connection> connection,
-                const std::string &uuid,
                 std::shared_ptr<struct event_base> base,
                 const std::string &ip_address,
                 const std::string &port

@@ -5,6 +5,7 @@
 #include <msd/channel.hpp>
 
 #include "model/networking/connection/connection.h"
+#include "model/networking/connection/channel/channel-writer.h"
 
 namespace model {
     class Injector {
@@ -15,7 +16,7 @@ namespace model {
                 std::shared_ptr<event_base> base,
                 const std::string &ip_address,
                 const std::string &port,
-                msd::channel<model::Data> &output
+                std::shared_ptr<ChannelWriter> buffer_writer
             );
     };
 }

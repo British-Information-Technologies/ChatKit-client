@@ -12,7 +12,6 @@ namespace model {
     std::unique_ptr<model::Tunnel> GetTunnel(
         TunnelType type,
         std::shared_ptr<Connection> connection,
-        const std::string &uuid,
         std::shared_ptr<struct event_base> base,
         const std::string &ip_address,
         const std::string &port
