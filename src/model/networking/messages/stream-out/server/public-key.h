@@ -20,6 +20,6 @@ public:
 
     model::StreamType GetStreamType();
 };
-}// namespace server_stream_out
+} // namespace server_stream_out
 
 #endif

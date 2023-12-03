@@ -24,6 +24,6 @@ private:
         const Glib::RefPtr<Gtk::Builder>& ref_builder,
         const std::string& filename);
 };
-}// namespace view
+} // namespace view
 
 #endif

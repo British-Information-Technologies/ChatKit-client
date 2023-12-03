@@ -33,7 +33,7 @@ void LaunchInputChannelHandler(
     std::cout << "[NetworkManager]: input channel handler launched" << std::endl;
 
     // read incoming channel data from connection callbacks
-    for (auto data : in_chann) {// blocks waiting for channel items
+    for (auto data : in_chann) { // blocks waiting for channel items
         std::cout << "[NetworkManager]: recv channel data from sockfd " << data.sockfd << std::endl;
 
         switch (data.message->GetType()) {
@@ -84,7 +84,7 @@ void LaunchInputChannelHandler(
 
     std::cout << "[NetworkManager]: input channel handler shutting down" << std::endl;
 }
-}// namespace
+} // namespace
 
 NetworkManager::NetworkManager() {
     connection_base.reset(event_base_new(),

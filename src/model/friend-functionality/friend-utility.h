@@ -17,6 +17,6 @@ public:
     bool DeleteFriend(const std::string& uuid);
     std::shared_ptr<FriendNode> GetFriend(const std::string& uuid) const;
 };
-}// namespace model_friend_functionality
+} // namespace model_friend_functionality
 
 #endif

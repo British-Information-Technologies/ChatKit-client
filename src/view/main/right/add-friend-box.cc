@@ -26,7 +26,7 @@ bool on_widget_key_pressed(guint keyval, guint _, Gdk::ModifierType state) {
 
     return false;
 }
-}// namespace
+} // namespace
 
 static void add_friend_dispose(GObject* gobject) {
     gtk_widget_dispose_template(GTK_WIDGET(gobject), ADD_FRIEND_TYPE);
@@ -55,7 +55,7 @@ static void add_friend_init(AddFriend* self) {
     add_friend = self;
 
     // It is now possible to access self->attributes
-    set_friend_code_entry();// TODO: will be removed
+    set_friend_code_entry(); // TODO: will be removed
 }
 
 void set_friend_code_entry(/*TODO: std::function<void()> func (function to send network vm data) */) {

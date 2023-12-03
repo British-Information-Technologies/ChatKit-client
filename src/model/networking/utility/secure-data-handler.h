@@ -23,6 +23,6 @@ public:
     std::string FormatSend(std::string& data);
     std::string FormatRead(std::string& data);
 };
-}// namespace model
+} // namespace model
 
 #endif

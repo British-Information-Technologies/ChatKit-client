@@ -16,6 +16,6 @@ public:
 
     void LoginObserver();
 };
-}// namespace view_model
+} // namespace view_model
 
 #endif

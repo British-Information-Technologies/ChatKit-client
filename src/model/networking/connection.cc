@@ -105,10 +105,10 @@ int Connection::Initiate() {
 
     struct addrinfo hints, *servinfo, *p;
     int rv;
-    char s[INET_ADDRSTRLEN];// add a 6 to INET to make it work with ivp 6 - remove 6 for ivp 4
+    char s[INET_ADDRSTRLEN]; // add a 6 to INET to make it work with ivp 6 - remove 6 for ivp 4
 
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_INET;// add a 6 to make it work with ivp 6 - remove 6 for ivp 4
+    hints.ai_family = AF_INET; // add a 6 to make it work with ivp 6 - remove 6 for ivp 4
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
 
@@ -174,7 +174,7 @@ int Connection::Initiate() {
 
     printf("[Connection]: connecting to %s\n", s);
 
-    freeaddrinfo(servinfo);// all done with this structure
+    freeaddrinfo(servinfo); // all done with this structure
 
     bufferevent_setfd(bev.get(), sockfd);
 
@@ -198,10 +198,10 @@ void Connection::Listen(std::shared_ptr<event_base> base) {
     // Clear the sockaddr in case extra platform-specific fields are messed up
     memset(&sin, 0, sizeof(sin));
 
-    sin.sin_family = AF_INET;// add 6 for ipv6
+    sin.sin_family = AF_INET; // add 6 for ipv6
 
-    sin.sin_addr.s_addr = htonl(0);       // listen on 0.0.0.0
-    sin.sin_port = htons(std::stoi(port));// listen on port
+    sin.sin_addr.s_addr = htonl(0);        // listen on 0.0.0.0
+    sin.sin_port = htons(std::stoi(port)); // listen on port
 
     listener = evconnlistener_new_bind(
         base.get(),

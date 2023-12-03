@@ -25,6 +25,6 @@ public:
 protected:
     std::unique_ptr<FriendList> friend_list;
 };
-}// namespace model_friend_functionality
+} // namespace model_friend_functionality
 
 #endif

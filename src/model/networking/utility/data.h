@@ -11,6 +11,6 @@ struct Data {
     int sockfd;
     std::shared_ptr<Message> message;
 };
-}// namespace model
+} // namespace model
 
 #endif

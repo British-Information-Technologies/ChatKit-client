@@ -26,6 +26,6 @@ public:
 protected:
     virtual void InternalThreadEntry() = 0;
 };
-}// namespace include
+} // namespace include
 
 #endif

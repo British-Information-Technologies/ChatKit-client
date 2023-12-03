@@ -19,6 +19,6 @@ public:
 
     model::StreamType GetStreamType();
 };
-}// namespace network_stream_out
+} // namespace network_stream_out
 
 #endif

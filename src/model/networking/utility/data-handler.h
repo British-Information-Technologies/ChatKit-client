@@ -17,6 +17,6 @@ public:
     virtual std::string FormatSend(std::string& data) = 0;
     virtual std::string FormatRead(std::string& data) = 0;
 };
-}// namespace model
+} // namespace model
 
 #endif

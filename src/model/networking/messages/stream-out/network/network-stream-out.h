@@ -12,6 +12,6 @@ public:
 
     virtual StreamType GetStreamType() = 0;
 };
-}// namespace model
+} // namespace model
 
 #endif

@@ -17,6 +17,6 @@ public:
     static std::shared_ptr<NetworkViewModel> inject_network_vm(
         std::function<void()> showDirectMessage);
 };
-}// namespace view_model
+} // namespace view_model
 
 #endif

@@ -60,7 +60,7 @@ json isValidJson(const std::string& data) {
         return nullptr;
     }
 }
-}// namespace
+} // namespace
 
 Type Message::GetType() {
     return this->type;

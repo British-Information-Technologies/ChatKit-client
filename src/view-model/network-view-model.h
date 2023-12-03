@@ -23,6 +23,6 @@ public:
 
     void OpenContactObserver();
 };
-}// namespace view_model
+} // namespace view_model
 
 #endif

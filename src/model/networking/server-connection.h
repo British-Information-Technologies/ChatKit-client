@@ -37,6 +37,6 @@ public:
 
     int SendMessage(Message* message);
 };
-}// namespace model
+} // namespace model
 
 #endif

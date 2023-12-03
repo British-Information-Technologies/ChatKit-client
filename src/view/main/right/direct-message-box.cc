@@ -26,7 +26,7 @@ bool on_widget_key_pressed(guint keyval, guint _, Gdk::ModifierType state) {
 
     return false;
 }
-}// namespace
+} // namespace
 
 static void direct_message_dispose(GObject* gobject) {
     gtk_widget_dispose_template(GTK_WIDGET(gobject), DIRECT_MESSAGE_TYPE);

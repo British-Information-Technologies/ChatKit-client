@@ -26,7 +26,7 @@ void from_json(const json& j, Packet& p) {
     j.at("nonce").get_to(p.nonce);
     j.at("payload").get_to(p.payload);
 }
-}// namespace
+} // namespace
 
 SecureDataHandler::SecureDataHandler(
     unsigned char* session_key_rx,

@@ -25,6 +25,6 @@ public:
 
     std::string GetPort();
 };
-}// namespace model_server_functionality
+} // namespace model_server_functionality
 
 #endif

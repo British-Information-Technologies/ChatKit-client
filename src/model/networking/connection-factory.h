@@ -23,6 +23,6 @@ std::shared_ptr<model::Connection> GetConnection(
     msd::channel<model::Data>& network_manager_chann,
     const std::string& ip_address,
     const std::string& port);
-}// namespace model
+} // namespace model
 
 #endif

@@ -54,6 +54,6 @@ public:
         const std::string& date,
         const std::string& data);
 };
-}// namespace model
+} // namespace model
 
 #endif

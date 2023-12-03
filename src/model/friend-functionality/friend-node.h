@@ -22,6 +22,6 @@ public:
 
     std::string GetPort();
 };
-}// namespace model_friend_functionality
+} // namespace model_friend_functionality
 
 #endif

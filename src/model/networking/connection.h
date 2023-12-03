@@ -91,6 +91,6 @@ public:
 
     void SetIsListener(int state);
 };
-}// namespace model
+} // namespace model
 
 #endif

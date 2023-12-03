@@ -12,6 +12,6 @@ public:
     static std::shared_ptr<DataModel> inject_data_model();
     static std::shared_ptr<NetworkModel> inject_network_model();
 };
-}// namespace model
+} // namespace model
 
 #endif

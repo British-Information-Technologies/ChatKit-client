@@ -81,6 +81,6 @@ Message* DeserializeServerStreamOut(std::string& data);
 Message* DeserializeNetworkStreamOut(std::string& data);
 
 Message* DeserializeInternal(std::string& data);
-}// namespace model
+} // namespace model
 
 #endif

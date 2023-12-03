@@ -10,7 +10,7 @@
 std::tuple<unsigned char*, size_t> model::Base642Bin(const std::string& encoded_data) {
     size_t encoded_data_len = encoded_data.length();
 
-    size_t data_len = (encoded_data_len * 3) / 4;// - n (n is padding char =, 0 <= n < 3)
+    size_t data_len = (encoded_data_len * 3) / 4; // - n (n is padding char =, 0 <= n < 3)
 
     unsigned char* data_ptr = (unsigned char*)malloc(sizeof(unsigned char) * data_len);
 

@@ -20,6 +20,6 @@ public:
     virtual std::shared_ptr<FriendNode> GetFriend(const std::string& uuid) const = 0;
 };
 
-}// namespace model_friend_functionality
+} // namespace model_friend_functionality
 
 #endif

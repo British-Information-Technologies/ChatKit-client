@@ -16,7 +16,7 @@ int NetworkModel::Run() {
     network_manager->LaunchConnectionBase();
     network_manager->LaunchInputChannel();
 
-    CreateServiceServerConnection();// TODO: move to connect on login and retry automatically if fail
+    CreateServiceServerConnection(); // TODO: move to connect on login and retry automatically if fail
 
     return 0;
 }

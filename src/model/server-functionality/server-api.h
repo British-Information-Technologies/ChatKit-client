@@ -22,6 +22,6 @@ public:
 protected:
     std::unique_ptr<ServerList> server_list;
 };
-}// namespace model_server_functionality
+} // namespace model_server_functionality
 
 #endif

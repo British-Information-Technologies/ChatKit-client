@@ -7,6 +7,6 @@
 
 namespace model {
 std::string ReadBufferLine(std::shared_ptr<struct bufferevent> bev);
-}// namespace model
+} // namespace model
 
 #endif

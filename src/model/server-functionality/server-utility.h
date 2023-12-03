@@ -18,6 +18,6 @@ public:
     bool DeleteServer(const std::string& uuid);
     std::shared_ptr<ServerNode> GetServer(const std::string& uuid) const;
 };
-}// namespace model_server_functionality
+} // namespace model_server_functionality
 
 #endif

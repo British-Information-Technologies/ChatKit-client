@@ -20,6 +20,6 @@ public:
     virtual std::shared_ptr<ServerNode> GetServer(const std::string& uuid) const = 0;
 };
 
-}// namespace model_server_functionality
+} // namespace model_server_functionality
 
 #endif

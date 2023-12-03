@@ -22,6 +22,6 @@ public:
 
     model::StreamType GetStreamType();
 };
-}// namespace client_stream_out
+} // namespace client_stream_out
 
 #endif

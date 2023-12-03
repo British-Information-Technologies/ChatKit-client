@@ -22,7 +22,7 @@ void to_json(json& j, const Packet& p) {
 void from_json(const json& j, Packet& p) {
     j.at("payload").get_to(p.payload);
 }
-}// namespace
+} // namespace
 
 DataHandlerType InsecureDataHandler::GetType() {
     return type;

@@ -34,6 +34,6 @@ public:
     std::shared_ptr<model_server_functionality::ServerNode> GetServer(
         const std::string& uuid) const;
 };
-}// namespace model
+} // namespace model
 
 #endif
