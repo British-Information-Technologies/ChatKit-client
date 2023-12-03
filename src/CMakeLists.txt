@@ -44,6 +44,7 @@ set(SOURCES
     model/server-functionality/server-node.cc
     model/server-functionality/server-utility.cc
 
+    model/networking/network-thread-manager.cc
     model/networking/network-manager.cc
     
     model/networking/connection/injector.cc
