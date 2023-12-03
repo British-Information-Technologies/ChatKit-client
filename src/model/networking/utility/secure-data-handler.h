@@ -8,21 +8,21 @@
 
 namespace model {
 class SecureDataHandler : public DataHandler {
- private:
-  DataHandlerType type = DataHandlerType::Secure;
+private:
+    DataHandlerType type = DataHandlerType::Secure;
 
-  std::unique_ptr<unsigned char[]> session_key_rx;
+    std::unique_ptr<unsigned char[]> session_key_rx;
 
-  std::unique_ptr<unsigned char[]> session_key_tx;
+    std::unique_ptr<unsigned char[]> session_key_tx;
 
- public:
-  SecureDataHandler(unsigned char *session_key_rx, unsigned char *session_key_tx);
+public:
+    SecureDataHandler(unsigned char* session_key_rx, unsigned char* session_key_tx);
 
-  DataHandlerType GetType();
+    DataHandlerType GetType();
 
-  std::string FormatSend(std::string &data);
-  std::string FormatRead(std::string &data);
+    std::string FormatSend(std::string& data);
+    std::string FormatRead(std::string& data);
 };
-}  // namespace model_networking_utility
+}// namespace model
 
 #endif

@@ -6,14 +6,14 @@
 #include "./network-stream-in.h"
 
 namespace network_stream_in {
-    class Connecting: public model::NetworkStreamIn {
-        public:
-            Connecting();
+class Connecting : public model::NetworkStreamIn {
+public:
+    Connecting();
 
-            std::string Serialize();
-            
-            model::StreamType GetStreamType();
-    };
-}
+    std::string Serialize();
+
+    model::StreamType GetStreamType();
+};
+}// namespace network_stream_in
 
 #endif

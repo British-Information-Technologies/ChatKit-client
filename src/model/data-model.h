@@ -10,31 +10,30 @@
 #include "server-functionality/server-node.h"
 
 namespace model {
-    class DataModel {
-        private:
-            std::shared_ptr<model_friend_functionality::FriendAPI> friend_api;
-            std::shared_ptr<model_server_functionality::ServerAPI> server_api;
+class DataModel {
+private:
+    std::shared_ptr<model_friend_functionality::FriendAPI> friend_api;
+    std::shared_ptr<model_server_functionality::ServerAPI> server_api;
 
-        public:
-            DataModel(
-                std::shared_ptr<model_friend_functionality::FriendAPI> friend_api,
-                std::shared_ptr<model_server_functionality::ServerAPI> server_api
-            );
-            
-            bool AddFriend(const std::string &uuid, const std::string &name, const std::string &ip, const std::string &port);
+public:
+    DataModel(
+        std::shared_ptr<model_friend_functionality::FriendAPI> friend_api,
+        std::shared_ptr<model_server_functionality::ServerAPI> server_api);
 
-            bool DeleteFriend(const std::string &uuid);
+    bool AddFriend(const std::string& uuid, const std::string& name, const std::string& ip, const std::string& port);
 
-            std::shared_ptr<model_friend_functionality::FriendNode> GetFriend(
-                const std::string &uuid) const;
+    bool DeleteFriend(const std::string& uuid);
 
-            bool AddServer(const std::string &uuid, const std::string &name, const std::string &owner, const std::string &ip, const std::string &port);
+    std::shared_ptr<model_friend_functionality::FriendNode> GetFriend(
+        const std::string& uuid) const;
 
-            bool DeleteServer(const std::string &uuid);
+    bool AddServer(const std::string& uuid, const std::string& name, const std::string& owner, const std::string& ip, const std::string& port);
 
-            std::shared_ptr<model_server_functionality::ServerNode> GetServer(
-                const std::string &uuid) const;
-    };
-}  // namespace model
+    bool DeleteServer(const std::string& uuid);
+
+    std::shared_ptr<model_server_functionality::ServerNode> GetServer(
+        const std::string& uuid) const;
+};
+}// namespace model
 
 #endif

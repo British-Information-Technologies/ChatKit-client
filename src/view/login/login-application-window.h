@@ -7,20 +7,19 @@
 #include "view-model/account-view-model.h"
 
 class LoginApplicationWindow : public Gtk::ApplicationWindow {
-    private:
-        std::shared_ptr<view_model::AccountViewModel> account_vm;
-        
-        Glib::RefPtr<Gtk::Builder> refBuilder;
-        
-        Glib::RefPtr<Gtk::Button> login_button;
+private:
+    std::shared_ptr<view_model::AccountViewModel> account_vm;
 
-    public:
-        LoginApplicationWindow(
-            BaseObjectType *cobject,
-            const Glib::RefPtr<Gtk::Builder> &refBuilder,
-            std::shared_ptr<view_model::AccountViewModel> account_vm
-        );
-        virtual ~LoginApplicationWindow();
+    Glib::RefPtr<Gtk::Builder> refBuilder;
+
+    Glib::RefPtr<Gtk::Button> login_button;
+
+public:
+    LoginApplicationWindow(
+        BaseObjectType* cobject,
+        const Glib::RefPtr<Gtk::Builder>& refBuilder,
+        std::shared_ptr<view_model::AccountViewModel> account_vm);
+    virtual ~LoginApplicationWindow();
 };
 
 #endif

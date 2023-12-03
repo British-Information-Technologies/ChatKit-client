@@ -1,12 +1,12 @@
 #include "client-removed.h"
 
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <string>
 
 using namespace server_stream_in;
 
-ClientRemoved::ClientRemoved(const std::string &id): id(id) {
+ClientRemoved::ClientRemoved(const std::string& id) : id(id) {
     this->type = model::Type::ClientRemoved;
 }
 

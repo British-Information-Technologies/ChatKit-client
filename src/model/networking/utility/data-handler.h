@@ -4,19 +4,19 @@
 #include <string>
 
 namespace model {
-  enum class DataHandlerType {
+enum class DataHandlerType {
     Insecure = 0,
     Secure = 1,
-  };
+};
 
-  class DataHandler {
-    public:
-      virtual ~DataHandler() {};
-      virtual DataHandlerType GetType() = 0;
+class DataHandler {
+public:
+    virtual ~DataHandler(){};
+    virtual DataHandlerType GetType() = 0;
 
-      virtual std::string FormatSend(std::string &data) = 0;
-      virtual std::string FormatRead(std::string &data) = 0;
-  };
-}  // namespace model_networking_utility
+    virtual std::string FormatSend(std::string& data) = 0;
+    virtual std::string FormatRead(std::string& data) = 0;
+};
+}// namespace model
 
 #endif

@@ -1,22 +1,20 @@
 #include <gtkmm-4.0/gtkmm.h>
-#include <string>
 #include <iostream>
+#include <string>
 
 #include "main-application-window.h"
 
 #include "view-model/network-view-model.h"
 
 MainApplicationWindow::MainApplicationWindow(
-    BaseObjectType *cobject, 
-    const Glib::RefPtr<Gtk::Builder> &refBuilder,
+    BaseObjectType* cobject,
+    const Glib::RefPtr<Gtk::Builder>& refBuilder,
     Glib::RefPtr<Gtk::Box> friend_list,
     Glib::RefPtr<Gtk::Box> server_list,
     Glib::RefPtr<Gtk::Box> profile_card,
     Glib::RefPtr<Gtk::Box> home_page,
     Glib::RefPtr<Gtk::Box> direct_msg,
-    Glib::RefPtr<Gtk::Box> add_friend
-): Glib::ObjectBase("MainApplicationWindow"), Gtk::ApplicationWindow(cobject)
-{
+    Glib::RefPtr<Gtk::Box> add_friend) : Glib::ObjectBase("MainApplicationWindow"), Gtk::ApplicationWindow(cobject) {
     this->refBuilder = refBuilder;
 
     this->refProvider = Gtk::CssProvider::create();
@@ -24,34 +22,29 @@ MainApplicationWindow::MainApplicationWindow(
     Gtk::StyleProvider::add_provider_for_display(
         get_display(),
         this->refProvider,
-        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
-    );
+        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
     this->refProvider->signal_parsing_error().connect(
         [](const auto& section, const auto& error) {
             on_parsing_error(section, error);
-        }
-    );
-    
+        });
+
     this->refProvider->load_from_resource("/view/res/panel_style.css");
-    
+
     home_page_button = this->refBuilder->get_object<Gtk::Button>("homepageButton");
     home_page_button->signal_clicked().connect(sigc::mem_fun(
         *this,
-        &MainApplicationWindow::SetHomePageState
-    ));
-    
+        &MainApplicationWindow::SetHomePageState));
+
     friend_list_button = this->refBuilder->get_object<Gtk::Button>("friendListButton");
     friend_list_button->signal_clicked().connect(sigc::mem_fun(
         *this,
-        &MainApplicationWindow::SetFriendListState
-    ));
-    
+        &MainApplicationWindow::SetFriendListState));
+
     server_list_button = this->refBuilder->get_object<Gtk::Button>("serverListButton");
     server_list_button->signal_clicked().connect(sigc::mem_fun(
         *this,
-        &MainApplicationWindow::SetServerListState
-    ));
+        &MainApplicationWindow::SetServerListState));
 
     this->friend_list = friend_list;
 
@@ -62,7 +55,7 @@ MainApplicationWindow::MainApplicationWindow(
     this->home_page = home_page;
 
     this->direct_msg = direct_msg;
-    
+
     this->add_friend = add_friend;
 }
 
@@ -70,22 +63,21 @@ MainApplicationWindow::~MainApplicationWindow() {}
 
 void MainApplicationWindow::on_parsing_error(
     const Glib::RefPtr<const Gtk::CssSection>& section,
-    const Glib::Error& error
-) {
-  std::cerr << "on_parsing_error(): " << error.what() << std::endl;
-  if (section) {
-    const auto file = section->get_file();
-    if (file) {
-      std::cerr << "  URI = " << file->get_uri() << std::endl;
-    }
+    const Glib::Error& error) {
+    std::cerr << "on_parsing_error(): " << error.what() << std::endl;
+    if (section) {
+        const auto file = section->get_file();
+        if (file) {
+            std::cerr << "  URI = " << file->get_uri() << std::endl;
+        }
 
-    auto start_location = section->get_start_location();
-    auto end_location = section->get_end_location();
-    std::cerr << "  start_line = " << start_location.get_lines()+1
-              << ", end_line = " << end_location.get_lines()+1 << std::endl;
-    std::cerr << "  start_position = " << start_location.get_line_chars()
-              << ", end_position = " << end_location.get_line_chars() << std::endl;
-  }
+        auto start_location = section->get_start_location();
+        auto end_location = section->get_end_location();
+        std::cerr << "  start_line = " << start_location.get_lines() + 1
+                  << ", end_line = " << end_location.get_lines() + 1 << std::endl;
+        std::cerr << "  start_position = " << start_location.get_line_chars()
+                  << ", end_position = " << end_location.get_line_chars() << std::endl;
+    }
 }
 
 void MainApplicationWindow::SetNetworkViewModel(std::shared_ptr<view_model::NetworkViewModel> network_vm) {

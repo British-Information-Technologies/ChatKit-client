@@ -5,12 +5,12 @@
 
 #include "model/networking/messages/message.h"
 
-namespace model{
-    struct Data {
-        std::string uuid;
-        int sockfd;
-        std::shared_ptr<Message> message;
-    };
-} // namespace model
+namespace model {
+struct Data {
+    std::string uuid;
+    int sockfd;
+    std::shared_ptr<Message> message;
+};
+}// namespace model
 
 #endif

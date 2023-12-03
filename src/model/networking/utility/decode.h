@@ -5,7 +5,7 @@
 #include <tuple>
 
 namespace model {
-    std::tuple<unsigned char*, size_t> Base642Bin(const std::string &encoded_data);
-} // namespace model
+std::tuple<unsigned char*, size_t> Base642Bin(const std::string& encoded_data);
+}// namespace model
 
 #endif

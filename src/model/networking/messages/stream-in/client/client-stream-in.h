@@ -6,12 +6,12 @@
 #include "../stream-in.h"
 
 namespace model {
-    class ClientStreamIn: public StreamIn {
-        public:
-            virtual std::string Serialize() = 0;
-            
-            virtual StreamType GetStreamType() = 0;
-    };
-}
+class ClientStreamIn : public StreamIn {
+public:
+    virtual std::string Serialize() = 0;
+
+    virtual StreamType GetStreamType() = 0;
+};
+}// namespace model
 
 #endif

@@ -8,18 +8,18 @@
 
 using json = nlohmann::json;
 
-namespace server_stream_in {    
-    class GlobalChatMessages: public model::ServerStreamIn {
-        private:
-            const json messages;
+namespace server_stream_in {
+class GlobalChatMessages : public model::ServerStreamIn {
+private:
+    const json messages;
 
-        public:
-            GlobalChatMessages(const json &messages);
+public:
+    GlobalChatMessages(const json& messages);
 
-            std::string Serialize();
-            
-            model::StreamType GetStreamType();
-    };
-}
+    std::string Serialize();
+
+    model::StreamType GetStreamType();
+};
+}// namespace server_stream_in
 
 #endif

@@ -8,23 +8,22 @@
 #include "friend-list.h"
 #include "friend-node.h"
 
-
 namespace model_friend_functionality {
 class FriendHashmap : public FriendList {
- private:
-  std::map<const std::string, std::shared_ptr<FriendNode>> friend_map;
+private:
+    std::map<const std::string, std::shared_ptr<FriendNode>> friend_map;
 
- public:
-  std::map<const std::string, std::shared_ptr<FriendNode>>::iterator GetBegin();
+public:
+    std::map<const std::string, std::shared_ptr<FriendNode>>::iterator GetBegin();
 
-  std::map<const std::string, std::shared_ptr<FriendNode>>::iterator GetEnd();
+    std::map<const std::string, std::shared_ptr<FriendNode>>::iterator GetEnd();
 
-  bool AddFriend(FriendNode &friend_node);
+    bool AddFriend(FriendNode& friend_node);
 
-  bool DeleteFriend(const std::string &uuid);
+    bool DeleteFriend(const std::string& uuid);
 
-  std::shared_ptr<FriendNode> GetFriend(const std::string &uuid) const;
+    std::shared_ptr<FriendNode> GetFriend(const std::string& uuid) const;
 };
-}  // namespace model_friend_functionality
+}// namespace model_friend_functionality
 
 #endif

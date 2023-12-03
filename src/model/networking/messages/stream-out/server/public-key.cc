@@ -1,19 +1,17 @@
 #include "public-key.h"
 
-#include <string>
 #include <fmt/core.h>
-#include <sodium.h>
 #include <magic_enum.hpp>
+#include <sodium.h>
+#include <string>
 
 #include "model/networking/utility/decode.h"
 
 using namespace server_stream_out;
 
 PublicKey::PublicKey(
-    const std::string &to,
-    const std::string &key
-): to(to), key(key)
-{
+    const std::string& to,
+    const std::string& key) : to(to), key(key) {
     this->type = model::Type::PublicKey;
 }
 

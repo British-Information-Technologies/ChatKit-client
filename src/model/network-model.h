@@ -7,40 +7,36 @@
 #include "networking/network-manager.h"
 
 namespace model {
-    class NetworkModel {
-        private:
-            std::shared_ptr<NetworkManager> network_manager;
+class NetworkModel {
+private:
+    std::shared_ptr<NetworkManager> network_manager;
 
-        public:
-            NetworkModel(
-                std::shared_ptr<NetworkManager> network_manager
-            );
-            
-            int Run();
+public:
+    NetworkModel(
+        std::shared_ptr<NetworkManager> network_manager);
 
-            int CreateClientConnection(
-                const std::string &uuid,
-                const std::string &ip_address,
-                const std::string &port
-            );
+    int Run();
 
-            int CreateServerConnection(
-                const std::string &uuid,
-                const std::string &ip_address,
-                const std::string &port
-            );
-            
-            int CreateServiceServerConnection();
+    int CreateClientConnection(
+        const std::string& uuid,
+        const std::string& ip_address,
+        const std::string& port);
 
-            int SendMessage(const std::string &uuid, std::string &data);
-            
-            int SendClientMessage(
-                const std::string &uuid,
-                const std::string &time,
-                const std::string &date,
-                const std::string &data
-            );
-    };
-}  // namespace model
+    int CreateServerConnection(
+        const std::string& uuid,
+        const std::string& ip_address,
+        const std::string& port);
+
+    int CreateServiceServerConnection();
+
+    int SendMessage(const std::string& uuid, std::string& data);
+
+    int SendClientMessage(
+        const std::string& uuid,
+        const std::string& time,
+        const std::string& date,
+        const std::string& data);
+};
+}// namespace model
 
 #endif

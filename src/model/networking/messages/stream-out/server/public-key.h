@@ -6,20 +6,20 @@
 #include <string>
 
 namespace server_stream_out {
-    class PublicKey: public model::ServerStreamOut {
-        private:
-            const std::string to;
-            const std::string key;
-        
-        public:
-            PublicKey(const std::string &to, const std::string &key);
+class PublicKey : public model::ServerStreamOut {
+private:
+    const std::string to;
+    const std::string key;
 
-            std::string Serialize();
+public:
+    PublicKey(const std::string& to, const std::string& key);
 
-            unsigned char* GetKey();
-            
-            model::StreamType GetStreamType();
-    };
-}
+    std::string Serialize();
+
+    unsigned char* GetKey();
+
+    model::StreamType GetStreamType();
+};
+}// namespace server_stream_out
 
 #endif

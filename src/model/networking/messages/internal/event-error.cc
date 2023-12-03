@@ -1,12 +1,12 @@
 #include "event-error.h"
 
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <string>
 
 using namespace internal;
 
-EventError::EventError(const std::string &msg): msg(msg) {
+EventError::EventError(const std::string& msg) : msg(msg) {
     this->type = model::Type::EventError;
 }
 

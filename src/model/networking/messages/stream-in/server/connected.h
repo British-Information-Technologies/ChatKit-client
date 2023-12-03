@@ -5,15 +5,15 @@
 
 #include <string>
 
-namespace server_stream_in {    
-    class Connected: public model::ServerStreamIn {
-        public:
-            Connected();
+namespace server_stream_in {
+class Connected : public model::ServerStreamIn {
+public:
+    Connected();
 
-            std::string Serialize();
-            
-            model::StreamType GetStreamType();
-    };
-}
+    std::string Serialize();
+
+    model::StreamType GetStreamType();
+};
+}// namespace server_stream_in
 
 #endif

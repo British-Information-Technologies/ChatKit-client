@@ -4,28 +4,28 @@
 #include <pthread.h>
 
 namespace include {
-  class Thread {
-    private:
-      pthread_t _thread;
+class Thread {
+private:
+    pthread_t _thread;
 
-      static void *InternalThreadEntryFunc(void *This) {
-        ((Thread *)This)->InternalThreadEntry();
+    static void* InternalThreadEntryFunc(void* This) {
+        ((Thread*)This)->InternalThreadEntry();
         return NULL;
-      }
+    }
 
-    public:
-      Thread() {}
-      virtual ~Thread() {}
+public:
+    Thread() {}
+    virtual ~Thread() {}
 
-      int StartInternalThread() {
+    int StartInternalThread() {
         return pthread_create(&_thread, NULL, InternalThreadEntryFunc, this);
-      }
+    }
 
-      void WaitForInternalThreadToExit() { (void)pthread_join(_thread, NULL); }
+    void WaitForInternalThreadToExit() { (void)pthread_join(_thread, NULL); }
 
-    protected:
-      virtual void InternalThreadEntry() = 0;
-    };
-}
+protected:
+    virtual void InternalThreadEntry() = 0;
+};
+}// namespace include
 
 #endif

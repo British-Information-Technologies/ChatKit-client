@@ -5,19 +5,19 @@
 
 #include "./server-stream-in.h"
 
-namespace server_stream_in {    
-    class ClientConnected: public model::ServerStreamIn {
-        private:
-            const std::string id;
-            const std::string username;
-        
-        public:
-            ClientConnected(const std::string &id, const std::string &username);
+namespace server_stream_in {
+class ClientConnected : public model::ServerStreamIn {
+private:
+    const std::string id;
+    const std::string username;
 
-            std::string Serialize();
-            
-            model::StreamType GetStreamType();
-    };
-}
+public:
+    ClientConnected(const std::string& id, const std::string& username);
+
+    std::string Serialize();
+
+    model::StreamType GetStreamType();
+};
+}// namespace server_stream_in
 
 #endif

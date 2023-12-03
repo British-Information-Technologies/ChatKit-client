@@ -1,15 +1,15 @@
 #include "connected-clients.h"
 
-#include <nlohmann/json.hpp>
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <nlohmann/json.hpp>
+#include <string>
 
 using json = nlohmann::json;
 
 using namespace server_stream_in;
 
-ConnectedClients::ConnectedClients(const json &clients): clients(clients) {
+ConnectedClients::ConnectedClients(const json& clients) : clients(clients) {
     this->type = model::Type::ConnectedClients;
 }
 

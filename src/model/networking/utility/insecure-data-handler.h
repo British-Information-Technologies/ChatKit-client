@@ -6,16 +6,16 @@
 #include "data-handler.h"
 
 namespace model {
-  class InsecureDataHandler : public DataHandler {
-    private:
-      DataHandlerType type = DataHandlerType::Insecure;
-    
-    public:
-      DataHandlerType GetType();
+class InsecureDataHandler : public DataHandler {
+private:
+    DataHandlerType type = DataHandlerType::Insecure;
 
-      std::string FormatSend(std::string &data);
-      std::string FormatRead(std::string &data);
-  };
-}  // namespace model_networking_utility
+public:
+    DataHandlerType GetType();
+
+    std::string FormatSend(std::string& data);
+    std::string FormatRead(std::string& data);
+};
+}// namespace model
 
 #endif

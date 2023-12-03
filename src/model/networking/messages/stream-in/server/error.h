@@ -6,17 +6,17 @@
 #include <string>
 
 namespace server_stream_in {
-    class Error: public model::ServerStreamIn {
-        private:
-            const std::string msg;
+class Error : public model::ServerStreamIn {
+private:
+    const std::string msg;
 
-        public:
-            Error(const std::string &msg);
+public:
+    Error(const std::string& msg);
 
-            std::string Serialize();
-            
-            model::StreamType GetStreamType();
-    };
-}
+    std::string Serialize();
+
+    model::StreamType GetStreamType();
+};
+}// namespace server_stream_in
 
 #endif
