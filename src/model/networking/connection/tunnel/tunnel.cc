@@ -1,3 +1,5 @@
+#include <fcntl.h>
+#include <sys/select.h>
 #include <memory>
 #include <string>
 #include <algorithm>
@@ -134,22 +136,52 @@ int Tunnel::Initiate()
 
   // loop through all the results and connect to the first we can
   int sockfd;
-  for (p = servinfo; p != NULL; p = p->ai_next) {
+  fd_set fdset;
+  struct timeval tv;
+  p = servinfo;
+
+  while (p != nullptr) {
     if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-      perror("[Tunnel]: socket creation failed\n");
+      printf("[Tunnel]: socket creation failed\n");
       continue;
     }
 
-    if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
-      close(sockfd);
-      perror("[Tunnel]: open socket failed\n");
-      continue;
+    // Set the socket that the `connect` syscall to non-blocking
+    // F_SETFL will set status flag for the file descriptor
+    // and O_NONBLOCK is not block
+    fcntl(sockfd, F_SETFL, O_NONBLOCK);
+    connect(sockfd, p->ai_addr, p->ai_addrlen);
+
+    // Clear the set of file descriptors and include the current socket
+    FD_ZERO(&fdset);
+    FD_SET(sockfd, &fdset);
+    // set timeout in sec and microsec
+    tv.tv_sec = 1;
+    tv.tv_usec = 50;
+
+    // `select` will return whenever any file descriptor in the set is writeable from the connect function (or ready for any other I/O operations),
+    // we have a `timevalue` struct given to define a timeout.
+    if (select(sockfd + 1, NULL, &fdset, NULL, &tv) != 0) {
+        int so_error;
+        socklen_t len = sizeof so_error;
+        // get the socket options to determine outcome of `select`.
+        // SOL_SOCKET defines the level to be options at API level
+        // and SO_ERROR is here to look if the socket errored,
+        // set the so_error option value.
+        getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &so_error, &len);
+        // if we timeout, then `select` has set this option
+        // in the socket file descriptors options.
+        if (so_error) {
+          close(sockfd);
+          perror("[Tunnel]: open socket failed\n");
+          break;
+        }
     }
 
-    break;
+    p = p->ai_next;
   }
 
-  if (p == NULL) {
+  if (!p) {
     fprintf(stderr, "[Tunnel]: failed to connect\n");
     return -1;
   }

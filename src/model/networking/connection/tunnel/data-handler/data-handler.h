@@ -11,6 +11,7 @@ namespace model {
 
   class DataHandler {
     public:
+      virtual ~DataHandler() {};
       virtual DataHandlerType GetType() = 0;
 
       virtual std::string FormatSend(std::string &data) = 0;
