@@ -4,7 +4,7 @@
 #include <string>
 
 namespace model {
-    std::string Bin2Base64(const unsigned char *data, unsigned long long data_len);
+std::string Bin2Base64(const unsigned char* data, unsigned long long data_len);
 } // namespace model
 
 #endif

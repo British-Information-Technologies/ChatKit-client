@@ -4,21 +4,20 @@
 #include <memory>
 #include <msd/channel.hpp>
 
-#include "model/networking/connection/connection.h"
 #include "model/networking/connection/channel/channel-writer.h"
+#include "model/networking/connection/connection.h"
 
 namespace model {
-    class Injector {
-        public:
-            static std::shared_ptr<Connection> inject_connection(
-                const ConnectionType type,
-                const std::string &uuid,
-                std::shared_ptr<event_base> base,
-                const std::string &ip_address,
-                const std::string &port,
-                std::shared_ptr<ChannelWriter> buffer_writer
-            );
-    };
-}
+class Injector {
+public:
+    static std::shared_ptr<Connection> inject_connection(
+        const ConnectionType type,
+        const std::string& uuid,
+        std::shared_ptr<event_base> base,
+        const std::string& ip_address,
+        const std::string& port,
+        std::shared_ptr<ChannelWriter> buffer_writer);
+};
+} // namespace model
 
 #endif

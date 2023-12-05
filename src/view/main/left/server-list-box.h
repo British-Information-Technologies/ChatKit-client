@@ -7,10 +7,10 @@
 
 G_DECLARE_FINAL_TYPE(ServerList, server_list, SERVER, LIST, GtkBox)
 
-static void server_list_dispose(GObject *gobject);
+static void server_list_dispose(GObject* gobject);
 
-static void server_list_class_init(ServerListClass *klass);
+static void server_list_class_init(ServerListClass* klass);
 
-static void server_list_init(ServerList *self);
+static void server_list_init(ServerList* self);
 
 #endif

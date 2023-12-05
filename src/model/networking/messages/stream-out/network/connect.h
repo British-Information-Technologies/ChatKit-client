@@ -6,19 +6,19 @@
 #include "./network-stream-out.h"
 
 namespace network_stream_out {
-    class Connect: public model::NetworkStreamOut {
-        private:
-            const std::string uuid;
-            const std::string username;
-            const std::string address;
+class Connect : public model::NetworkStreamOut {
+private:
+    const std::string uuid;
+    const std::string username;
+    const std::string address;
 
-        public:
-            Connect(const std::string &uuid, const std::string &username, const std::string &address);
+public:
+    Connect(const std::string& uuid, const std::string& username, const std::string& address);
 
-            std::string Serialize();
-            
-            model::StreamType GetStreamType();
-    };
-}
+    std::string Serialize();
+
+    model::StreamType GetStreamType();
+};
+} // namespace network_stream_out
 
 #endif

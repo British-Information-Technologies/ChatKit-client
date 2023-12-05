@@ -1,16 +1,14 @@
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <string>
 
 #include "send-message.h"
 
 using namespace server_stream_out;
 
 SendMessage::SendMessage(
-    const std::string &to,
-    const std::string &content
-): to(to), content(content)
-{
+    const std::string& to,
+    const std::string& content) : to(to), content(content) {
     this->type = model::Type::SendMessage;
 }
 

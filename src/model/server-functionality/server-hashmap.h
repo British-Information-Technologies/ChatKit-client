@@ -10,20 +10,20 @@
 
 namespace model_server_functionality {
 class ServerHashmap : public ServerList {
- private:
-  std::map<const std::string, std::shared_ptr<ServerNode>> server_map;
+private:
+    std::map<const std::string, std::shared_ptr<ServerNode>> server_map;
 
- public:
-  std::map<const std::string, std::shared_ptr<ServerNode>>::iterator GetBegin();
+public:
+    std::map<const std::string, std::shared_ptr<ServerNode>>::iterator GetBegin();
 
-  std::map<const std::string, std::shared_ptr<ServerNode>>::iterator GetEnd();
+    std::map<const std::string, std::shared_ptr<ServerNode>>::iterator GetEnd();
 
-  bool AddServer(ServerNode &server_node);
+    bool AddServer(ServerNode& server_node);
 
-  bool DeleteServer(const std::string &uuid);
+    bool DeleteServer(const std::string& uuid);
 
-  std::shared_ptr<ServerNode> GetServer(const std::string &uuid) const;
+    std::shared_ptr<ServerNode> GetServer(const std::string& uuid) const;
 };
-}  // namespace model_friend_functionality
+} // namespace model_server_functionality
 
 #endif

@@ -4,21 +4,19 @@
 #include <event2/listener.h>
 
 namespace model {
-    class ListenerCallbacks {
-        public:
-            static void AcceptConnectionCbHandler(
-                struct evconnlistener *listener,
-                evutil_socket_t sockfd,
-                struct sockaddr *address,
-                int socklen,
-                void *ptr
-            );
+class ListenerCallbacks {
+public:
+    static void AcceptConnectionCbHandler(
+        struct evconnlistener* listener,
+        evutil_socket_t sockfd,
+        struct sockaddr* address,
+        int socklen,
+        void* ptr);
 
-            static void AcceptErrorCbHandler(
-                struct evconnlistener *listener,
-                void *ptr
-            );    
-    };
-}
+    static void AcceptErrorCbHandler(
+        struct evconnlistener* listener,
+        void* ptr);
+};
+} // namespace model
 
 #endif

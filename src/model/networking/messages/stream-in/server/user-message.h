@@ -6,18 +6,18 @@
 #include <string>
 
 namespace server_stream_in {
-    class UserMessage: public model::ServerStreamIn {
-        private:
-            const std::string from;
-            const std::string content;
+class UserMessage : public model::ServerStreamIn {
+private:
+    const std::string from;
+    const std::string content;
 
-        public:
-            UserMessage(const std::string &from, const std::string &content);
+public:
+    UserMessage(const std::string& from, const std::string& content);
 
-            std::string Serialize();
-            
-            model::StreamType GetStreamType();
-    };
-}
+    std::string Serialize();
+
+    model::StreamType GetStreamType();
+};
+} // namespace server_stream_in
 
 #endif

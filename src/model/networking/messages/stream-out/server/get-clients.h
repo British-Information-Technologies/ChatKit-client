@@ -5,15 +5,15 @@
 
 #include "./server-stream-out.h"
 
-namespace server_stream_out {    
-    class GetClients: public model::ServerStreamOut {
-        public:
-            GetClients();
+namespace server_stream_out {
+class GetClients : public model::ServerStreamOut {
+public:
+    GetClients();
 
-            std::string Serialize();
-            
-            model::StreamType GetStreamType();
-    };
-}
+    std::string Serialize();
+
+    model::StreamType GetStreamType();
+};
+} // namespace server_stream_out
 
 #endif

@@ -1,13 +1,12 @@
-#include <gtkmm-4.0/gtkmm.h>
 #include <functional>
+#include <gtkmm-4.0/gtkmm.h>
 
 #include "account-view-model.h"
 
 using namespace view_model;
 
 AccountViewModel::AccountViewModel(
-    std::function<void(int)> setViewState
-) {
+    std::function<void(int)> setViewState) {
     this->setViewState = setViewState;
 }
 

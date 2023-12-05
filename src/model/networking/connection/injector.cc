@@ -1,25 +1,23 @@
 #include "injector.h"
 
 #include <memory>
-#include <string>
 #include <msd/channel.hpp>
+#include <string>
 
-#include "model/networking/connection/connection.h"
-#include "model/networking/connection/tunnel/tunnel-factory.h"
-#include "model/networking/connection/listener/event-listener.h"
 #include "model/networking/connection/channel/channel-writer.h"
+#include "model/networking/connection/connection.h"
+#include "model/networking/connection/listener/event-listener.h"
+#include "model/networking/connection/tunnel/tunnel-factory.h"
 
 using namespace model;
 
 std::shared_ptr<Connection> Injector::inject_connection(
     const ConnectionType type,
-    const std::string &uuid,
+    const std::string& uuid,
     std::shared_ptr<event_base> base,
-    const std::string &ip_address,
-    const std::string &port,
-    std::shared_ptr<ChannelWriter> buffer_writer
-)
-{
+    const std::string& ip_address,
+    const std::string& port,
+    std::shared_ptr<ChannelWriter> buffer_writer) {
     std::shared_ptr<Connection> connection = std::make_shared<Connection>();
 
     connection->uuid;
@@ -29,15 +27,13 @@ std::shared_ptr<Connection> Injector::inject_connection(
         connection,
         base,
         ip_address,
-        port
-    );
+        port);
 
     connection->listener.reset(new EventListener(
         base,
-        connection
-    ));
+        connection));
 
     connection->channel = buffer_writer;
-    
+
     return connection;
 }

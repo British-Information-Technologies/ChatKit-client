@@ -1,12 +1,12 @@
 #include "global-message.h"
 
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <string>
 
 using namespace server_stream_in;
 
-GlobalMessage::GlobalMessage(const std::string &from, const std::string &content): from(from), content(content) {
+GlobalMessage::GlobalMessage(const std::string& from, const std::string& content) : from(from), content(content) {
     this->type = model::Type::GlobalMessage;
 }
 

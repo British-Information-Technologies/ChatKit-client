@@ -1,18 +1,18 @@
-#include <fcntl.h>
-#include <sys/select.h>
-#include <memory>
-#include <string>
+#include "msd/channel.hpp"
 #include <algorithm>
-#include <sodium.h>
 #include <arpa/inet.h>
 #include <bits/stdc++.h>
-#include <netdb.h>
-#include <event2/listener.h>
-#include <event2/event.h>
 #include <event2/bufferevent.h>
+#include <event2/event.h>
+#include <event2/listener.h>
 #include <event2/util.h>
+#include <fcntl.h>
 #include <iostream>
-#include "msd/channel.hpp"
+#include <memory>
+#include <netdb.h>
+#include <sodium.h>
+#include <string>
+#include <sys/select.h>
 
 #include "tunnel.h"
 
@@ -21,239 +21,228 @@
 #include "model/networking/connection/tunnel/data-handler/secure-data-handler.h"
 #include "model/networking/utility/encode.h"
 
-#include "model/networking/messages/message.h"
 #include "model/networking/messages/internal/event-error.h"
+#include "model/networking/messages/message.h"
 
 #include "model/networking/connection/callback/io-callbacks.h"
 
 using namespace model;
 
 // get sockaddr, IPv4 or IPv6:
-void *Tunnel::GetInAddr(struct sockaddr *sa) {
-  return &(((struct sockaddr_in *)sa)->sin_addr);
+void* Tunnel::GetInAddr(struct sockaddr* sa) {
+    return &(((struct sockaddr_in*)sa)->sin_addr);
 }
 
 std::tuple<unsigned char*, unsigned char*> Tunnel::GenerateKeyPair() {
-  // ensures operations are thread safe
-  if (sodium_init() < 0) {
-    // sodium initialisation failed
-    return std::make_tuple(nullptr, nullptr);
-  }
-
-  // generate keypair
-  unsigned char *public_key = (unsigned char*) malloc(sizeof(unsigned char[crypto_kx_PUBLICKEYBYTES]));
-  unsigned char *secret_key = (unsigned char*) malloc(sizeof(unsigned char[crypto_kx_SECRETKEYBYTES]));
-
-  if(crypto_kx_keypair(public_key, secret_key) != 0) {
-    // keypair generation failed
-    free(public_key);
-    free(secret_key);
-
-    return std::make_tuple(nullptr, nullptr);
-  }
-  
-  return std::make_tuple(public_key, secret_key);
-}
-
-void Tunnel::SetState(DataHandler *next_handler) {
-  data_handler.reset(next_handler);
-}
-
-void Tunnel::SetBev(bufferevent *bev) {
-  this->bev.reset(
-    bev,
-    [](bufferevent *b){
-      bufferevent_free(b);
+    // ensures operations are thread safe
+    if (sodium_init() < 0) {
+        // sodium initialisation failed
+        return std::make_tuple(nullptr, nullptr);
     }
-  );  
+
+    // generate keypair
+    unsigned char* public_key = (unsigned char*)malloc(sizeof(unsigned char[crypto_kx_PUBLICKEYBYTES]));
+    unsigned char* secret_key = (unsigned char*)malloc(sizeof(unsigned char[crypto_kx_SECRETKEYBYTES]));
+
+    if (crypto_kx_keypair(public_key, secret_key) != 0) {
+        // keypair generation failed
+        free(public_key);
+        free(secret_key);
+
+        return std::make_tuple(nullptr, nullptr);
+    }
+
+    return std::make_tuple(public_key, secret_key);
 }
 
-const char* Tunnel::GetIpAddress()
-{
-  return ip_address.c_str();
+void Tunnel::SetState(DataHandler* next_handler) {
+    data_handler.reset(next_handler);
 }
 
-int Tunnel::GetPort()
-{
-  return std::stoi(port);
+void Tunnel::SetBev(bufferevent* bev) {
+    this->bev.reset(
+        bev,
+        [](bufferevent* b) {
+            bufferevent_free(b);
+        });
+}
+
+const char* Tunnel::GetIpAddress() {
+    return ip_address.c_str();
+}
+
+int Tunnel::GetPort() {
+    return std::stoi(port);
 }
 
 Tunnel::Tunnel(
-  const TunnelType type,
-  std::shared_ptr<Connection> connection,
-  std::shared_ptr<event_base> base,
-  const std::string &ip_address, 
-  const std::string &port,
-  unsigned char *public_key,
-  unsigned char *secret_key
-):type(type),
-  connection(connection),
-  ip_address(ip_address),
-  port(port),
-  data_handler(new InsecureDataHandler),
-  public_key(public_key),
-  secret_key(secret_key)
-{
-  this->bev.reset(bufferevent_socket_new(base.get(), -1, BEV_OPT_CLOSE_ON_FREE),
-    [](bufferevent *b){
-      bufferevent_free(b);
-    }
-  );  
+    const TunnelType type,
+    std::shared_ptr<Connection> connection,
+    std::shared_ptr<event_base> base,
+    const std::string& ip_address,
+    const std::string& port,
+    unsigned char* public_key,
+    unsigned char* secret_key) : type(type),
+                                 connection(connection),
+                                 ip_address(ip_address),
+                                 port(port),
+                                 data_handler(new InsecureDataHandler),
+                                 public_key(public_key),
+                                 secret_key(secret_key) {
+    this->bev.reset(bufferevent_socket_new(base.get(), -1, BEV_OPT_CLOSE_ON_FREE),
+                    [](bufferevent* b) {
+                        bufferevent_free(b);
+                    });
 }
 
 bool Tunnel::IsSecure() {
-  return data_handler->GetType() == DataHandlerType::Secure;
+    return data_handler->GetType() == DataHandlerType::Secure;
 }
 
 const TunnelType Tunnel::GetType() {
-  return type;
+    return type;
 }
 
 const std::string Tunnel::GetPublicKey() {
-  return Bin2Base64(public_key.get(), crypto_kx_PUBLICKEYBYTES);
+    return Bin2Base64(public_key.get(), crypto_kx_PUBLICKEYBYTES);
 }
 
-int Tunnel::Initiate()
-{
-  if (!bev.get()) {
-    // panic! failed to create connection - bev is null
-    return -1;
-  }
-  
-  struct addrinfo hints, *servinfo, *p;
-  int rv;
-  char s[INET_ADDRSTRLEN]; // add a 6 to INET to make it work with ivp 6 - remove 6 for ivp 4
-
-  memset(&hints, 0, sizeof hints);
-  hints.ai_family = AF_INET;  // add a 6 to make it work with ivp 6 - remove 6 for ivp 4
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_protocol = IPPROTO_TCP;
-
-  if ((rv = getaddrinfo(ip_address.c_str(), port.c_str(), &hints, &servinfo)) != 0) {
-    fprintf(stderr, "[Tunnel]: getaddrinfo = %s\n", gai_strerror(rv));
-    return -1;
-  }
-
-  // loop through all the results and connect to the first we can
-  int sockfd;
-  fd_set fdset;
-  struct timeval tv;
-  p = servinfo;
-
-  while (p != nullptr) {
-    if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-      printf("[Tunnel]: socket creation failed\n");
-      continue;
+int Tunnel::Initiate() {
+    if (!bev.get()) {
+        // panic! failed to create connection - bev is null
+        return -1;
     }
 
-    // Set the socket that the `connect` syscall to non-blocking
-    // F_SETFL will set status flag for the file descriptor
-    // and O_NONBLOCK is not block
-    fcntl(sockfd, F_SETFL, O_NONBLOCK);
-    connect(sockfd, p->ai_addr, p->ai_addrlen);
+    struct addrinfo hints, *servinfo, *p;
+    int rv;
+    char s[INET_ADDRSTRLEN]; // add a 6 to INET to make it work with ivp 6 - remove 6 for ivp 4
 
-    // Clear the set of file descriptors and include the current socket
-    FD_ZERO(&fdset);
-    FD_SET(sockfd, &fdset);
-    // set timeout in sec and microsec
-    tv.tv_sec = 1;
-    tv.tv_usec = 50;
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_INET; // add a 6 to make it work with ivp 6 - remove 6 for ivp 4
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
 
-    // `select` will return whenever any file descriptor in the set is writeable from the connect function (or ready for any other I/O operations),
-    // we have a `timevalue` struct given to define a timeout.
-    if (select(sockfd + 1, NULL, &fdset, NULL, &tv) != 0) {
-        int so_error;
-        socklen_t len = sizeof so_error;
-        // get the socket options to determine outcome of `select`.
-        // SOL_SOCKET defines the level to be options at API level
-        // and SO_ERROR is here to look if the socket errored,
-        // set the so_error option value.
-        getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &so_error, &len);
-        // if we timeout, then `select` has set this option
-        // in the socket file descriptors options.
-        if (so_error) {
-          close(sockfd);
-          perror("[Tunnel]: open socket failed\n");
-          break;
+    if ((rv = getaddrinfo(ip_address.c_str(), port.c_str(), &hints, &servinfo)) != 0) {
+        fprintf(stderr, "[Tunnel]: getaddrinfo = %s\n", gai_strerror(rv));
+        return -1;
+    }
+
+    // loop through all the results and connect to the first we can
+    int sockfd;
+    fd_set fdset;
+    struct timeval tv;
+    p = servinfo;
+
+    while (p != nullptr) {
+        if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
+            printf("[Tunnel]: socket creation failed\n");
+            continue;
         }
+
+        // Set the socket that the `connect` syscall to non-blocking
+        // F_SETFL will set status flag for the file descriptor
+        // and O_NONBLOCK is not block
+        fcntl(sockfd, F_SETFL, O_NONBLOCK);
+        connect(sockfd, p->ai_addr, p->ai_addrlen);
+
+        // Clear the set of file descriptors and include the current socket
+        FD_ZERO(&fdset);
+        FD_SET(sockfd, &fdset);
+        // set timeout in sec and microsec
+        tv.tv_sec = 1;
+        tv.tv_usec = 50;
+
+        // `select` will return whenever any file descriptor in the set is writeable from the connect function (or ready for any other I/O operations),
+        // we have a `timevalue` struct given to define a timeout.
+        if (select(sockfd + 1, NULL, &fdset, NULL, &tv) != 0) {
+            int so_error;
+            socklen_t len = sizeof so_error;
+            // get the socket options to determine outcome of `select`.
+            // SOL_SOCKET defines the level to be options at API level
+            // and SO_ERROR is here to look if the socket errored,
+            // set the so_error option value.
+            getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &so_error, &len);
+            // if we timeout, then `select` has set this option
+            // in the socket file descriptors options.
+            if (so_error) {
+                close(sockfd);
+                perror("[Tunnel]: open socket failed\n");
+                break;
+            }
+        }
+
+        p = p->ai_next;
     }
 
-    p = p->ai_next;
-  }
+    if (!p) {
+        fprintf(stderr, "[Tunnel]: failed to connect\n");
+        return -1;
+    }
 
-  if (!p) {
-    fprintf(stderr, "[Tunnel]: failed to connect\n");
-    return -1;
-  }
+    inet_ntop(p->ai_family, GetInAddr((struct sockaddr*)p->ai_addr), s, sizeof s);
 
-  inet_ntop(p->ai_family, GetInAddr((struct sockaddr *)p->ai_addr), s, sizeof s);
+    printf("[Tunnel]: connecting to %s\n", s);
 
-  printf("[Tunnel]: connecting to %s\n", s);
+    freeaddrinfo(servinfo); // all done with this structure
 
-  freeaddrinfo(servinfo);  // all done with this structure
-   
-  bufferevent_setfd(bev.get(), sockfd);
- 
-  switch (GetType()) {
+    bufferevent_setfd(bev.get(), sockfd);
+
+    switch (GetType()) {
     case TunnelType::Client:
-      IOCallbacks::SetClientConnectionCallbacks(bev.get(), connection.get());
-      break;
+        IOCallbacks::SetClientConnectionCallbacks(bev.get(), connection.get());
+        break;
 
     case TunnelType::Server:
-      IOCallbacks::SetServerConnectionCallbacks(bev.get(), connection.get());
-  }
-  
-  if (bufferevent_enable(bev.get(), EV_READ|EV_WRITE) != 0) {
-    // panic! failed to enable event socket read and write
-    return -1;
-  }
+        IOCallbacks::SetServerConnectionCallbacks(bev.get(), connection.get());
+    }
 
-  SetState(new InsecureDataHandler());
+    if (bufferevent_enable(bev.get(), EV_READ | EV_WRITE) != 0) {
+        // panic! failed to enable event socket read and write
+        return -1;
+    }
 
-  return 0;
+    SetState(new InsecureDataHandler());
+
+    return 0;
 }
 
-int Tunnel::EstablishSecureTunnel(Party party, const unsigned char *recv_pk) {
-  // ensures operations are thread safe
-  if (sodium_init() < 0) {
-    // sodium initialisation failed
-    return -1;
-  }
+int Tunnel::EstablishSecureTunnel(Party party, const unsigned char* recv_pk) {
+    // ensures operations are thread safe
+    if (sodium_init() < 0) {
+        // sodium initialisation failed
+        return -1;
+    }
 
-  // create shared secret with recipient PK and our SK
-  unsigned char *session_key_rx = (unsigned char*) malloc(sizeof(unsigned char[crypto_kx_SESSIONKEYBYTES]));
-  unsigned char *session_key_tx = (unsigned char*) malloc(sizeof(unsigned char[crypto_kx_SESSIONKEYBYTES]));
-  
-  int res = (party == Party::One) ?
-    crypto_kx_server_session_keys(
-      session_key_rx,
-      session_key_tx,
-      public_key.get(),
-      secret_key.get(),
-      recv_pk
-    ) :
-    crypto_kx_client_session_keys(
-      session_key_rx,
-      session_key_tx,
-      public_key.get(),
-      secret_key.get(),
-      recv_pk
-    );
+    // create shared secret with recipient PK and our SK
+    unsigned char* session_key_rx = (unsigned char*)malloc(sizeof(unsigned char[crypto_kx_SESSIONKEYBYTES]));
+    unsigned char* session_key_tx = (unsigned char*)malloc(sizeof(unsigned char[crypto_kx_SESSIONKEYBYTES]));
 
-  if(res) {
-    // shared secret creation failed
-    free(session_key_rx);
-    free(session_key_tx);
-    
-    return -1;
-  }
+    int res = (party == Party::One) ? crypto_kx_server_session_keys(
+                  session_key_rx,
+                  session_key_tx,
+                  public_key.get(),
+                  secret_key.get(),
+                  recv_pk)
+                                    : crypto_kx_client_session_keys(
+                                        session_key_rx,
+                                        session_key_tx,
+                                        public_key.get(),
+                                        secret_key.get(),
+                                        recv_pk);
 
-  SetState(new SecureDataHandler(session_key_rx, session_key_tx));
+    if (res) {
+        // shared secret creation failed
+        free(session_key_rx);
+        free(session_key_tx);
 
-  return 0;
+        return -1;
+    }
+
+    SetState(new SecureDataHandler(session_key_rx, session_key_tx));
+
+    return 0;
 }
 
-std::string Tunnel::ReadMessage(std::string &data)
-{
-  return data_handler->FormatRead(data);
+std::string Tunnel::ReadMessage(std::string& data) {
+    return data_handler->FormatRead(data);
 }

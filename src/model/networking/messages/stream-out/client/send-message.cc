@@ -1,17 +1,15 @@
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <string>
 
 #include "send-message.h"
 
 using namespace client_stream_out;
 
 SendMessage::SendMessage(
-    const std::string &time,
-    const std::string &date,
-    const std::string &content
-): time(time), date(date), content(content)
-{
+    const std::string& time,
+    const std::string& date,
+    const std::string& content) : time(time), date(date), content(content) {
     this->type = model::Type::SendMessage;
 }
 

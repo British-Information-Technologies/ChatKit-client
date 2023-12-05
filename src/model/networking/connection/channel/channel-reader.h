@@ -5,23 +5,22 @@
 #include <msd/channel.hpp>
 #include <optional>
 
-#include "model/networking/utility/data.h"
 #include "model/networking/messages/message.h"
+#include "model/networking/utility/data.h"
 
 namespace model {
-    class ChannelReader {
-        private:
-            std::shared_ptr<msd::channel<Data>> buffer;
-            
-        public:
-            ChannelReader(
-                std::shared_ptr<msd::channel<Data>> buffer
-            );
+class ChannelReader {
+private:
+    std::shared_ptr<msd::channel<Data>> buffer;
 
-            virtual ~ChannelReader() {}
+public:
+    ChannelReader(
+        std::shared_ptr<msd::channel<Data>> buffer);
 
-            std::optional<Data> ReadData();
-    };
-}
+    virtual ~ChannelReader() {}
+
+    std::optional<Data> ReadData();
+};
+} // namespace model
 
 #endif

@@ -1,12 +1,12 @@
 #ifndef MODEL_NETWORKING_CONNECTION_TUNNEL_H_
 #define MODEL_NETWORKING_CONNECTION_TUNNEL_H_
 
-#include <memory>
-#include <string>
-#include <event2/listener.h>
-#include <event2/event.h>
 #include <event2/bufferevent.h>
+#include <event2/event.h>
+#include <event2/listener.h>
+#include <memory>
 #include <msd/channel.hpp>
+#include <string>
 
 #include "model/networking/messages/message.h"
 
@@ -15,76 +15,75 @@
 #include "model/networking/connection/listener/event-listener.h"
 
 namespace model {
-  class Connection;
+class Connection;
 
-  enum class TunnelType {
+enum class TunnelType {
     Client,
     Server,
-  };
+};
 
-  enum class Party {
+enum class Party {
     One,
     Two
-  };
+};
 
-  class Tunnel {
-    private:
-      const TunnelType type;
-  
-      std::shared_ptr<Connection> connection;
+class Tunnel {
+private:
+    const TunnelType type;
 
-    protected:
-      const std::string ip_address;
-      const std::string port;
+    std::shared_ptr<Connection> connection;
 
-      std::shared_ptr<bufferevent> bev;
+protected:
+    const std::string ip_address;
+    const std::string port;
 
-      std::unique_ptr<unsigned char[]> public_key;
-      std::unique_ptr<unsigned char[]> secret_key;
-      
-      std::shared_ptr<DataHandler> data_handler;
- 
-    private:
-      void *GetInAddr(struct sockaddr *);
+    std::shared_ptr<bufferevent> bev;
 
-    protected:
-      void SetState(DataHandler *);
-      
-      static std::tuple<unsigned char*, unsigned char*> GenerateKeyPair();
- 
-      Tunnel(
+    std::unique_ptr<unsigned char[]> public_key;
+    std::unique_ptr<unsigned char[]> secret_key;
+
+    std::shared_ptr<DataHandler> data_handler;
+
+private:
+    void* GetInAddr(struct sockaddr*);
+
+protected:
+    void SetState(DataHandler*);
+
+    static std::tuple<unsigned char*, unsigned char*> GenerateKeyPair();
+
+    Tunnel(
         const TunnelType type,
         std::shared_ptr<Connection> connection,
         std::shared_ptr<struct event_base> base,
-        const std::string &ip_address,
-        const std::string &port,
-        unsigned char *public_key,
-        unsigned char *secret_key
-      );
+        const std::string& ip_address,
+        const std::string& port,
+        unsigned char* public_key,
+        unsigned char* secret_key);
 
-      //virtual ~Tunnel() {}
-    
-    public:
-      void SetBev(bufferevent *bev);
+    //virtual ~Tunnel() {}
 
-      const char* GetIpAddress();
+public:
+    void SetBev(bufferevent* bev);
 
-      int GetPort();
-      
-      bool IsSecure();
+    const char* GetIpAddress();
 
-      const TunnelType GetType();
+    int GetPort();
 
-      const std::string GetPublicKey();
-      
-      int Initiate();
+    bool IsSecure();
 
-      int EstablishSecureTunnel(Party party, const unsigned char *recv_pk);
-      
-      virtual int SendMessage(Message *message) = 0;
+    const TunnelType GetType();
 
-      std::string ReadMessage(std::string &data);
-  };
-}  // namespace model_networking
+    const std::string GetPublicKey();
+
+    int Initiate();
+
+    int EstablishSecureTunnel(Party party, const unsigned char* recv_pk);
+
+    virtual int SendMessage(Message* message) = 0;
+
+    std::string ReadMessage(std::string& data);
+};
+} // namespace model
 
 #endif

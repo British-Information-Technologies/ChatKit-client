@@ -6,12 +6,12 @@
 #include "../stream-out.h"
 
 namespace model {
-    class ClientStreamOut: public StreamOut {
-        public:
-            virtual std::string Serialize() = 0;
-            
-            virtual StreamType GetStreamType() = 0;
-    };
-}
+class ClientStreamOut : public StreamOut {
+public:
+    virtual std::string Serialize() = 0;
+
+    virtual StreamType GetStreamType() = 0;
+};
+} // namespace model
 
 #endif

@@ -1,16 +1,14 @@
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <string>
 
 #include "got-info.h"
 
 using namespace network_stream_in;
 
 GotInfo::GotInfo(
-    const std::string &server_name,
-    const std::string &server_owner
-): server_name(server_name), server_owner(server_owner)
-{
+    const std::string& server_name,
+    const std::string& server_owner) : server_name(server_name), server_owner(server_owner) {
     this->type = model::Type::GotInfo;
 }
 

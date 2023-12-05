@@ -6,14 +6,14 @@
 #include <string>
 
 namespace server_stream_in {
-    class Disconnected: public model::ServerStreamIn {
-        public:
-            Disconnected();
+class Disconnected : public model::ServerStreamIn {
+public:
+    Disconnected();
 
-            std::string Serialize();
-            
-            model::StreamType GetStreamType();
-    };
-}
+    std::string Serialize();
+
+    model::StreamType GetStreamType();
+};
+} // namespace server_stream_in
 
 #endif

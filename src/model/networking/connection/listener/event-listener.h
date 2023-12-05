@@ -1,46 +1,45 @@
 #ifndef MODEL_NETWORKING_CONNECTION_LISTENER_H_
 #define MODEL_NETWORKING_CONNECTION_LISTENER_H_
 
-#include <event2/listener.h>
-#include <event2/event.h>
 #include <event2/bufferevent.h>
+#include <event2/event.h>
+#include <event2/listener.h>
 #include <memory>
 #include <string>
 
 namespace model {
-    class Connection;
+class Connection;
 
-    enum class EventListenerState {
-        Idle,
-        Listening
-    };
+enum class EventListenerState {
+    Idle,
+    Listening
+};
 
-    class EventListener {
-        private:
-            std::shared_ptr<event_base> base;
-            
-            std::shared_ptr<Connection> connection;
-            
-            EventListenerState state;
+class EventListener {
+private:
+    std::shared_ptr<event_base> base;
 
-            evconnlistener *listener;
+    std::shared_ptr<Connection> connection;
 
-        public:
-            EventListener(
-                std::shared_ptr<event_base> base,
-                std::shared_ptr<Connection> connection
-            );
-            
-            virtual ~EventListener();
+    EventListenerState state;
 
-            void Listen();
+    evconnlistener* listener;
 
-            void SetState(EventListenerState state);
+public:
+    EventListener(
+        std::shared_ptr<event_base> base,
+        std::shared_ptr<Connection> connection);
 
-            const EventListenerState GetState();
+    virtual ~EventListener();
 
-            const bool IsListening();
-    };
-}
+    void Listen();
+
+    void SetState(EventListenerState state);
+
+    const EventListenerState GetState();
+
+    const bool IsListening();
+};
+} // namespace model
 
 #endif
