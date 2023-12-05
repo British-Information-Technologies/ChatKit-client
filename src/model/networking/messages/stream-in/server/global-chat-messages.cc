@@ -1,15 +1,15 @@
 #include "global-chat-messages.h"
 
-#include <nlohmann/json.hpp>
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <nlohmann/json.hpp>
+#include <string>
 
 using json = nlohmann::json;
 
 using namespace server_stream_in;
 
-GlobalChatMessages::GlobalChatMessages(const json &messages): messages(messages) {
+GlobalChatMessages::GlobalChatMessages(const json& messages) : messages(messages) {
     this->type = model::Type::GlobalChatMessages;
 }
 

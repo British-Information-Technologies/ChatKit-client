@@ -1,6 +1,6 @@
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <string>
 
 #include "connecting.h"
 

@@ -17,25 +17,21 @@ std::shared_ptr<DataModel> Injector::inject_data_model() {
     std::shared_ptr<ServerUtility> server_api;
 
     std::shared_ptr<DataModel> data_model(
-      new DataModel(
-        friend_api,
-        server_api
-      )
-    );
+        new DataModel(
+            friend_api,
+            server_api));
 
     return data_model;
 }
 
 std::shared_ptr<NetworkModel> Injector::inject_network_model() {
-  std::shared_ptr<NetworkManager> network_manager(new NetworkManager());
-  
-  std::shared_ptr<NetworkModel> network_model(
-    new NetworkModel(
-      network_manager
-    )
-  );
-  
-  network_model->Run();
+    std::shared_ptr<NetworkManager> network_manager(new NetworkManager());
 
-  return network_model;
+    std::shared_ptr<NetworkModel> network_model(
+        new NetworkModel(
+            network_manager));
+
+    network_model->Run();
+
+    return network_model;
 }

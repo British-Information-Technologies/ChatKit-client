@@ -1,16 +1,14 @@
 #include "client-connected.h"
 
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <string>
 
 using namespace server_stream_in;
 
 ClientConnected::ClientConnected(
-    const std::string &id,
-    const std::string &username
-): id(id), username(username)
-{
+    const std::string& id,
+    const std::string& username) : id(id), username(username) {
     this->type = model::Type::ClientConnected;
 }
 

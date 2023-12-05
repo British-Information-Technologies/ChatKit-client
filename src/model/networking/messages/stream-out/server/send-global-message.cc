@@ -1,12 +1,12 @@
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <string>
 
 #include "send-global-message.h"
 
 using namespace server_stream_out;
 
-SendGlobalMessage::SendGlobalMessage(const std::string &content): content(content) {
+SendGlobalMessage::SendGlobalMessage(const std::string& content) : content(content) {
     this->type = model::Type::SendGlobalMessage;
 }
 

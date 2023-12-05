@@ -5,23 +5,23 @@
 
 #include <string>
 
-namespace server_stream_in {    
-    class PublicKey: public model::ServerStreamIn {
-        private:
-            const std::string from;
-            const std::string key;
-        
-        public:
-            PublicKey(const std::string &from, const std::string &key);
+namespace server_stream_in {
+class PublicKey : public model::ServerStreamIn {
+private:
+    const std::string from;
+    const std::string key;
 
-            std::string Serialize();
+public:
+    PublicKey(const std::string& from, const std::string& key);
 
-            std::string GetFrom();
+    std::string Serialize();
 
-            unsigned char* GetKey();
-            
-            model::StreamType GetStreamType();
-    };
-}
+    std::string GetFrom();
+
+    unsigned char* GetKey();
+
+    model::StreamType GetStreamType();
+};
+} // namespace server_stream_in
 
 #endif

@@ -7,23 +7,22 @@
 #include "../model/network-model.h"
 
 namespace view_model {
-  class NetworkViewModel {
-    private:
-      std::shared_ptr<model::NetworkModel> model;
+class NetworkViewModel {
+private:
+    std::shared_ptr<model::NetworkModel> model;
 
-      // Bindings
-      std::function<void()> showDirectMessage;
+    // Bindings
+    std::function<void()> showDirectMessage;
 
-    public:
-      NetworkViewModel(
+public:
+    NetworkViewModel(
         std::shared_ptr<model::NetworkModel> model,
-        std::function<void()> showDirectMessage
-      );
+        std::function<void()> showDirectMessage);
 
-      void SendMessageObserver(std::string &data);
+    void SendMessageObserver(std::string& data);
 
-      void OpenContactObserver();
-  };
-}  // namespace view_model
+    void OpenContactObserver();
+};
+} // namespace view_model
 
 #endif

@@ -4,8 +4,8 @@
 #include <gtkmm-4.0/gtkmm.h>
 
 class Injector {
-    public:
-        static Glib::RefPtr<Gtk::Application> inject_app();
+public:
+    static Glib::RefPtr<Gtk::Application> inject_app();
 };
 
 #endif

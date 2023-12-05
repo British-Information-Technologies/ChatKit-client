@@ -1,9 +1,9 @@
 #ifndef MODEL_NETWORKING_CLIENT_CONNECTION_H_
 #define MODEL_NETWORKING_CLIENT_CONNECTION_H_
 
+#include "msd/channel.hpp"
 #include <memory>
 #include <string>
-#include "msd/channel.hpp"
 
 #include "connection.h"
 
@@ -11,34 +11,32 @@
 #include "utility/data.h"
 
 namespace model {
-    class ClientConnection : public Connection {
-        private:
-            int GetRecipientPublicKey(unsigned char* recv_pk);
-            
-            void ReadMessageCb();
+class ClientConnection : public Connection {
+private:
+    int GetRecipientPublicKey(unsigned char* recv_pk);
 
-        protected:
-            ClientConnection(
-                const std::string &uuid,
-                std::shared_ptr<struct event_base> base,
-                msd::channel<Data> &network_manager_chann,
-                const std::string &ip_address,
-                const std::string &port,
-                unsigned char *public_key,
-                unsigned char *secret_key
-            );
+    void ReadMessageCb();
 
-        public:
-            static std::shared_ptr<Connection> Create(
-                const std::string &uuid,
-                std::shared_ptr<struct event_base> base,
-                msd::channel<Data> &network_manager_chann,
-                const std::string &ip_address,
-                const std::string &port
-            );
-            
-            int SendMessage(Message *message);
-    };
-}  // namespace model
+protected:
+    ClientConnection(
+        const std::string& uuid,
+        std::shared_ptr<struct event_base> base,
+        msd::channel<Data>& network_manager_chann,
+        const std::string& ip_address,
+        const std::string& port,
+        unsigned char* public_key,
+        unsigned char* secret_key);
+
+public:
+    static std::shared_ptr<Connection> Create(
+        const std::string& uuid,
+        std::shared_ptr<struct event_base> base,
+        msd::channel<Data>& network_manager_chann,
+        const std::string& ip_address,
+        const std::string& port);
+
+    int SendMessage(Message* message);
+};
+} // namespace model
 
 #endif

@@ -6,14 +6,14 @@
 #include "./network-stream-out.h"
 
 namespace network_stream_out {
-    class Info: public model::NetworkStreamOut {
-        public:
-            Info();
+class Info : public model::NetworkStreamOut {
+public:
+    Info();
 
-            std::string Serialize();
-            
-            model::StreamType GetStreamType();
-    };
-}
+    std::string Serialize();
+
+    model::StreamType GetStreamType();
+};
+} // namespace network_stream_out
 
 #endif

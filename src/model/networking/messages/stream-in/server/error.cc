@@ -1,12 +1,12 @@
 #include "error.h"
 
-#include <string>
 #include <fmt/core.h>
 #include <magic_enum.hpp>
+#include <string>
 
 using namespace server_stream_in;
 
-Error::Error(const std::string &msg): msg(msg) {
+Error::Error(const std::string& msg) : msg(msg) {
     this->type = model::Type::Error;
 }
 
