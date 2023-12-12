@@ -23,7 +23,7 @@ EventListener::EventListener(
       listener(nullptr) {}
 
 EventListener::~EventListener() {
-    if (listener) {
+    if (listener != nullptr) {
         evconnlistener_free(listener);
     }
 }
@@ -45,7 +45,7 @@ void EventListener::Listen() {
 
     listener = evconnlistener_new_bind(
         base.get(),
-        ListenerCallbacks::AcceptConnectionCbHandler,
+        model_networking_connection_callback::AcceptConnectionCbHandler,
         connection.get(),
         LEV_OPT_CLOSE_ON_FREE | LEV_OPT_REUSEABLE,
         -1,
@@ -53,7 +53,7 @@ void EventListener::Listen() {
         sizeof(sin));
 
     SetState(EventListenerState::Listening);
-    evconnlistener_set_error_cb(listener, ListenerCallbacks::AcceptErrorCbHandler);
+    evconnlistener_set_error_cb(listener, model_networking_connection_callback::AcceptErrorCbHandler);
 
     printf("[EventListener]: listener started\n");
 }

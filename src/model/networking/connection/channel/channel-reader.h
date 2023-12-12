@@ -17,8 +17,6 @@ public:
     ChannelReader(
         std::shared_ptr<msd::channel<Data>> buffer);
 
-    virtual ~ChannelReader() {}
-
     std::optional<Data> ReadData();
 };
 } // namespace model

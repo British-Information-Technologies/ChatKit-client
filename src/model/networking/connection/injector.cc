@@ -20,7 +20,7 @@ std::shared_ptr<Connection> Injector::inject_connection(
     std::shared_ptr<ChannelWriter> buffer_writer) {
     std::shared_ptr<Connection> connection = std::make_shared<Connection>();
 
-    connection->uuid;
+    connection->uuid = uuid;
 
     connection->tunnel = GetTunnel(
         type == ConnectionType::Client ? TunnelType::Client : TunnelType::Server,
@@ -33,7 +33,7 @@ std::shared_ptr<Connection> Injector::inject_connection(
         base,
         connection));
 
-    connection->channel = buffer_writer;
+    connection->channel = std::move(buffer_writer);
 
     return connection;
 }

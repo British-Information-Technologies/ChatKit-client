@@ -41,14 +41,11 @@ std::tuple<unsigned char*, unsigned char*> Tunnel::GenerateKeyPair() {
     }
 
     // generate keypair
-    unsigned char* public_key = (unsigned char*)malloc(sizeof(unsigned char[crypto_kx_PUBLICKEYBYTES]));
-    unsigned char* secret_key = (unsigned char*)malloc(sizeof(unsigned char[crypto_kx_SECRETKEYBYTES]));
+    unsigned char public_key[crypto_kx_PUBLICKEYBYTES];
+    unsigned char secret_key[crypto_kx_SECRETKEYBYTES];
 
     if (crypto_kx_keypair(public_key, secret_key) != 0) {
         // keypair generation failed
-        free(public_key);
-        free(secret_key);
-
         return std::make_tuple(nullptr, nullptr);
     }
 
@@ -80,15 +77,16 @@ Tunnel::Tunnel(
     std::shared_ptr<Connection> connection,
     std::shared_ptr<event_base> base,
     const std::string& ip_address,
-    const std::string& port,
-    unsigned char* public_key,
-    unsigned char* secret_key) : type(type),
-                                 connection(connection),
-                                 ip_address(ip_address),
-                                 port(port),
-                                 data_handler(new InsecureDataHandler),
-                                 public_key(public_key),
-                                 secret_key(secret_key) {
+    const std::string& port) : type(type),
+                               connection(connection),
+                               ip_address(ip_address),
+                               port(port),
+                               data_handler(new InsecureDataHandler) {
+    auto [public_key, secret_key] = GenerateKeyPair();
+
+    this->public_key.reset(public_key);
+    this->secret_key.reset(secret_key);
+
     this->bev.reset(bufferevent_socket_new(base.get(), -1, BEV_OPT_CLOSE_ON_FREE),
                     [](bufferevent* b) {
                         bufferevent_free(b);
@@ -189,11 +187,11 @@ int Tunnel::Initiate() {
 
     switch (GetType()) {
     case TunnelType::Client:
-        IOCallbacks::SetClientConnectionCallbacks(bev.get(), connection.get());
+        model_networking_connection_callback::SetClientConnectionCallbacks(bev.get(), connection.get());
         break;
 
     case TunnelType::Server:
-        IOCallbacks::SetServerConnectionCallbacks(bev.get(), connection.get());
+        model_networking_connection_callback::SetServerConnectionCallbacks(bev.get(), connection.get());
     }
 
     if (bufferevent_enable(bev.get(), EV_READ | EV_WRITE) != 0) {
@@ -214,8 +212,8 @@ int Tunnel::EstablishSecureTunnel(Party party, const unsigned char* recv_pk) {
     }
 
     // create shared secret with recipient PK and our SK
-    unsigned char* session_key_rx = (unsigned char*)malloc(sizeof(unsigned char[crypto_kx_SESSIONKEYBYTES]));
-    unsigned char* session_key_tx = (unsigned char*)malloc(sizeof(unsigned char[crypto_kx_SESSIONKEYBYTES]));
+    unsigned char session_key_rx[crypto_kx_SESSIONKEYBYTES];
+    unsigned char session_key_tx[crypto_kx_SESSIONKEYBYTES];
 
     int res = (party == Party::One) ? crypto_kx_server_session_keys(
                   session_key_rx,
@@ -232,9 +230,6 @@ int Tunnel::EstablishSecureTunnel(Party party, const unsigned char* recv_pk) {
 
     if (res) {
         // shared secret creation failed
-        free(session_key_rx);
-        free(session_key_tx);
-
         return -1;
     }
 

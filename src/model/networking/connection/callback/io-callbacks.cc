@@ -8,8 +8,15 @@
 #include "model/networking/utility/buffer-reader.h"
 
 using namespace model;
+using namespace model_networking_connection_callback;
 
-void IOCallbacks::ReadMessageClientCbHandler(
+namespace {
+void ReadMessageClientCbHandler(struct bufferevent* bev, void* ptr);
+void ReadMessageServerCbHandler(struct bufferevent* bev, void* ptr);
+void WriteMessageCbHandler(struct bufferevent* bev, void* ptr);
+void EventCbHandler(struct bufferevent* bev, short events, void* ptr);
+
+void ReadMessageClientCbHandler(
     struct bufferevent* bev,
     void* ptr) {
     // cast connection object
@@ -37,7 +44,7 @@ void IOCallbacks::ReadMessageClientCbHandler(
         message);
 }
 
-void IOCallbacks::ReadMessageServerCbHandler(
+void ReadMessageServerCbHandler(
     struct bufferevent* bev,
     void* ptr) {
     // cast connection object
@@ -70,13 +77,13 @@ void IOCallbacks::ReadMessageServerCbHandler(
         message);
 }
 
-void IOCallbacks::WriteMessageCbHandler(
+void WriteMessageCbHandler(
     struct bufferevent* bev,
     void* ptr) {
     printf("[Connection]: data successfully written to socket\n");
 }
 
-void IOCallbacks::EventCbHandler(
+void EventCbHandler(
     struct bufferevent* bev,
     short events,
     void* ptr) {
@@ -84,35 +91,36 @@ void IOCallbacks::EventCbHandler(
         printf("[Connection]: buffer event error, terminating connection!\n");
 
         /* send data to network manager - todo add message factory
-    json data = {
-      { "sockfd", bufferevent_getfd(bev.get()) },
-      { "internal", internal::EventError("Buffer Event Error! Terminating Connection!").Serialize() },
-    };
+        json data = {
+        { "sockfd", bufferevent_getfd(bev.get()) },
+        { "internal", internal::EventError("Buffer Event Error! Terminating Connection!").Serialize() },
+        };
 
-    bufferevent_free(bev.get());
-    
-    data >> out_chann;*/
+        bufferevent_free(bev.get());
+        
+        data >> out_chann;*/
     }
 }
+} // namespace
 
-void IOCallbacks::SetClientConnectionCallbacks(
+void model_networking_connection_callback::SetClientConnectionCallbacks(
     struct bufferevent* bev,
     Connection* connection) {
     bufferevent_setcb(
         bev,
-        IOCallbacks::ReadMessageClientCbHandler,
-        IOCallbacks::WriteMessageCbHandler,
-        IOCallbacks::EventCbHandler,
+        ReadMessageClientCbHandler,
+        WriteMessageCbHandler,
+        EventCbHandler,
         connection);
 }
 
-void IOCallbacks::SetServerConnectionCallbacks(
+void model_networking_connection_callback::SetServerConnectionCallbacks(
     struct bufferevent* bev,
     Connection* connection) {
     bufferevent_setcb(
         bev,
-        IOCallbacks::ReadMessageServerCbHandler,
-        IOCallbacks::WriteMessageCbHandler,
-        IOCallbacks::EventCbHandler,
+        ReadMessageServerCbHandler,
+        WriteMessageCbHandler,
+        EventCbHandler,
         connection);
 }

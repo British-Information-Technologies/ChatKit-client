@@ -57,13 +57,11 @@ protected:
         std::shared_ptr<Connection> connection,
         std::shared_ptr<struct event_base> base,
         const std::string& ip_address,
-        const std::string& port,
-        unsigned char* public_key,
-        unsigned char* secret_key);
-
-    //virtual ~Tunnel() {}
+        const std::string& port);
 
 public:
+    virtual ~Tunnel() = default;
+
     void SetBev(bufferevent* bev);
 
     const char* GetIpAddress();

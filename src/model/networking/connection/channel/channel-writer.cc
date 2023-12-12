@@ -16,5 +16,5 @@ void ChannelWriter::SendData(
     const std::string& uuid,
     const int fd,
     std::shared_ptr<Message> message) {
-    std::move(Data{uuid, fd, message}) >> *buffer;
+    Data{uuid, fd, message} >> *buffer;
 }

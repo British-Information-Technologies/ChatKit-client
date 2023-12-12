@@ -25,32 +25,7 @@ ServerTunnel::ServerTunnel(
     std::shared_ptr<Connection> connection,
     std::shared_ptr<event_base> base,
     const std::string& ip_address,
-    const std::string& port,
-    unsigned char* public_key,
-    unsigned char* secret_key) : Tunnel(TunnelType::Server, connection, base, ip_address, port, public_key, secret_key) {}
-
-std::unique_ptr<Tunnel> ServerTunnel::Create(
-    std::shared_ptr<Connection> connection,
-    std::shared_ptr<struct event_base> base,
-    const std::string& ip_address,
-    const std::string& port) {
-    auto [public_key, secret_key] = GenerateKeyPair();
-
-    if (public_key == nullptr || public_key == nullptr) {
-        return nullptr;
-    }
-
-    // todo: refactor GenerateKeyPair and unique_ptr below to be more efficient
-    std::unique_ptr<Tunnel> tunnel(new ServerTunnel(
-        connection,
-        base,
-        ip_address,
-        port,
-        public_key,
-        secret_key));
-
-    return tunnel;
-}
+    const std::string& port) : Tunnel(TunnelType::Server, connection, base, ip_address, port) {}
 
 int ServerTunnel::SendMessage(Message* message) {
     if (

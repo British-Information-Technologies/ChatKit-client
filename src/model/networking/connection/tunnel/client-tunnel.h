@@ -11,17 +11,8 @@
 
 namespace model {
 class ClientTunnel : public Tunnel {
-protected:
-    ClientTunnel(
-        std::shared_ptr<Connection> connection,
-        std::shared_ptr<struct event_base> base,
-        const std::string& ip_address,
-        const std::string& port,
-        unsigned char* public_key,
-        unsigned char* secret_key);
-
 public:
-    static std::unique_ptr<Tunnel> Create(
+    ClientTunnel(
         std::shared_ptr<Connection> connection,
         std::shared_ptr<struct event_base> base,
         const std::string& ip_address,

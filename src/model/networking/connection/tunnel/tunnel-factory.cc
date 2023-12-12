@@ -16,8 +16,16 @@ std::unique_ptr<model::Tunnel> model::GetTunnel(
     const std::string& ip_address,
     const std::string& port) {
     if (type == model::TunnelType::Client) {
-        return model::ClientTunnel::Create(connection, base, ip_address, port);
+        return std::make_unique<ClientTunnel>(
+            connection,
+            base,
+            ip_address,
+            port);
     }
 
-    return model::ServerTunnel::Create(connection, base, ip_address, port);
+    return std::make_unique<ServerTunnel>(
+        connection,
+        base,
+        ip_address,
+        port);
 }

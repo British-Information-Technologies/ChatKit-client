@@ -11,8 +11,9 @@
 #include "model/networking/connection/connection.h"
 
 using namespace model;
+using namespace model_networking_connection_callback;
 
-void ListenerCallbacks::AcceptConnectionCbHandler(
+void model_networking_connection_callback::AcceptConnectionCbHandler(
     struct evconnlistener* listener,
     evutil_socket_t sockfd,
     struct sockaddr* address,
@@ -30,11 +31,11 @@ void ListenerCallbacks::AcceptConnectionCbHandler(
     // set tunnel callbacks
     switch (connection->tunnel->GetType()) {
     case TunnelType::Client:
-        IOCallbacks::SetClientConnectionCallbacks(bev, connection);
+        SetClientConnectionCallbacks(bev, connection);
         break;
 
     case TunnelType::Server:
-        IOCallbacks::SetServerConnectionCallbacks(bev, connection);
+        SetServerConnectionCallbacks(bev, connection);
     }
 
     // enable the bufferevent read and write
@@ -53,7 +54,7 @@ void ListenerCallbacks::AcceptConnectionCbHandler(
     std::cout << "[ListenerCallbacks]: connecting to " << address->sa_data << std::endl;
 }
 
-void ListenerCallbacks::AcceptErrorCbHandler(
+void model_networking_connection_callback::AcceptErrorCbHandler(
     struct evconnlistener* listener,
     void* ptr) {
     int err = EVUTIL_SOCKET_ERROR();

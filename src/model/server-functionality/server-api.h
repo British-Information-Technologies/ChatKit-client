@@ -12,6 +12,8 @@ class ServerAPI {
 public:
     ServerAPI() { server_list = std::make_unique<ServerHashmap>(); }
 
+    virtual ~ServerAPI() = default;
+
     virtual std::map<const std::string, std::shared_ptr<ServerNode>>::iterator Begin() = 0;
     virtual std::map<const std::string, std::shared_ptr<ServerNode>>::iterator End() = 0;
 

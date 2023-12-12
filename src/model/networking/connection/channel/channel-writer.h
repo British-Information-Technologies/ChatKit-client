@@ -18,8 +18,6 @@ public:
     ChannelWriter(
         std::shared_ptr<msd::channel<Data>> buffer);
 
-    virtual ~ChannelWriter() {}
-
     void SendData(
         const std::string& uuid,
         const int fd,

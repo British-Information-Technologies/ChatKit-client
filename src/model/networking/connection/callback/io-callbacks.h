@@ -6,34 +6,14 @@
 
 #include "model/networking/connection/connection.h"
 
-namespace model {
-class IOCallbacks {
-public:
-    static void ReadMessageClientCbHandler(
-        struct bufferevent* bev,
-        void* ptr);
+namespace model_networking_connection_callback {
+void SetClientConnectionCallbacks(
+    struct bufferevent* bev,
+    model::Connection* connection);
 
-    static void ReadMessageServerCbHandler(
-        struct bufferevent* bev,
-        void* ptr);
-
-    static void WriteMessageCbHandler(
-        struct bufferevent* bev,
-        void* ptr);
-
-    static void EventCbHandler(
-        struct bufferevent* bev,
-        short events,
-        void* ptr);
-
-    static void SetClientConnectionCallbacks(
-        struct bufferevent* bev,
-        Connection* connection);
-
-    static void SetServerConnectionCallbacks(
-        struct bufferevent* bev,
-        Connection* connection);
-};
-} // namespace model
+void SetServerConnectionCallbacks(
+    struct bufferevent* bev,
+    model::Connection* connection);
+} // namespace model_networking_connection_callback
 
 #endif

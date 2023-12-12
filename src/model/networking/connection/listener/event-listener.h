@@ -30,7 +30,7 @@ public:
         std::shared_ptr<event_base> base,
         std::shared_ptr<Connection> connection);
 
-    virtual ~EventListener();
+    ~EventListener();
 
     void Listen();
 
