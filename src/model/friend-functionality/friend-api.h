@@ -12,6 +12,8 @@ class FriendAPI {
 public:
     FriendAPI() { friend_list = std::make_unique<FriendHashmap>(); }
 
+    virtual ~FriendAPI() = default;
+
     virtual std::map<const std::string, std::shared_ptr<FriendNode>>::iterator Begin() = 0;
 
     virtual std::map<const std::string, std::shared_ptr<FriendNode>>::iterator End() = 0;

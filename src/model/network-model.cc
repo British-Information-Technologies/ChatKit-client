@@ -8,13 +8,10 @@
 using namespace model;
 
 NetworkModel::NetworkModel(
-    std::shared_ptr<NetworkManager> network_manager) {
-    this->network_manager = network_manager;
-}
+    std::unique_ptr<NetworkManager> network_manager) : network_manager(std::move(network_manager)) {}
 
 int NetworkModel::Run() {
-    network_manager->LaunchConnectionBase();
-    network_manager->LaunchInputChannel();
+    network_manager->LaunchConnectionManagement();
 
     CreateServiceServerConnection(); // TODO: move to connect on login and retry automatically if fail
 

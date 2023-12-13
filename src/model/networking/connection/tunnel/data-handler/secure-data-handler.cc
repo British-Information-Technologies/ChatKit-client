@@ -4,9 +4,10 @@
 #include <sodium.h>
 #include <string>
 
+#include "secure-data-handler.h"
+
 #include "model/networking/utility/decode.h"
 #include "model/networking/utility/encode.h"
-#include "secure-data-handler.h"
 
 using namespace model;
 

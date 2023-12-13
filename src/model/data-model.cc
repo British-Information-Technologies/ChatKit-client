@@ -11,11 +11,8 @@ using namespace model_friend_functionality;
 using namespace model_server_functionality;
 
 DataModel::DataModel(
-    std::shared_ptr<model_friend_functionality::FriendAPI> friend_api,
-    std::shared_ptr<model_server_functionality::ServerAPI> server_api) {
-    this->friend_api = friend_api;
-    this->server_api = server_api;
-}
+    std::unique_ptr<model_friend_functionality::FriendAPI> friend_api,
+    std::unique_ptr<model_server_functionality::ServerAPI> server_api) : friend_api(std::move(friend_api)), server_api(std::move(server_api)) {}
 
 bool DataModel::AddFriend(const std::string& uuid, const std::string& name, const std::string& ip, const std::string& port) {
     return friend_api->AddFriend(uuid, name, ip, port);

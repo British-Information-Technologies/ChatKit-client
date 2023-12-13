@@ -10,11 +10,8 @@
 using namespace view_model;
 
 NetworkViewModel::NetworkViewModel(
-    std::shared_ptr<model::NetworkModel> model,
-    std::function<void()> showDirectMessage) {
-    this->model = model;
-    this->showDirectMessage = showDirectMessage;
-}
+    std::unique_ptr<model::NetworkModel> model,
+    std::function<void()> showDirectMessage) : model(std::move(model)), showDirectMessage(showDirectMessage) {}
 
 void NetworkViewModel::SendMessageObserver(std::string& data) {
     if (data.empty()) {
