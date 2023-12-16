@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.12.1 -->
+<interface>
+  <requires lib="gtk" version="4.10"/>
+  <object class="GtkApplicationWindow" id="mainWindow">
+    <property name="maximized">True</property>
+    <property name="title">Draft</property>
+    <property name="titlebar">
+      <object class="GtkHeaderBar">
+        <property name="hexpand">True</property>
+        <property name="valign">start</property>
+        <child>
+          <object class="GtkButton" id="homepageButton">
+            <property name="child">
+              <object class="GtkImage">
+                <property name="file">./homepage.png</property>
+                <property name="pixel-size">20</property>
+              </object>
+            </property>
+            <style/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="friendListButton">
+            <property name="child">
+              <object class="GtkImage">
+                <property name="file">./friendlist.png</property>
+                <property name="pixel-size">20</property>
+              </object>
+            </property>
+            <style/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="serverListButton">
+            <property name="child">
+              <object class="GtkImage">
+                <property name="file">./serverlist.png</property>
+                <property name="pixel-size">20</property>
+              </object>
+            </property>
+            <style/>
+          </object>
+        </child>
+      </object>
+    </property>
+    <child>
+      <object class="GtkBox" id="mainBox">
+        <property name="hexpand">True</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+        <property name="spacing">10</property>
+        <property name="vexpand">True</property>
+        <child>
+          <object class="GtkBox" id="leftPane">
+            <property name="orientation">vertical</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="FriendList" id="friendListBox">
+                <property name="vexpand">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="ServerList" id="serverListBox">
+                <property name="vexpand">True</property>
+                <property name="visible">False</property>
+              </object>
+            </child>
+            <child>
+              <object class="ProfileCard" id="profileCardBox">
+                <property name="valign">end</property>
+              </object>
+            </child>
+            <style>
+              <class name="abc"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="rightPane">
+            <child>
+              <object class="HomePage" id="homepageBox">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="DirectMessage" id="directMessageBox">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="visible">False</property>
+              </object>
+            </child>
+            <child>
+              <object class="AddFriend" id="addFriendBox">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="visible">False</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

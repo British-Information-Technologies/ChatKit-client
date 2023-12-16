@@ -1,16 +1,8 @@
-#include <iostream>
+#include <gtkmm-4.0/gtkmm.h>
 
-#include "controller/client-controller.h"
+#include "injector.h"
 
-using namespace chat_client_controller;
-
-int main(int argc, char **argv) {
-  ClientController client_controller(argc, argv);
-  client_controller.Body();
-
-  // create application
-  // auto app = MainApplication::create();
-
-  // enter main loop
-  // app->run(argc, argv);
+int main(int argc, char** argv) {
+    Glib::RefPtr<Gtk::Application> view = Injector::inject_app();
+    view->run();
 }

@@ -1,6 +1,12 @@
 # Ignore build folder
 build/
+build_*/
+build-*/
+*-build-*/
 CMakeFiles/
+.cache/
+.idea/
+compile_commands.json
 
 # Ignore .vscode folder
 .vscode/
@@ -51,6 +57,3 @@ CPackConfig.cmake
 CPackSourceConfig.cmake
 cmake_install.cmake
 CTestTestfile.cmake
-
-# All generated make files
-Makefile

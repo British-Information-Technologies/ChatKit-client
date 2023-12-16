@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.12.1 -->
+<interface>
+  <requires lib="gtk" version="4.10"/>
+  <template class="ProfileCard" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="spacing">10</property>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+        <property name="spacing">10</property>
+        <property name="valign">start</property>
+        <child>
+          <object class="GtkButton">
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <child>
+              <object class="GtkImage">
+                <property name="file">./user-profile.png</property>
+                <property name="pixel-size">55</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">&lt;span size="21pt"&gt;[void]&lt;/span&gt;</property>
+                <property name="use-markup">True</property>
+                <property name="xalign">0.0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">&lt;span size="16pt"&gt;[void]&lt;/span&gt;</property>
+                <property name="use-markup">True</property>
+                <property name="xalign">0.0</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="valign">start</property>
+        <child>
+          <object class="GtkBox">
+            <property name="halign">start</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkButton">
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="file">./signal_00.png</property>
+                    <property name="pixel-size">38</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="file">./mic.png</property>
+                    <property name="pixel-size">38</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="file">./headphone.png</property>
+                    <property name="pixel-size">38</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="halign">end</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkButton">
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="file">./settings.png</property>
+                    <property name="pixel-size">38</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="file">./notification.png</property>
+                    <property name="pixel-size">38</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <style>
+      <class name="panel"/>
+    </style>
+  </template>
+</interface>

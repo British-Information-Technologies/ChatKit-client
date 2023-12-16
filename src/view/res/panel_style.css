@@ -1,0 +1,9 @@
+.panel {
+	background-color: #313338;
+	border-radius: 10px;
+}
+
+.foreground-panel {
+	background-color: #2B2D31;
+	border-radius: 10px;
+}

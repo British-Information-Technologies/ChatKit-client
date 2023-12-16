@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.12.1 -->
+<interface>
+  <requires lib="gtk" version="4.10"/>
+  <object class="GtkButton" id="openChatButton">
+    <property name="valign">start</property>
+    <child>
+      <object class="GtkBox">
+        <property name="hexpand">True</property>
+        <property name="margin-bottom">5</property>
+        <property name="margin-top">5</property>
+        <property name="spacing">10</property>
+        <property name="valign">center</property>
+        <property name="vexpand">True</property>
+        <child>
+          <object class="GtkImage">
+            <property name="file">./user-profile.png</property>
+            <property name="pixel-size">55</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="hexpand">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">5</property>
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkLabel" id="openChatUsernameLabel">
+                <property name="hexpand">True</property>
+                <property name="label">&lt;span size="18pt"&gt;[void]&lt;/span&gt;</property>
+                <property name="use-markup">True</property>
+                <property name="xalign">0.0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="openChatTypeLabel">
+                <property name="hexpand">True</property>
+                <property name="label">&lt;span size="14pt"&gt;[void]&lt;/span&gt;</property>
+                <property name="use-markup">True</property>
+                <property name="xalign">0.0</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -1,20 +1,25 @@
-#ifndef CPPCHATCLIENT_MODEL_FRIENDFUNCTIONALITY_FRIENDLIST_
-#define CPPCHATCLIENT_MODEL_FRIENDFUNCTIONALITY_FRIENDLIST_
+#ifndef MODEL_FRIEND_FUNCTIONALITY_FRIEND_LIST_H_
+#define MODEL_FRIEND_FUNCTIONALITY_FRIEND_LIST_H_
 
+#include <map>
 #include <memory>
 #include <string>
 
 #include "friend-node.h"
 
-namespace chat_client_model_friend_functionality {
+namespace model_friend_functionality {
 
 class FriendList {
- public:
-  virtual bool AddFriend(FriendNode&) = 0;
-  virtual bool DeleteFriend(const std::string&) = 0;
-  virtual std::shared_ptr<FriendNode> GetFriend(const std::string&) const = 0;
+public:
+    virtual ~FriendList(){};
+    virtual std::map<const std::string, std::shared_ptr<FriendNode>>::iterator GetBegin() = 0;
+    virtual std::map<const std::string, std::shared_ptr<FriendNode>>::iterator GetEnd() = 0;
+
+    virtual bool AddFriend(FriendNode& friend_node) = 0;
+    virtual bool DeleteFriend(const std::string& uuid) = 0;
+    virtual std::shared_ptr<FriendNode> GetFriend(const std::string& uuid) const = 0;
 };
 
-}  // namespace chat_client_model_friend_functionality
+} // namespace model_friend_functionality
 
 #endif

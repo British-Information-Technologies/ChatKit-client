@@ -1,0 +1,4 @@
+#include <sodium.h>
+
+#define base64_VARIANT sodium_base64_VARIANT_ORIGINAL
+#define base64_VARIANT_NO_PADDING sodium_base64_VARIANT_ORIGINAL_NO_PADDING
