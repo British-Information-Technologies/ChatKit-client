@@ -58,12 +58,19 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox">
+      <object class="GtkScrolledWindow">
+        <property name="child">
+          <object class="GtkBox" id="contactBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">5</property>
+            <property name="vexpand">True</property>
+          </object>
+        </property>
+        <property name="hscrollbar-policy">never</property>
         <property name="margin-bottom">10</property>
         <property name="margin-end">10</property>
         <property name="margin-start">10</property>
         <property name="margin-top">10</property>
-        <property name="orientation">vertical</property>
         <property name="vexpand">True</property>
       </object>
     </child>

@@ -14,6 +14,10 @@ private:
 public:
     GotInfo(const std::string& server_name, const std::string& server_owner);
 
+    std::string GetServerAlias();
+
+    std::string GetServerOwner();
+
     std::string Serialize();
 
     model::StreamType GetStreamType();

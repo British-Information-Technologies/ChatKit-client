@@ -13,6 +13,7 @@ set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 
 # --- find required locally installed libraries ---
 find_package(PkgConfig REQUIRED)
+find_package(Boost COMPONENTS system filesystem REQUIRED)
 
 pkg_check_modules(GTKMM REQUIRED gtkmm-4.0)
 pkg_check_modules(Libevent REQUIRED libevent)
@@ -73,8 +74,8 @@ FetchContent_MakeAvailable(googletest)
 
 
 # --- setup src ---
-include_directories(src /usr/local/include)
-link_directories(/usr/local/lib)
+include_directories(src /usr/local/include ${Boost_INCLUDE_DIRS})
+#link_directories(/usr/local/lib)
 
 add_subdirectory(src)
 

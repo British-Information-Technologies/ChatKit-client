@@ -81,6 +81,13 @@
         <child>
           <object class="GtkBox" id="rightPane">
             <child>
+              <object class="AddServer" id="addServerBox">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="visible">False</property>
+              </object>
+            </child>
+            <child>
               <object class="HomePage" id="homepageBox">
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>

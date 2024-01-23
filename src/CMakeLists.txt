@@ -7,8 +7,10 @@ set(RESOURCE_LIST
     view/res/server_list.ui
     view/res/profile_card.ui
     view/res/friend_profile_card.ui
+    view/res/server_profile_card.ui
     view/res/homepage.ui
     view/res/add_friend.ui
+    view/res/add_server.ui
     view/res/direct_message.ui
  
     view/res/panel_style.css
@@ -114,11 +116,19 @@ set(SOURCES
     view/main/left/friend-list-box.cc
     view/main/left/server-list-box.cc
     view/main/left/friend-profile-card-button.cc
+    view/main/left/server-profile-card-button.cc
 
     view/main/right/add-friend-box.cc
+    view/main/right/add-server-box.cc
     view/main/right/direct-message-box.cc
     
     view/login/login-application-window.cc
+
+    view/observers/notifications/notification-factory.cc
+    view/observers/notifications/notification-observer.cc
+    view/observers/notifications/profile-card-notification-observer.cc
+
+    view/style/string-modifiers.cc
 
     # root
     injector.cc
@@ -132,12 +142,12 @@ add_definitions(${GTKMM_CFLAGS_OTHER})
 add_executable(${BINARY}_run ${SOURCES})
 target_link_directories(${BINARY}_run PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_run PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt magic_enum::magic_enum)
+target_link_libraries(${BINARY}_run PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt magic_enum::magic_enum ${Boost_LIBRARIES})
 
 add_library(${BINARY}_lib STATIC ${SOURCES})
 target_link_directories(${BINARY}_lib PRIVATE ${GTKMM_LIBRARY_DIRS})
 target_include_directories(${BINARY}_lib PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt magic_enum::magic_enum)
+target_link_libraries(${BINARY}_lib PRIVATE ${GTKMM_LIBRARIES} nlohmann_json::nlohmann_json event sodium msd_channel fmt magic_enum::magic_enum ${Boost_LIBRARIES})
 
 # Don't want to copy if we're building in the source dir
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)

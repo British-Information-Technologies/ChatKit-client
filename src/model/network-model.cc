@@ -4,6 +4,7 @@
 #include "network-model.h"
 
 #include "networking/network-manager.h"
+#include "view/observers/notifications/notification-observer.h"
 
 using namespace model;
 
@@ -12,10 +13,15 @@ NetworkModel::NetworkModel(
 
 int NetworkModel::Run() {
     network_manager->LaunchConnectionManagement();
-
-    CreateServiceServerConnection(); // TODO: move to connect on login and retry automatically if fail
-
     return 0;
+}
+
+int NetworkModel::SetNotification(const std::string& uuid, view::NotificationObserver* notification) {
+    return network_manager->SetNotification(uuid, notification);
+}
+
+int NetworkModel::EnableBuffer(const std::string& uuid) {
+    return network_manager->EnableBuffer(uuid);
 }
 
 int NetworkModel::CreateClientConnection(
@@ -46,34 +52,28 @@ int NetworkModel::CreateServerConnection(
     const std::string& uuid,
     const std::string& ip_address,
     const std::string& port) {
-    if (network_manager->CreateConnection(
-            ConnectionType::Server,
-            uuid,
-            ip_address,
-            port)) {
-        return -1;
-    }
+    return network_manager->CreateConnection(
+        ConnectionType::Server,
+        uuid,
+        ip_address,
+        port);
 
-    return network_manager->InitiateSecureConnection(uuid, /*TODO*/ "some higher hierarchy server");
+    //return network_manager->InitiateSecureConnection(uuid, /*TODO*/ "some higher hierarchy server");
 }
 
-int NetworkModel::CreateServiceServerConnection() {
-    // TODO: load ip addresses and ports (currently faked)
+int NetworkModel::CreateServiceConnection() {
+    // TODO: when service server exists replace server connection with service connection
     const std::string uuid = "some higher hierarchy server";
-    const std::string ip_address = "192.168.0.59";
-    const std::string port = "5790";
+    const std::string ip_address = "84.68.132.52";
+    const std::string port = "5600";
 
-    if (network_manager->CreateConnection(
-            ConnectionType::Server,
-            uuid,
-            ip_address,
-            port)) {
+    if (CreateServerConnection(uuid, ip_address, port)) {
         return -1;
-    }
+    };
 
-    /* TODO: currently this connection will never recieve a pk to make it secure. 
-   *       When done, it should ask some CA or something to verify it the pk
-   *       it recieves.
+    /* TODO: currently this connection will never recieve a pk to make its secure. 
+   *         When done, it should ask some CA or something to verify the pk
+   *         it recieves.
    */
     return 0;
 }

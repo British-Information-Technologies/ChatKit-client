@@ -23,6 +23,7 @@ private:
     Glib::RefPtr<Gtk::Box> home_page;
     Glib::RefPtr<Gtk::Box> direct_msg;
     Glib::RefPtr<Gtk::Box> add_friend;
+    Glib::RefPtr<Gtk::Box> add_server;
 
 public:
     MainApplicationWindow(
@@ -33,7 +34,9 @@ public:
         Glib::RefPtr<Gtk::Box> profile_card,
         Glib::RefPtr<Gtk::Box> home_page,
         Glib::RefPtr<Gtk::Box> direct_msg,
-        Glib::RefPtr<Gtk::Box> add_friend);
+        Glib::RefPtr<Gtk::Box> add_friend,
+        Glib::RefPtr<Gtk::Box> add_server);
+
     virtual ~MainApplicationWindow();
 
     void SetNetworkViewModel(std::shared_ptr<view_model::NetworkViewModel> network_vm);
@@ -43,6 +46,8 @@ public:
     void SetDirectMessageState();
 
     void SetAddFriendState();
+
+    void SetAddServerState();
 
     void SetFriendListState();
 

@@ -6,15 +6,15 @@
 
 namespace model {
 enum class StreamType {
-    StreamIn,
     ClientStreamIn,
     ServerStreamIn,
     NetworkStreamIn,
+    StreamIn,
 
-    StreamOut,
     ClientStreamOut,
     ServerStreamOut,
     NetworkStreamOut,
+    StreamOut,
 
     Internal
 };

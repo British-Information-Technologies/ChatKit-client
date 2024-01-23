@@ -5,7 +5,7 @@
 #include "buffer-reader.h"
 
 std::string model::ReadBufferLine(bufferevent* bev) {
-    std::string payload;
+    std::string packet;
 
     const int buffer_size = 1024;
     char buffer[buffer_size];
@@ -16,8 +16,8 @@ std::string model::ReadBufferLine(bufferevent* bev) {
     int bytes_read;
     while ((bytes_read = evbuffer_remove(input, buffer, buffer_size)) > 0) {
         // create string from buffer
-        payload.append(buffer, bytes_read);
+        packet.append(buffer, bytes_read);
     }
 
-    return payload;
+    return packet;
 }

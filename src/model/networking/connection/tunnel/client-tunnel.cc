@@ -34,8 +34,7 @@ int ClientTunnel::SendMessage(Message* message) {
         return -1;
     }
 
-    std::string msg_str = message->Serialize();
-    std::string packet = data_handler->FormatSend(msg_str);
+    std::string packet = message->Serialize();
 
     if (!packet.length()) {
         // packet is empty, failed to format message

@@ -12,11 +12,12 @@
 namespace model {
 class ChannelWriter {
 private:
-    std::shared_ptr<msd::channel<Data>> buffer;
+    msd::channel<Data> buffer;
 
 public:
-    ChannelWriter(
-        std::shared_ptr<msd::channel<Data>> buffer);
+    ChannelWriter();
+
+    msd::channel<Data>& GetBuffer();
 
     void SendData(
         const std::string& uuid,

@@ -9,12 +9,15 @@
 
 using namespace model;
 
-ChannelWriter::ChannelWriter(
-    std::shared_ptr<msd::channel<Data>> buffer) : buffer(buffer) {}
+ChannelWriter::ChannelWriter() : buffer(msd::channel<Data>()) {}
+
+msd::channel<Data>& ChannelWriter::GetBuffer() {
+    return buffer;
+}
 
 void ChannelWriter::SendData(
     const std::string& uuid,
     const int fd,
     std::shared_ptr<Message> message) {
-    Data{uuid, fd, message} >> *buffer;
+    Data{uuid, fd, message} >> buffer;
 }

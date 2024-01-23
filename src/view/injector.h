@@ -19,6 +19,9 @@ public:
         std::shared_ptr<view_model::NetworkViewModel> network_vm,
         const std::string& uuid);
 
+    static std::shared_ptr<Gtk::Button> inject_server_profile_card(
+        std::shared_ptr<view_model::NetworkViewModel> network_vm);
+
 private:
     static int UpdateBuilder(
         const Glib::RefPtr<Gtk::Builder>& ref_builder,

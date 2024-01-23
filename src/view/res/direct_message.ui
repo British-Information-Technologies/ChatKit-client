@@ -65,6 +65,7 @@
         <child>
           <object class="GtkEntry" id="messageEntry">
             <property name="hexpand">True</property>
+            <property name="max-length">250</property>
             <property name="placeholder-text">Message</property>
             <property name="show-emoji-icon">True</property>
           </object>

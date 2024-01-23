@@ -11,11 +11,10 @@
 namespace model {
 class ChannelReader {
 private:
-    std::shared_ptr<msd::channel<Data>> buffer;
+    msd::channel<Data>& buffer;
 
 public:
-    ChannelReader(
-        std::shared_ptr<msd::channel<Data>> buffer);
+    ChannelReader(msd::channel<Data>& buffer);
 
     std::optional<Data> ReadData();
 };

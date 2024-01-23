@@ -18,6 +18,7 @@
 #include "model/networking/connection/tunnel/tunnel-factory.h"
 #include "network-manager.h"
 #include "utility/data.h"
+#include "view/observers/notifications/notification-observer.h"
 
 using namespace model;
 
@@ -34,6 +35,24 @@ NetworkManager::NetworkManager(
 
 NetworkManager::~NetworkManager() {
     connections.clear();
+}
+
+int NetworkManager::SetNotification(const std::string& uuid, view::NotificationObserver* notification) {
+    if (!connections.contains(uuid)) {
+        return -1;
+    }
+
+    connections.at(uuid)->notification.reset(notification);
+
+    return 0;
+}
+
+int NetworkManager::EnableBuffer(const std::string& uuid) {
+    if (!connections.contains(uuid)) {
+        return -1;
+    }
+
+    return connections.at(uuid)->tunnel->EnableBuffer();
 }
 
 void NetworkManager::LaunchConnectionManagement() {

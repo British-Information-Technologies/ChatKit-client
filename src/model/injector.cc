@@ -11,6 +11,8 @@
 
 #include "networking/network-manager.h"
 
+#include <iostream>
+
 using namespace model;
 using namespace model_friend_functionality;
 using namespace model_server_functionality;
@@ -28,10 +30,8 @@ std::unique_ptr<DataModel> Injector::inject_data_model() {
 
 // todo: create injection functions for different objects
 std::unique_ptr<NetworkModel> Injector::inject_network_model() {
-    std::shared_ptr<msd::channel<Data>> buffer = std::make_shared<msd::channel<Data>>();
-
-    std::unique_ptr<ChannelReader> buffer_reader = std::make_unique<ChannelReader>(buffer);
-    std::shared_ptr<ChannelWriter> buffer_writer = std::make_shared<ChannelWriter>(buffer);
+    std::shared_ptr<ChannelWriter> buffer_writer = std::make_shared<ChannelWriter>();
+    std::unique_ptr<ChannelReader> buffer_reader = std::make_unique<ChannelReader>(buffer_writer->GetBuffer());
 
     std::unique_ptr<NetworkThreadManager> thread_manager = std::make_unique<NetworkThreadManager>(
         std::move(buffer_reader));

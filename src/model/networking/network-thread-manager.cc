@@ -1,11 +1,21 @@
 #include "network-thread-manager.h"
 
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include "messages/internal/event-error.h"
 #include "messages/message.h"
 #include "messages/stream-in/server/public-key.h"
+#include "model/networking/connection/connection.h"
+#include "model/networking/connection/tunnel/client-tunnel.h"
+#include "model/networking/connection/tunnel/server-tunnel.h"
+#include "model/networking/messages/stream-in/network/got-info.h"
+#include "model/networking/messages/stream-out/network/connect.h"
+#include "model/networking/messages/stream-out/network/info.h"
 
 using namespace model;
 
@@ -44,7 +54,7 @@ void NetworkThreadManager::LaunchConnectionBaseHandler(
 
 void NetworkThreadManager::LaunchInputChannelHandler(
     std::unordered_map<std::string, std::shared_ptr<Connection>>& connections) {
-    std::cout << "[NetworkManager]: input channel handler launched" << std::endl;
+    std::cout << "[NetworkThreadManager]: input channel handler launched" << std::endl;
 
     // read incoming channel data from connection callbacks
     while (true) {
@@ -56,10 +66,71 @@ void NetworkThreadManager::LaunchInputChannelHandler(
 
         std::cout << "[NetworkManager]: recv channel data from sockfd " << data.value().sockfd << std::endl;
 
+        auto end_point = connections.at(data->uuid);
+
         switch (data.value().message->GetType()) {
+        case Type::Request: {
+            switch (end_point->state) {
+            case ConnectionState::NeedInfo: {
+                network_stream_out::Info info = network_stream_out::Info();
+
+                end_point->tunnel->SendMessage(&info);
+
+                break;
+            }
+
+            case ConnectionState::GotInfo: {
+                // todo: uuid, username should be loaded from some storage, currently random value
+                boost::uuids::random_generator uuid_generator;
+                boost::uuids::uuid uuid = uuid_generator();
+                std::stringstream ss;
+                ss << uuid;
+
+                network_stream_out::Connect connect = network_stream_out::Connect(
+                    ss.str(),
+                    "mitch",
+                    "111.111.111.111");
+
+                end_point->tunnel->SendMessage(&connect);
+
+                break;
+            }
+
+            default: {
+            }
+            }
+
+            break;
+        }
+
+        case Type::GotInfo: {
+            end_point->state = ConnectionState::GotInfo;
+
+            network_stream_in::GotInfo* info = dynamic_cast<network_stream_in::GotInfo*>(data.value().message.get());
+
+            // todo must check tunnel type but will be done with a refactor
+            end_point->alias = info->GetServerAlias();
+            end_point->name = info->GetServerOwner();
+
+            end_point->notification->Notify(end_point->alias, end_point->name);
+
+            break;
+        }
+
+        case Type::Connecting: {
+            end_point->state = ConnectionState::Connecting;
+
+            break;
+        }
+
+        case Type::Connected: {
+            end_point->state = ConnectionState::Connected;
+
+            break;
+        }
+
         case Type::PublicKey: {
-            server_stream_in::PublicKey* recv_pk = dynamic_cast<server_stream_in::PublicKey*>(
-                data.value().message.get());
+            server_stream_in::PublicKey* recv_pk = dynamic_cast<server_stream_in::PublicKey*>(data.value().message.get());
 
             std::string end_point_uuid = recv_pk->GetFrom();
 

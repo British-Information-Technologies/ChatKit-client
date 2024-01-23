@@ -14,7 +14,8 @@ MainApplicationWindow::MainApplicationWindow(
     Glib::RefPtr<Gtk::Box> profile_card,
     Glib::RefPtr<Gtk::Box> home_page,
     Glib::RefPtr<Gtk::Box> direct_msg,
-    Glib::RefPtr<Gtk::Box> add_friend) : Glib::ObjectBase("MainApplicationWindow"), Gtk::ApplicationWindow(cobject) {
+    Glib::RefPtr<Gtk::Box> add_friend,
+    Glib::RefPtr<Gtk::Box> add_server) : Glib::ObjectBase("MainApplicationWindow"), Gtk::ApplicationWindow(cobject) {
     this->refBuilder = refBuilder;
 
     this->refProvider = Gtk::CssProvider::create();
@@ -57,6 +58,8 @@ MainApplicationWindow::MainApplicationWindow(
     this->direct_msg = direct_msg;
 
     this->add_friend = add_friend;
+
+    this->add_server = add_server;
 }
 
 MainApplicationWindow::~MainApplicationWindow() {}
@@ -87,11 +90,13 @@ void MainApplicationWindow::SetNetworkViewModel(std::shared_ptr<view_model::Netw
 void MainApplicationWindow::SetHomePageState() {
     direct_msg->hide();
     add_friend->hide();
+    add_server->hide();
     home_page->show();
 }
 
 void MainApplicationWindow::SetDirectMessageState() {
     add_friend->hide();
+    add_server->hide();
     home_page->hide();
     direct_msg->show();
 }
@@ -99,7 +104,15 @@ void MainApplicationWindow::SetDirectMessageState() {
 void MainApplicationWindow::SetAddFriendState() {
     direct_msg->hide();
     home_page->hide();
+    add_server->hide();
     add_friend->show();
+}
+
+void MainApplicationWindow::SetAddServerState() {
+    direct_msg->hide();
+    home_page->hide();
+    add_friend->hide();
+    add_server->show();
 }
 
 void MainApplicationWindow::SetFriendListState() {

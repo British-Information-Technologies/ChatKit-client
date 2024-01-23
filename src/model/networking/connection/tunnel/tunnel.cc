@@ -64,6 +64,15 @@ void Tunnel::SetBev(bufferevent* bev) {
         });
 }
 
+int Tunnel::EnableBuffer() {
+    if (bufferevent_enable(bev.get(), EV_READ | EV_WRITE) != 0) {
+        // panic! failed to enable event socket read and write
+        return -1;
+    }
+
+    return 0;
+}
+
 const char* Tunnel::GetIpAddress() {
     return ip_address.c_str();
 }
@@ -137,6 +146,8 @@ int Tunnel::Initiate() {
             continue;
         }
 
+        bufferevent_setfd(bev.get(), sockfd);
+
         // Set the socket that the `connect` syscall to non-blocking
         // F_SETFL will set status flag for the file descriptor
         // and O_NONBLOCK is not block
@@ -164,9 +175,11 @@ int Tunnel::Initiate() {
             // in the socket file descriptors options.
             if (so_error) {
                 close(sockfd);
+                bufferevent_free(bev.get());
                 perror("[Tunnel]: open socket failed\n");
-                break;
             }
+
+            break;
         }
 
         p = p->ai_next;
@@ -183,8 +196,6 @@ int Tunnel::Initiate() {
 
     freeaddrinfo(servinfo); // all done with this structure
 
-    bufferevent_setfd(bev.get(), sockfd);
-
     switch (GetType()) {
     case TunnelType::Client:
         model_networking_connection_callback::SetClientConnectionCallbacks(bev.get(), connection.get());
@@ -192,11 +203,6 @@ int Tunnel::Initiate() {
 
     case TunnelType::Server:
         model_networking_connection_callback::SetServerConnectionCallbacks(bev.get(), connection.get());
-    }
-
-    if (bufferevent_enable(bev.get(), EV_READ | EV_WRITE) != 0) {
-        // panic! failed to enable event socket read and write
-        return -1;
     }
 
     SetState(new InsecureDataHandler());

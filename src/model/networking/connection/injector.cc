@@ -35,5 +35,7 @@ std::shared_ptr<Connection> Injector::inject_connection(
 
     connection->channel = std::move(buffer_writer);
 
+    connection->state = ConnectionState::NeedInfo;
+
     return connection;
 }

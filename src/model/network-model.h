@@ -5,6 +5,7 @@
 #include <string>
 
 #include "networking/network-manager.h"
+#include "view/observers/notifications/notification-observer.h"
 
 namespace model {
 class NetworkModel {
@@ -17,6 +18,10 @@ public:
 
     int Run();
 
+    int SetNotification(const std::string& uuid, view::NotificationObserver* notification);
+
+    int EnableBuffer(const std::string& uuid);
+
     int CreateClientConnection(
         const std::string& uuid,
         const std::string& ip_address,
@@ -27,7 +32,7 @@ public:
         const std::string& ip_address,
         const std::string& port);
 
-    int CreateServiceServerConnection();
+    int CreateServiceConnection();
 
     int SendMessage(const std::string& uuid, std::string& data);
 

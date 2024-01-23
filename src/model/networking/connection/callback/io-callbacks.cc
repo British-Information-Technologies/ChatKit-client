@@ -25,17 +25,14 @@ void ReadMessageClientCbHandler(
     // read packet
     std::string packet = ReadBufferLine(bev);
 
-    // decode or decode and decrypt data
-    std::string plaintext = connection->tunnel->ReadMessage(packet);
-
-    if (!plaintext.length()) {
-        // plaintext is empty, failed to format packet
+    if (!packet.length()) {
+        // packet is empty, failed to format packet
         return;
     }
 
-    std::cout << "[ClientCallbacks]: " << plaintext << std::endl;
+    std::cout << "[ClientCallbacks]: " << packet << std::endl;
 
-    std::shared_ptr<Message> message(DeserializeClientStreamIn(plaintext));
+    std::shared_ptr<Message> message(DeserializeClientStreamIn(packet));
 
     // send data to network manager
     connection->channel->SendData(
@@ -51,23 +48,20 @@ void ReadMessageServerCbHandler(
     Connection* connection = static_cast<Connection*>(ptr);
 
     // read encoded packet
-    std::string encoded_packet = ReadBufferLine(bev);
+    std::string packet = ReadBufferLine(bev);
 
-    // get plaintext
-    std::string plaintext = connection->tunnel->ReadMessage(encoded_packet);
-
-    if (!plaintext.length()) {
-        // plaintext is empty, failed to format encoded packet
+    if (!packet.length()) {
+        // packet is empty, failed to format packet
         return;
     }
 
-    std::cout << "[ServerConnection]: " << plaintext << std::endl;
+    std::cout << "[ServerConnection]: " << packet << std::endl;
 
-    std::shared_ptr<Message> message(DeserializeServerStreamIn(plaintext));
+    std::shared_ptr<Message> message(DeserializeServerStreamIn(packet));
 
     if (message->GetType() == Type::EventError) {
         // message is not a server message, check if network message
-        message.reset(DeserializeNetworkStreamIn(plaintext));
+        message.reset(DeserializeNetworkStreamIn(packet));
     }
 
     // send data to network manager
@@ -89,16 +83,6 @@ void EventCbHandler(
     void* ptr) {
     if (events && (BEV_EVENT_ERROR || BEV_EVENT_READING || BEV_EVENT_WRITING)) {
         printf("[Connection]: buffer event error, terminating connection!\n");
-
-        /* send data to network manager - todo add message factory
-        json data = {
-        { "sockfd", bufferevent_getfd(bev.get()) },
-        { "internal", internal::EventError("Buffer Event Error! Terminating Connection!").Serialize() },
-        };
-
-        bufferevent_free(bev.get());
-        
-        data >> out_chann;*/
     }
 }
 } // namespace

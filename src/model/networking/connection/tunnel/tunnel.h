@@ -64,6 +64,8 @@ public:
 
     void SetBev(bufferevent* bev);
 
+    int EnableBuffer();
+
     const char* GetIpAddress();
 
     int GetPort();

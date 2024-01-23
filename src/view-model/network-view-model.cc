@@ -1,3 +1,4 @@
+#include <functional>
 #include <gtkmm-4.0/gtkmm.h>
 #include <iostream>
 #include <memory>
@@ -6,12 +7,28 @@
 #include "network-view-model.h"
 
 #include "model/network-model.h"
+#include "view/observers/notifications/notification-observer.h"
 
 using namespace view_model;
+using namespace view;
 
 NetworkViewModel::NetworkViewModel(
     std::unique_ptr<model::NetworkModel> model,
     std::function<void()> showDirectMessage) : model(std::move(model)), showDirectMessage(showDirectMessage) {}
+
+void NetworkViewModel::ConnectToServer(
+    const std::string& ip_address,
+    const std::string& port,
+    view::NotificationObserver* notification) {
+    const std::string fake_uuid = "micky_server"; // TODO: replace
+    if (model->CreateServerConnection(fake_uuid, ip_address, port) != 0) {
+        return;
+    }
+
+    model->SetNotification(fake_uuid, notification);
+
+    model->EnableBuffer(fake_uuid);
+}
 
 void NetworkViewModel::SendMessageObserver(std::string& data) {
     if (data.empty()) {

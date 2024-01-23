@@ -13,4 +13,8 @@ static void server_list_class_init(ServerListClass* klass);
 
 static void server_list_init(ServerList* self);
 
+void set_add_server_button(std::function<void()> func);
+
+void append_server_to_list(Glib::RefPtr<Gtk::Widget> child);
+
 #endif

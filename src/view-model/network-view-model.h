@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "model/network-model.h"
+#include "view/observers/notifications/notification-observer.h"
 
 namespace view_model {
 class NetworkViewModel {
@@ -18,6 +19,11 @@ public:
     NetworkViewModel(
         std::unique_ptr<model::NetworkModel> model,
         std::function<void()> showDirectMessage);
+
+    void ConnectToServer(
+        const std::string& ip_address,
+        const std::string& port,
+        view::NotificationObserver* notification);
 
     void SendMessageObserver(std::string& data);
 

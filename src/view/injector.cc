@@ -1,9 +1,11 @@
 #include <functional>
 #include <gtkmm-4.0/gtkmm.h>
+#include <iostream>
 #include <memory>
 
 #include "injector.h"
 
+#include "sigc++/functors/mem_fun.h"
 #include "view-model/account-view-model.h"
 #include "view-model/injector.h"
 #include "view-model/network-view-model.h"
@@ -16,8 +18,10 @@
 #include "view/main/left/friend-profile-card-button.h"
 #include "view/main/left/profile-card-box.h"
 #include "view/main/left/server-list-box.h"
+#include "view/main/left/server-profile-card-button.h"
 
 #include "view/main/right/add-friend-box.h"
+#include "view/main/right/add-server-box.h"
 #include "view/main/right/direct-message-box.h"
 #include "view/main/right/home-page-box.h"
 
@@ -29,8 +33,9 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_login(
 
     UpdateBuilder(builder, "/view/res/login.ui");
 
-    std::shared_ptr<view_model::AccountViewModel> account_vm = view_model::Injector::inject_account_vm(
-        setViewState);
+    std::shared_ptr<view_model::AccountViewModel>
+        account_vm = view_model::Injector::inject_account_vm(
+            setViewState);
 
     std::shared_ptr<Gtk::ApplicationWindow> login_window(
         builder->get_widget_derived<LoginApplicationWindow>(
@@ -44,6 +49,7 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_login(
 std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
     // ensure custom types have been registered with the type system
     g_type_ensure(ADD_FRIEND_TYPE);
+    g_type_ensure(ADD_SERVER_TYPE);
     g_type_ensure(DIRECT_MESSAGE_TYPE);
     g_type_ensure(FRIEND_LIST_TYPE);
     g_type_ensure(SERVER_LIST_TYPE);
@@ -67,6 +73,8 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
 
     Glib::RefPtr<Gtk::Box> add_friend = builder->get_object<Gtk::Box>("addFriendBox");
 
+    Glib::RefPtr<Gtk::Box> add_server = builder->get_object<Gtk::Box>("addServerBox");
+
     // create main window
     std::shared_ptr<MainApplicationWindow> main_window(
         builder->get_widget_derived<MainApplicationWindow>(
@@ -77,7 +85,8 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
             profile_card,
             home_page,
             direct_msg,
-            add_friend));
+            add_friend,
+            add_server));
 
     // create network view model
     std::shared_ptr<view_model::NetworkViewModel> network_vm = view_model::Injector::inject_network_vm(
@@ -92,14 +101,27 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
         *main_window,
         &MainApplicationWindow::SetAddFriendState));
 
+    // assign server list button behaviour
+    set_add_server_button(sigc::mem_fun(
+        *main_window,
+        &MainApplicationWindow::SetAddServerState));
+
     // TODO: currently hard coded and faked, eventually change with net vm
     set_send_invite_button([network_vm]() {
-        auto friend_profile_card_button = Injector::inject_friend_profile_card(
+        auto profile_card_button = Injector::inject_friend_profile_card(
             network_vm,
             "faked uuid");
 
-        append_friend_to_list(friend_profile_card_button);
+        append_friend_to_list(profile_card_button);
     });
+
+    set_join_button([network_vm]() {
+        auto profile_card_button = Injector::inject_server_profile_card(network_vm);
+
+        append_server_to_list(profile_card_button);
+    });
+
+    set_server_code_entry(network_vm);
 
     set_message_entry(sigc::mem_fun(
         *network_vm,
@@ -119,7 +141,7 @@ std::shared_ptr<Gtk::Button> Injector::inject_friend_profile_card(
     const std::string username = "fake username";
     const std::string type = "fake type";
 
-    std::shared_ptr<FriendProfileCardButton> friend_profile_card_button(
+    std::shared_ptr<FriendProfileCardButton> profile_card_button(
         builder->get_widget_derived<FriendProfileCardButton>(
             builder,
             "openChatButton",
@@ -127,7 +149,28 @@ std::shared_ptr<Gtk::Button> Injector::inject_friend_profile_card(
             username,
             type));
 
-    return friend_profile_card_button;
+    return profile_card_button;
+}
+
+std::shared_ptr<Gtk::Button> Injector::inject_server_profile_card(
+    std::shared_ptr<view_model::NetworkViewModel> network_vm) {
+    Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
+
+    UpdateBuilder(builder, "/view/res/server_profile_card.ui");
+
+    // TODO: use uuid to load user data from local storage (names, etc)
+    const std::string server_name = "fake server name";
+    const std::string server_type = "fake type";
+
+    std::shared_ptr<ServerProfileCardButton> profile_card_button(
+        builder->get_widget_derived<ServerProfileCardButton>(
+            builder,
+            "openServerButton",
+            network_vm,
+            server_name,
+            server_type));
+
+    return profile_card_button;
 }
 
 int Injector::UpdateBuilder(
