@@ -1,21 +1,24 @@
 #ifndef VIEW_OBSERVERS_NOTIFICATIONS_PROFILE_CARD_H_
 #define VIEW_OBSERVERS_NOTIFICATIONS_PROFILE_CARD_H_
 
-#include "view/observers/notifications/notification-observer.h"
+#include "glibmm/refptr.h"
+#include "gtkmm/label.h"
+#include <string>
 
-#include <gtkmm-4.0/gtkmm/widget.h>
+#include "view/observers/notifications/notification-observer.h"
 
 namespace view {
 class ProfileCardNotificationObserver : public NotificationObserver {
 private:
-    GtkLabel* first;
-    GtkLabel* second;
+    const Glib::RefPtr<Gtk::Widget> widget;
+    const Glib::RefPtr<Gtk::Label> first;
+    const Glib::RefPtr<Gtk::Label> second;
 
 public:
     ProfileCardNotificationObserver(
-        GtkWidget* widget,
-        GtkLabel* first,
-        GtkLabel* second);
+        const Glib::RefPtr<Gtk::Widget> widget,
+        const Glib::RefPtr<Gtk::Label> first,
+        const Glib::RefPtr<Gtk::Label> second);
 
     void Notify(const std::string& alias, const std::string& owner);
 

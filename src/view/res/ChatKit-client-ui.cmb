@@ -12,8 +12,21 @@
 	(9,1,None,"add_friend.ui",None,None,None,None,None,None,None),
 	(11,None,None,"friend_profile_card.ui",None,None,None,None,None,None,None),
 	(12,1,None,"add_server.ui",None,None,None,None,None,None,None),
-	(13,1,None,"server_profile_card.ui",None,None,None,None,None,None,None)
+	(13,None,None,"server_profile_card.ui",None,None,None,None,None,None,None)
   </ui>
+  <ui_library>
+	(1,"gtk","4.10",None),
+	(3,"gtk","4.10",None),
+	(4,"gtk","4.10",None),
+	(5,"gtk","4.10",None),
+	(6,"gtk","4.10",None),
+	(7,"gtk","4.10",None),
+	(8,"gtk","4.10",None),
+	(9,"gtk","4.10",None),
+	(11,"gtk","4.10",None),
+	(12,"gtk","4.10",None),
+	(13,"gtk","4.10",None)
+  </ui_library>
   <css>
 	(1,"panel_style.css",None,1)
   </css>
@@ -145,7 +158,7 @@
 	(13,3,"GtkImage",None,2,None,None,None,None,None),
 	(13,4,"GtkBox",None,2,None,None,None,1,None),
 	(13,5,"GtkLabel","openServerNameLabel",4,None,None,None,None,None),
-	(13,6,"GtkLabel","openServerTypeLabel",4,None,None,None,1,None)
+	(13,6,"GtkLabel","openServerOwnerLabel",4,None,None,None,1,None)
   </object>
   <object_property>
 	(1,24,"GtkWindow","default-height","500",None,None,None,None,None,None,None,None,None),

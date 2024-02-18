@@ -29,6 +29,7 @@ public:
     MainApplicationWindow(
         BaseObjectType* cobject,
         const Glib::RefPtr<Gtk::Builder>& refBuilder,
+        std::shared_ptr<view_model::NetworkViewModel> network_vm,
         Glib::RefPtr<Gtk::Box> friend_list,
         Glib::RefPtr<Gtk::Box> server_list,
         Glib::RefPtr<Gtk::Box> profile_card,
@@ -39,15 +40,7 @@ public:
 
     virtual ~MainApplicationWindow();
 
-    void SetNetworkViewModel(std::shared_ptr<view_model::NetworkViewModel> network_vm);
-
     void SetHomePageState();
-
-    void SetDirectMessageState();
-
-    void SetAddFriendState();
-
-    void SetAddServerState();
 
     void SetFriendListState();
 

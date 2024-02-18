@@ -1,40 +1,37 @@
 #include "profile-card-notification-observer.h"
 
-#include <fmt/core.h>
-#include <gtkmm-4.0/gtkmm.h>
-#include <gtkmm-4.0/gtkmm/widget.h>
-
+#include "glibmm/refptr.h"
+#include "gtkmm/label.h"
 #include "view/style/font-sizes.h"
 #include "view/style/formats.h"
+#include <string>
+
+#include "view/observers/notifications/notification-observer.h"
 
 using namespace view;
 
 ProfileCardNotificationObserver::ProfileCardNotificationObserver(
-    GtkWidget* widget,
-    GtkLabel* first,
-    GtkLabel* second)
-    : NotificationObserver(widget), first(first), second(second) {}
+    const Glib::RefPtr<Gtk::Widget> widget,
+    const Glib::RefPtr<Gtk::Label> first,
+    const Glib::RefPtr<Gtk::Label> second)
+    : NotificationObserver(), widget(widget), first(first), second(second) {}
 
 void ProfileCardNotificationObserver::Notify(const std::string& alias, const std::string& owner) {
-    if (Glib::wrap(widget, true)->is_visible()) {
-        gtk_widget_set_visible(
-            widget,
-            false);
+    if (widget->is_visible()) {
+        widget->hide();
         return;
     }
 
     SetFirstLabel(alias);
     SetSecondLabel(owner);
 
-    gtk_widget_set_visible(
-        widget,
-        true);
+    widget->show();
 }
 
 void ProfileCardNotificationObserver::SetFirstLabel(const std::string& text) {
-    Glib::wrap(first, true)->set_label(SpanWithSize(FONT_MEDIUM, text));
+    first->set_label(SpanWithSize(FONT_MEDIUM, text));
 }
 
 void ProfileCardNotificationObserver::SetSecondLabel(const std::string& text) {
-    Glib::wrap(second, true)->set_label(SpanWithSize(FONT_SMALL, text));
+    second->set_label(SpanWithSize(FONT_SMALL, text));
 }

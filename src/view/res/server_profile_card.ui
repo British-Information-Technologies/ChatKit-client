@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.12.1 -->
+<!-- Created with Cambalache 0.16.0 -->
 <interface>
   <requires lib="gtk" version="4.10"/>
-  <template class="openServerButton" parent="GtkButton">
+  <object class="GtkButton" id="openServerButton">
     <property name="valign">start</property>
     <child>
       <object class="GtkBox">
@@ -33,7 +33,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkLabel" id="openServerTypeLabel">
+              <object class="GtkLabel" id="openServerOwnerLabel">
                 <property name="hexpand">True</property>
                 <property name="label">&lt;span size="14pt"&gt;[void]&lt;/span&gt;</property>
                 <property name="use-markup">True</property>
@@ -44,5 +44,5 @@
         </child>
       </object>
     </child>
-  </template>
+  </object>
 </interface>

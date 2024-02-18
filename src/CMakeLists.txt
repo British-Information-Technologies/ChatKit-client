@@ -111,22 +111,48 @@ set(SOURCES
 
     view/MainApplication.cc
 
+    view/common/ui-util.cc
+
     view/main/main-application-window.cc
+    
+    view/main/right/home-page-box.cc
+    
+    view/main/left/shared/contact-list-box.cc
 
-    view/main/left/friend-list-box.cc
-    view/main/left/server-list-box.cc
-    view/main/left/friend-profile-card-button.cc
-    view/main/left/server-profile-card-button.cc
+    view/main/left/friend/injector.cc
+    view/main/left/friend/friend-profile-card-button.cc
+    view/main/left/friend/friend-list-box.cc
+    view/main/left/friend/add-friend-button.cc
+    
+    view/main/left/profile/injector.cc
+    view/main/left/profile/profile-card-box.cc
 
-    view/main/right/add-friend-box.cc
-    view/main/right/add-server-box.cc
-    view/main/right/direct-message-box.cc
+    view/main/left/server/injector.cc
+    view/main/left/server/server-profile-card-button.cc
+    view/main/left/server/server-list-box.cc
+    view/main/left/server/add-server-button.cc
+
+    view/main/right/add-friend/injector.cc
+    view/main/right/add-friend/add-friend-box.cc
+    view/main/right/add-friend/send-invite-button.cc
+
+    view/main/right/add-server/injector.cc
+    view/main/right/add-server/add-server-box.cc
+    view/main/right/add-server/join-button.cc
+
+    view/main/right/direct-message/injector.cc
+    view/main/right/direct-message/direct-message-box.cc
+    view/main/right/direct-message/message-entry.cc
     
     view/login/login-application-window.cc
 
     view/observers/notifications/notification-factory.cc
-    view/observers/notifications/notification-observer.cc
     view/observers/notifications/profile-card-notification-observer.cc
+    view/observers/notifications/main-layout-notification-observer.cc
+    view/observers/notifications/contact-list-notification-observer.cc
+    
+    view/observers/workers/worker-factory.cc
+    view/observers/workers/send-message-worker-observer.cc
 
     view/style/string-modifiers.cc
 
