@@ -8,7 +8,7 @@
 
 class ContactListBox : public Gtk::Box {
 protected:
-    const Glib::RefPtr<Gtk::Builder>& refBuilder;
+    const Glib::RefPtr<Gtk::Builder> refBuilder;
 
     const Glib::RefPtr<Gtk::Button> add_contact_button;
 

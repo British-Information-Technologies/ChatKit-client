@@ -13,8 +13,8 @@ using namespace view_model;
 using namespace view;
 
 NetworkViewModel::NetworkViewModel(
-    std::unique_ptr<model::NetworkModel> model,
-    std::function<void()> showDirectMessage) : model(std::move(model)), showDirectMessage(showDirectMessage) {}
+    std::unique_ptr<model::NetworkModel> model)
+    : model(std::move(model)) {}
 
 void NetworkViewModel::ConnectToServer(
     const std::string& ip_address,
@@ -30,25 +30,24 @@ void NetworkViewModel::ConnectToServer(
     model->EnableBuffer(fake_uuid);
 }
 
-void NetworkViewModel::SendMessageObserver(std::string& data) {
-    if (data.empty()) {
+void NetworkViewModel::ConnectToClient(
+    const std::string& ip_address,
+    const std::string& port,
+    view::NotificationObserver* notification) {
+    const std::string fake_uuid = "faked uuid"; // TODO: currently faked, will use data model getUuid() or server,
+
+    if (model->CreateClientConnection(fake_uuid, ip_address, port) != 0) {
         return;
     }
 
-    std::cout << "Message to send: " << data << std::endl;
+    model->SetNotification(fake_uuid, notification);
 
+    model->EnableBuffer(fake_uuid);
+}
+
+int NetworkViewModel::SendMessage(const std::string& uuid, const std::string& data) {
     const std::string time("fake time"); // TODO
     const std::string date("fake date"); // TODO
 
-    model->SendClientMessage("faked uuid", time, date, data); // TODO: currently faked, will use data model getUuid() or server,
-}
-
-void NetworkViewModel::OpenContactObserver() {
-    model->CreateClientConnection(
-        "faked uuid",   // TODO: currently faked, will use data model getUuid() or server,
-        "192.168.0.59", // TODO: currently faked, will use data model getIpAddress() or server,
-        "5789"          // TODO: currently faked, will use data model getPort() or server
-    );
-
-    showDirectMessage();
+    return model->SendClientMessage(uuid, time, date, data);
 }

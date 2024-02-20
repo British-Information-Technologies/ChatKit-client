@@ -2,8 +2,10 @@
 <!-- Created with Cambalache 0.16.0 -->
 <interface>
   <requires lib="gtk" version="4.10"/>
-  <template class="ServerList" parent="GtkBox">
+  <object class="GtkBox" id="serverListBox">
     <property name="orientation">vertical</property>
+    <property name="vexpand">True</property>
+    <property name="visible">False</property>
     <child>
       <object class="GtkBox">
         <property name="margin-bottom">10</property>
@@ -77,5 +79,5 @@
     <style>
       <class name="panel"/>
     </style>
-  </template>
+  </object>
 </interface>

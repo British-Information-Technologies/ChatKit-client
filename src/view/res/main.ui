@@ -57,22 +57,6 @@
           <object class="GtkBox" id="leftPane">
             <property name="orientation">vertical</property>
             <property name="spacing">10</property>
-            <child>
-              <object class="FriendList" id="friendListBox">
-                <property name="vexpand">True</property>
-              </object>
-            </child>
-            <child>
-              <object class="ServerList" id="serverListBox">
-                <property name="vexpand">True</property>
-                <property name="visible">False</property>
-              </object>
-            </child>
-            <child>
-              <object class="ProfileCard" id="profileCardBox">
-                <property name="valign">end</property>
-              </object>
-            </child>
             <style>
               <class name="abc"/>
             </style>

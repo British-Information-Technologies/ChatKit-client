@@ -2,8 +2,9 @@
 <!-- Created with Cambalache 0.16.0 -->
 <interface>
   <requires lib="gtk" version="4.10"/>
-  <template class="FriendList" parent="GtkBox">
+  <object class="GtkBox" id="friendListBox">
     <property name="orientation">vertical</property>
+    <property name="vexpand">True</property>
     <child>
       <object class="GtkBox">
         <property name="margin-bottom">10</property>
@@ -77,5 +78,5 @@
     <style>
       <class name="panel"/>
     </style>
-  </template>
+  </object>
 </interface>

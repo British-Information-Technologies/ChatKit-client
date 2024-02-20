@@ -26,7 +26,7 @@ struct Connection {
     std::string alias;
     std::string name;
 
-    std::unique_ptr<view::NotificationObserver> notification;
+    view::NotificationObserver* notification;
 
     std::unique_ptr<Tunnel> tunnel;
     std::unique_ptr<EventListener> listener;

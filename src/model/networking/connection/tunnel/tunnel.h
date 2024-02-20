@@ -27,9 +27,17 @@ enum class Party {
     Two
 };
 
+enum class TunnelState {
+    None,
+    Insecure,
+    Secure
+};
+
 class Tunnel {
 private:
     const TunnelType type;
+
+    TunnelState state;
 
     std::shared_ptr<Connection> connection;
 
@@ -48,8 +56,6 @@ private:
     void* GetInAddr(struct sockaddr*);
 
 protected:
-    void SetState(DataHandler*);
-
     static std::tuple<unsigned char*, unsigned char*> GenerateKeyPair();
 
     Tunnel(
@@ -69,6 +75,8 @@ public:
     const char* GetIpAddress();
 
     int GetPort();
+
+    void SetState(const TunnelState state);
 
     bool IsSecure();
 

@@ -12,6 +12,8 @@
 
 class MessageEntry : public Gtk::Entry {
 private:
+    const Glib::RefPtr<Gtk::Builder> refBuilder;
+
     std::unique_ptr<view::WorkerObserver> send_message;
 
     const Glib::RefPtr<Gtk::EventControllerKey> event_ck;

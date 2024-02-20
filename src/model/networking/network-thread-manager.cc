@@ -120,6 +120,8 @@ void NetworkThreadManager::LaunchInputChannelHandler(
         case Type::Connecting: {
             end_point->state = ConnectionState::Connecting;
 
+            end_point->notification->Notify(end_point->alias, end_point->name);
+
             break;
         }
 

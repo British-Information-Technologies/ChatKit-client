@@ -13,7 +13,7 @@
 
 class JoinButton : public Gtk::Button {
 private:
-    const Glib::RefPtr<Gtk::Builder>& refBuilder;
+    const Glib::RefPtr<Gtk::Builder> refBuilder;
 
     Glib::RefPtr<Gtk::Label> server_name_label;
 

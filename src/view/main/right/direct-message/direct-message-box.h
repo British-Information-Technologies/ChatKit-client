@@ -11,7 +11,7 @@
 
 class DirectMessage : public Gtk::Box {
 private:
-    const Glib::RefPtr<Gtk::Builder>& refBuilder;
+    const Glib::RefPtr<Gtk::Builder> refBuilder;
 
     const Glib::RefPtr<Gtk::Button> content_button;
 

@@ -14,8 +14,7 @@ public:
     static std::shared_ptr<AccountViewModel> inject_account_vm(
         std::function<void(int)> setViewState);
 
-    static std::shared_ptr<NetworkViewModel> inject_network_vm(
-        std::function<void()> showDirectMessage);
+    static std::shared_ptr<NetworkViewModel> inject_network_vm();
 };
 } // namespace view_model
 

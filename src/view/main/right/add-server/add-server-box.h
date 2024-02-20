@@ -15,7 +15,7 @@
 
 class AddServer : public Gtk::Box {
 private:
-    const Glib::RefPtr<Gtk::Builder>& refBuilder;
+    const Glib::RefPtr<Gtk::Builder> refBuilder;
 
     const Glib::RefPtr<Gtk::EventControllerKey> event_ck;
 

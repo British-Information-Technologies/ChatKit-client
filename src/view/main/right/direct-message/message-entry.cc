@@ -13,6 +13,7 @@ MessageEntry::MessageEntry(
     view::WorkerObserver* send_message)
     : Glib::ObjectBase("MessageEntry"),
       Gtk::Entry(cobject),
+      refBuilder(refBuilder),
       send_message(send_message),
       event_ck(Gtk::EventControllerKey::create()) {
     event_ck->signal_key_pressed().connect(

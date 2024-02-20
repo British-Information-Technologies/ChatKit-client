@@ -12,22 +12,21 @@ class NetworkViewModel {
 private:
     std::unique_ptr<model::NetworkModel> model;
 
-    // Bindings
-    std::function<void()> showDirectMessage;
-
 public:
     NetworkViewModel(
-        std::unique_ptr<model::NetworkModel> model,
-        std::function<void()> showDirectMessage);
+        std::unique_ptr<model::NetworkModel> model);
 
     void ConnectToServer(
         const std::string& ip_address,
         const std::string& port,
         view::NotificationObserver* notification);
 
-    void SendMessageObserver(std::string& data);
+    void ConnectToClient(
+        const std::string& ip_address,
+        const std::string& port,
+        view::NotificationObserver* notification);
 
-    void OpenContactObserver();
+    int SendMessage(const std::string& uuid, const std::string& data);
 };
 } // namespace view_model
 

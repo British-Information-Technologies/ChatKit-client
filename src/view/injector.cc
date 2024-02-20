@@ -110,7 +110,7 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
     UpdateBuilder(builder, "/view/res/main.ui");
 
     // load ui files for main window
-    auto left_pane = builder->get_object<Gtk::Box>("leftPane");
+    const auto left_pane = builder->get_object<Gtk::Box>("leftPane");
 
     friend_list = injector::inject_friend_list(show_add_friend);
 
@@ -144,6 +144,8 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
             builder,
             "mainWindow",
             network_vm,
+            left_pane,
+            right_pane,
             friend_list,
             server_list,
             profile_card,

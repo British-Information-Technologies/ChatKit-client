@@ -52,10 +52,6 @@ std::tuple<unsigned char*, unsigned char*> Tunnel::GenerateKeyPair() {
     return std::make_tuple(public_key, secret_key);
 }
 
-void Tunnel::SetState(DataHandler* next_handler) {
-    data_handler.reset(next_handler);
-}
-
 void Tunnel::SetBev(bufferevent* bev) {
     this->bev.reset(
         bev,
@@ -90,6 +86,7 @@ Tunnel::Tunnel(
                                connection(connection),
                                ip_address(ip_address),
                                port(port),
+                               state(TunnelState::None),
                                data_handler(new InsecureDataHandler) {
     auto [public_key, secret_key] = GenerateKeyPair();
 
@@ -102,8 +99,12 @@ Tunnel::Tunnel(
                     });
 }
 
+void Tunnel::SetState(const TunnelState state) {
+    this->state = state;
+}
+
 bool Tunnel::IsSecure() {
-    return data_handler->GetType() == DataHandlerType::Secure;
+    return state == TunnelState::Secure;
 }
 
 const TunnelType Tunnel::GetType() {
@@ -205,7 +206,7 @@ int Tunnel::Initiate() {
         model_networking_connection_callback::SetServerConnectionCallbacks(bev.get(), connection.get());
     }
 
-    SetState(new InsecureDataHandler());
+    SetState(TunnelState::Insecure);
 
     return 0;
 }
@@ -239,7 +240,8 @@ int Tunnel::EstablishSecureTunnel(Party party, const unsigned char* recv_pk) {
         return -1;
     }
 
-    SetState(new SecureDataHandler(session_key_rx, session_key_tx));
+    //todo SetState(new SecureDataHandler(session_key_rx, session_key_tx));
+    SetState(TunnelState::Secure);
 
     return 0;
 }

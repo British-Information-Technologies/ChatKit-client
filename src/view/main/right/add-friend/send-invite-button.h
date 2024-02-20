@@ -11,7 +11,7 @@
 
 class SendInviteButton : public Gtk::Button {
 private:
-    const Glib::RefPtr<Gtk::Builder>& refBuilder;
+    const Glib::RefPtr<Gtk::Builder> refBuilder;
 
     std::shared_ptr<view_model::NetworkViewModel> network_vm;
 

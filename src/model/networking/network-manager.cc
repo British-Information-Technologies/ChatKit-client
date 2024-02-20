@@ -42,7 +42,7 @@ int NetworkManager::SetNotification(const std::string& uuid, view::NotificationO
         return -1;
     }
 
-    connections.at(uuid)->notification.reset(notification);
+    connections.at(uuid)->notification = notification;
 
     return 0;
 }
@@ -116,30 +116,26 @@ int NetworkManager::CreateConnection(
     const std::string& uuid,
     const std::string& ip_address,
     const std::string& port) {
+    std::shared_ptr<Connection> connection;
     if (connections.contains(uuid)) {
+        connection = connections.at(uuid);
         printf("[NetworkManager]: connection loaded\n");
-        return 0;
-    }
+    } else {
+        connection = Injector::inject_connection(
+            type,
+            uuid,
+            connection_base,
+            ip_address,
+            port,
+            buffer_writer);
 
-    auto connection = Injector::inject_connection(
-        type,
-        uuid,
-        connection_base,
-        ip_address,
-        port,
-        buffer_writer);
-
-    if (!connection) {
-        printf("[NetworkManager]: connection failed to create\n");
-        return -1;
+        connections.insert(std::pair<std::string, std::shared_ptr<Connection>>(uuid, connection));
     }
 
     if (connection->tunnel->Initiate()) {
         printf("[NetworkManager]: connection failed to initiate\n");
         return -1;
     }
-
-    connections.insert(std::pair<std::string, std::shared_ptr<Connection>>(uuid, connection));
 
     printf("[NetworkManager]: connection created\n");
     return 0;

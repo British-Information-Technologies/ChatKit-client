@@ -10,15 +10,31 @@ MainApplicationWindow::MainApplicationWindow(
     BaseObjectType* cobject,
     const Glib::RefPtr<Gtk::Builder>& refBuilder,
     std::shared_ptr<view_model::NetworkViewModel> network_vm,
-    Glib::RefPtr<Gtk::Box> friend_list,
-    Glib::RefPtr<Gtk::Box> server_list,
-    Glib::RefPtr<Gtk::Box> profile_card,
-    Glib::RefPtr<Gtk::Box> home_page,
-    Glib::RefPtr<Gtk::Box> direct_msg,
-    Glib::RefPtr<Gtk::Box> add_friend,
-    Glib::RefPtr<Gtk::Box> add_server) : Glib::ObjectBase("MainApplicationWindow"), Gtk::ApplicationWindow(cobject), network_vm(network_vm) {
-    this->refBuilder = refBuilder;
-
+    const Glib::RefPtr<Gtk::Box> left_pane,
+    const Glib::RefPtr<Gtk::Box> right_pane,
+    const Glib::RefPtr<Gtk::Box> friend_list,
+    const Glib::RefPtr<Gtk::Box> server_list,
+    const Glib::RefPtr<Gtk::Box> profile_card,
+    const Glib::RefPtr<Gtk::Box> home_page,
+    const Glib::RefPtr<Gtk::Box> direct_msg,
+    const Glib::RefPtr<Gtk::Box> add_friend,
+    const Glib::RefPtr<Gtk::Box> add_server)
+    : Glib::ObjectBase("MainApplicationWindow"),
+      Gtk::ApplicationWindow(cobject),
+      refBuilder(refBuilder),
+      network_vm(network_vm),
+      left_pane(left_pane),
+      right_pane(right_pane),
+      friend_list(friend_list),
+      server_list(server_list),
+      profile_card(profile_card),
+      home_page(home_page),
+      direct_msg(direct_msg),
+      add_friend(add_friend),
+      add_server(add_server),
+      home_page_button(this->refBuilder->get_object<Gtk::Button>("homepageButton")),
+      friend_list_button(this->refBuilder->get_object<Gtk::Button>("friendListButton")),
+      server_list_button(this->refBuilder->get_object<Gtk::Button>("serverListButton")) {
     this->refProvider = Gtk::CssProvider::create();
 
     Gtk::StyleProvider::add_provider_for_display(
@@ -33,34 +49,17 @@ MainApplicationWindow::MainApplicationWindow(
 
     this->refProvider->load_from_resource("/view/res/panel_style.css");
 
-    home_page_button = this->refBuilder->get_object<Gtk::Button>("homepageButton");
     home_page_button->signal_clicked().connect(sigc::mem_fun(
         *this,
         &MainApplicationWindow::SetHomePageState));
 
-    friend_list_button = this->refBuilder->get_object<Gtk::Button>("friendListButton");
     friend_list_button->signal_clicked().connect(sigc::mem_fun(
         *this,
         &MainApplicationWindow::SetFriendListState));
 
-    server_list_button = this->refBuilder->get_object<Gtk::Button>("serverListButton");
     server_list_button->signal_clicked().connect(sigc::mem_fun(
         *this,
         &MainApplicationWindow::SetServerListState));
-
-    this->friend_list = friend_list;
-
-    this->server_list = server_list;
-
-    this->profile_card = profile_card;
-
-    this->home_page = home_page;
-
-    this->direct_msg = direct_msg;
-
-    this->add_friend = add_friend;
-
-    this->add_server = add_server;
 }
 
 MainApplicationWindow::~MainApplicationWindow() {}
