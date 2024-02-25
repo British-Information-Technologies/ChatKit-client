@@ -14,10 +14,10 @@ using namespace view;
 
 NotificationObserver* view::GetNotification(
     NotificationType type,
-    Glib::RefPtr<Gtk::Box> box_one,
-    Glib::RefPtr<Gtk::Box> box_two,
-    Glib::RefPtr<Gtk::Box> box_three,
-    Glib::RefPtr<Gtk::Box> box_four) {
+    Gtk::Box** box_one,
+    Gtk::Box** box_two,
+    Gtk::Box** box_three,
+    Gtk::Box** box_four) {
     switch (type) {
     case NotificationType::MainLayout: {
         return new MainLayoutNotificationObserver(box_one, box_two, box_three, box_four);
@@ -43,6 +43,6 @@ NotificationObserver* view::GetNotification(
 
 VboxNotificationObserver* view::GetNotification(
     const NotificationType type,
-    const Glib::RefPtr<ContactListBox> contact_list_box) {
+    ContactListBox** contact_list_box) {
     return new ContactListNotificationObserver(contact_list_box);
 }

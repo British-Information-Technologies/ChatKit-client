@@ -1,6 +1,6 @@
 #include "injector.h"
 
-#include "glibmm/refptr.h"
+#include "gtkmm/box.h"
 
 #include "view-model/network-view-model.h"
 #include "view/common/ui-util.h"
@@ -10,7 +10,7 @@
 #include "view/observers/notifications/vbox-notification-observer.h"
 #include "view/observers/workers/worker-observer.h"
 
-const Glib::RefPtr<AddFriend> injector::inject_add_friend_box(
+Gtk::Box* injector::inject_add_friend_box(
     view::VboxNotificationObserver* append_contact,
     view::NotificationObserver* open_contents,
     std::shared_ptr<view_model::NetworkViewModel> network_vm) {
@@ -20,5 +20,5 @@ const Glib::RefPtr<AddFriend> injector::inject_add_friend_box(
 
     Glib::RefPtr<SendInviteButton> send_invite_button = Glib::RefPtr<SendInviteButton>(add_friend_builder->get_widget_derived<SendInviteButton>(add_friend_builder, "sendInviteButton", append_contact, open_contents, network_vm));
 
-    return Glib::RefPtr<AddFriend>(add_friend_builder->get_widget_derived<AddFriend>(add_friend_builder, "addFriendBox", send_invite_button));
+    return add_friend_builder->get_widget_derived<AddFriend>(add_friend_builder, "addFriendBox", send_invite_button);
 }

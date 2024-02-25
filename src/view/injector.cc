@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cstring>
 #include <functional>
 #include <gtkmm-4.0/gtkmm.h>
 #include <iostream>
@@ -18,21 +20,12 @@
 #include "view/main/left/friend/injector.h"
 #include "view/main/left/profile/injector.h"
 #include "view/main/left/server/injector.h"
-#include "view/main/left/server/server-list-box.h"
+#include "view/main/left/shared/contact-list-box.h"
 #include "view/main/main-application-window.h"
 
-#include "view/main/left/friend/friend-list-box.h"
-#include "view/main/left/friend/friend-profile-card-button.h"
-#include "view/main/left/profile/profile-card-box.h"
-#include "view/main/left/server/server-list-box.h"
-#include "view/main/left/server/server-profile-card-button.h"
-
 #include "view/common/ui-util.h"
-#include "view/main/right/add-friend/add-friend-box.h"
 #include "view/main/right/add-friend/injector.h"
-#include "view/main/right/add-server/add-server-box.h"
 #include "view/main/right/add-server/injector.h"
-#include "view/main/right/direct-message/direct-message-box.h"
 #include "view/main/right/direct-message/injector.h"
 #include "view/main/right/home-page-box.h"
 #include "view/observers/notifications/notification-factory.h"
@@ -65,13 +58,13 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
     std::shared_ptr<view_model::NetworkViewModel> network_vm = view_model::Injector::inject_network_vm();
 
     // define widget types
-    Glib::RefPtr<FriendListBox> friend_list;
-    Glib::RefPtr<ServerListBox> server_list;
-    Glib::RefPtr<ProfileCardBox> profile_card;
-    Glib::RefPtr<AddFriend> add_friend;
-    Glib::RefPtr<AddServer> add_server;
-    Glib::RefPtr<HomePage> home_page;
-    Glib::RefPtr<DirectMessage> direct_msg;
+    Gtk::Box** friend_list = (Gtk::Box**)malloc(sizeof(Gtk::Box*));
+    Gtk::Box** server_list = (Gtk::Box**)malloc(sizeof(Gtk::Box*));
+    Gtk::Box** profile_card = (Gtk::Box**)malloc(sizeof(Gtk::Box*));
+    Gtk::Box** add_friend = (Gtk::Box**)malloc(sizeof(Gtk::Box*));
+    Gtk::Box** add_server = (Gtk::Box**)malloc(sizeof(Gtk::Box*));
+    Gtk::Box** home_page = (Gtk::Box**)malloc(sizeof(Gtk::Box*));
+    Gtk::Box** direct_msg = (Gtk::Box**)malloc(sizeof(Gtk::Box*));
 
     // create observers
     auto show_messages = view::GetNotification(
@@ -95,9 +88,9 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
         direct_msg,
         home_page);
 
-    auto append_friend = view::GetNotification(NotificationType::ContactList, friend_list);
+    auto append_friend = view::GetNotification(NotificationType::ContactList, (ContactListBox**)friend_list);
 
-    auto append_server = view::GetNotification(NotificationType::ContactList, server_list);
+    auto append_server = view::GetNotification(NotificationType::ContactList, (ContactListBox**)server_list);
 
     auto send_message = view::GetWorker(WorkerType::SendMessage, network_vm);
 
@@ -112,31 +105,32 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
     // load ui files for main window
     const auto left_pane = builder->get_object<Gtk::Box>("leftPane");
 
-    friend_list = injector::inject_friend_list(show_add_friend);
+    *friend_list = injector::inject_friend_list(show_add_friend);
 
-    server_list = injector::inject_server_list(show_add_server);
+    *server_list = injector::inject_server_list(show_add_server);
 
-    profile_card = injector::inject_profile_card_box();
+    *profile_card = injector::inject_profile_card_box();
 
-    left_pane->append(*friend_list);
-    left_pane->append(*server_list);
-    left_pane->append(*profile_card);
+    left_pane->append(**friend_list);
+    left_pane->append(**server_list);
+    left_pane->append(**profile_card);
 
     const auto right_pane = builder->get_object<Gtk::Box>("rightPane");
 
-    home_page = Glib::RefPtr<HomePage>(homepage_builder->get_widget_derived<HomePage>(homepage_builder, "homepageBox"));
+    *home_page = homepage_builder->get_widget_derived<HomePage>(homepage_builder, "homepageBox");
 
-    direct_msg = injector::inject_direct_message_box(send_message);
+    *direct_msg = injector::inject_direct_message_box(send_message);
 
-    add_friend = injector::inject_add_friend_box(append_friend, show_messages, network_vm);
+    *add_friend = injector::inject_add_friend_box(append_friend, show_messages, network_vm);
+    //*add_friend_addr = add_friend;
 
-    add_server = injector::inject_add_server_box(append_server, show_messages, network_vm);
+    *add_server = injector::inject_add_server_box(append_server, show_messages, network_vm);
 
     // add widgets to main window
-    right_pane->append(*home_page);
-    right_pane->append(*direct_msg);
-    right_pane->append(*add_friend);
-    right_pane->append(*add_server);
+    right_pane->append(**home_page);
+    right_pane->append(**direct_msg);
+    right_pane->append(**add_friend);
+    right_pane->append(**add_server);
 
     // create main window
     std::shared_ptr<MainApplicationWindow> main_window(
@@ -146,13 +140,13 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
             network_vm,
             left_pane,
             right_pane,
-            friend_list,
-            server_list,
-            profile_card,
-            home_page,
-            direct_msg,
-            add_friend,
-            add_server));
+            *friend_list,
+            *server_list,
+            *profile_card,
+            *home_page,
+            *direct_msg,
+            *add_friend,
+            *add_server));
 
     return main_window;
 }

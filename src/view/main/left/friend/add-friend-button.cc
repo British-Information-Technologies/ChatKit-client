@@ -15,5 +15,5 @@ AddFriendButton::AddFriendButton(
       show_add_friend(show_add_friend) {}
 
 void AddFriendButton::on_clicked() {
-    show_add_friend->Notify("todo", "todo");
+    show_add_friend->Notify("todo F1", "todo F2");
 }

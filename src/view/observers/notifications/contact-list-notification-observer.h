@@ -11,10 +11,10 @@
 namespace view {
 class ContactListNotificationObserver : public VboxNotificationObserver {
 private:
-    const Glib::RefPtr<ContactListBox> contact_list_box;
+    ContactListBox** contact_list_box;
 
 public:
-    ContactListNotificationObserver(const Glib::RefPtr<ContactListBox> contact_list_box);
+    ContactListNotificationObserver(ContactListBox** contact_list_box);
 
     void Notify(const Glib::RefPtr<Gtk::Button> contact);
 };

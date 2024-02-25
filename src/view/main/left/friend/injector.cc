@@ -1,6 +1,6 @@
 #include "injector.h"
 
-#include "glibmm/refptr.h"
+#include "gtkmm/box.h"
 #include "gtkmm/button.h"
 #include <memory.h>
 #include <string>
@@ -33,13 +33,12 @@ std::shared_ptr<Gtk::Button> injector::inject_friend_profile_card(
     return profile_card_button;
 }
 
-Glib::RefPtr<FriendListBox> injector::inject_friend_list(
-    view::NotificationObserver* show_add_friend) {
+Gtk::Box* injector::inject_friend_list(view::NotificationObserver* show_add_friend) {
     Glib::RefPtr<Gtk::Builder> friend_list_builder = Gtk::Builder::create();
 
     view::UpdateBuilder(friend_list_builder, "/view/res/friend_list.ui");
 
     auto add_friend_button = Glib::RefPtr<AddFriendButton>(friend_list_builder->get_widget_derived<AddFriendButton>(friend_list_builder, "addFriendButton", show_add_friend));
 
-    return Glib::RefPtr<FriendListBox>(friend_list_builder->get_widget_derived<FriendListBox>(friend_list_builder, "friendListBox", add_friend_button));
+    return friend_list_builder->get_widget_derived<FriendListBox>(friend_list_builder, "friendListBox", add_friend_button);
 }

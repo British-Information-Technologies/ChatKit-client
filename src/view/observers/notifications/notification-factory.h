@@ -18,10 +18,10 @@ enum class NotificationType {
 
 NotificationObserver* GetNotification(
     NotificationType type,
-    Glib::RefPtr<Gtk::Box> box_one,
-    Glib::RefPtr<Gtk::Box> box_two,
-    Glib::RefPtr<Gtk::Box> box_three,
-    Glib::RefPtr<Gtk::Box> box_four);
+    Gtk::Box** box_one,
+    Gtk::Box** box_two,
+    Gtk::Box** box_three,
+    Gtk::Box** box_four);
 
 NotificationObserver* GetNotification(
     const NotificationType type,
@@ -31,7 +31,7 @@ NotificationObserver* GetNotification(
 
 VboxNotificationObserver* GetNotification(
     const NotificationType type,
-    const Glib::RefPtr<ContactListBox> contact_list_box);
+    ContactListBox** contact_list_box);
 } // namespace view
 
 #endif

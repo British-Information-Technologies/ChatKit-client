@@ -5,6 +5,7 @@
 
 #include "glibmm/refptr.h"
 #include "gtkmm/box.h"
+#include "gtkmm/button.h"
 #include "view-model/network-view-model.h"
 
 class MainApplicationWindow : public Gtk::ApplicationWindow {
@@ -36,13 +37,13 @@ public:
         std::shared_ptr<view_model::NetworkViewModel> network_vm,
         const Glib::RefPtr<Gtk::Box> left_pane,
         const Glib::RefPtr<Gtk::Box> right_pane,
-        const Glib::RefPtr<Gtk::Box> friend_list,
-        const Glib::RefPtr<Gtk::Box> server_list,
-        const Glib::RefPtr<Gtk::Box> profile_card,
-        const Glib::RefPtr<Gtk::Box> home_page,
-        const Glib::RefPtr<Gtk::Box> direct_msg,
-        const Glib::RefPtr<Gtk::Box> add_friend,
-        const Glib::RefPtr<Gtk::Box> add_server);
+        Gtk::Box* friend_list,
+        Gtk::Box* server_list,
+        Gtk::Box* profile_card,
+        Gtk::Box* home_page,
+        Gtk::Box* direct_msg,
+        Gtk::Box* add_friend,
+        Gtk::Box* add_server);
 
     virtual ~MainApplicationWindow();
 

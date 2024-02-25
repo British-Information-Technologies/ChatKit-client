@@ -11,17 +11,17 @@
 namespace view {
 class MainLayoutNotificationObserver : public NotificationObserver {
 private:
-    Glib::RefPtr<Gtk::Box> main_box;
-    Glib::RefPtr<Gtk::Box> sub_box_one;
-    Glib::RefPtr<Gtk::Box> sub_box_two;
-    Glib::RefPtr<Gtk::Box> sub_box_three;
+    Gtk::Box** main_box;
+    Gtk::Box** sub_box_one;
+    Gtk::Box** sub_box_two;
+    Gtk::Box** sub_box_three;
 
 public:
     MainLayoutNotificationObserver(
-        Glib::RefPtr<Gtk::Box> main_box,
-        Glib::RefPtr<Gtk::Box> sub_box_one,
-        Glib::RefPtr<Gtk::Box> sub_box_two,
-        Glib::RefPtr<Gtk::Box> sub_box_three);
+        Gtk::Box** main_box,
+        Gtk::Box** sub_box_one,
+        Gtk::Box** sub_box_two,
+        Gtk::Box** sub_box_three);
 
     void Notify(const std::string& alias, const std::string& owner);
 };

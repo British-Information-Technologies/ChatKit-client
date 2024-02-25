@@ -1,6 +1,6 @@
 #include "injector.h"
 
-#include "glibmm/refptr.h"
+#include "gtkmm/box.h"
 #include "gtkmm/button.h"
 #include <memory.h>
 #include <string>
@@ -37,13 +37,12 @@ std::shared_ptr<Gtk::Button> injector::inject_server_profile_card(
     return profile_card_button;
 }
 
-const Glib::RefPtr<ServerListBox> injector::inject_server_list(
-    view::NotificationObserver* show_add_server) {
+Gtk::Box* injector::inject_server_list(view::NotificationObserver* show_add_server) {
     Glib::RefPtr<Gtk::Builder> server_list_builder = Gtk::Builder::create();
 
     view::UpdateBuilder(server_list_builder, "/view/res/server_list.ui");
 
     auto add_server_button = Glib::RefPtr<AddServerButton>(server_list_builder->get_widget_derived<AddServerButton>(server_list_builder, "addServerButton", show_add_server));
 
-    return Glib::RefPtr<ServerListBox>(server_list_builder->get_widget_derived<ServerListBox>(server_list_builder, "serverListBox", add_server_button));
+    return server_list_builder->get_widget_derived<ServerListBox>(server_list_builder, "serverListBox", add_server_button);
 }
