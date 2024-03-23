@@ -10,6 +10,12 @@
 
 using namespace view;
 
+/*
+todo: It would be better to have a list from the ui which we can
+append profile cards onto. Then we can load and create the profile
+card from the ui file inside this observer.
+*/
+
 ProfileCardNotificationObserver::ProfileCardNotificationObserver(
     const Glib::RefPtr<Gtk::Widget> widget,
     const Glib::RefPtr<Gtk::Label> first,

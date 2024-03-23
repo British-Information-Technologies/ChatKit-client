@@ -6,6 +6,7 @@
 
 #include "networking/network-manager.h"
 #include "view/observers/notifications/notification-observer.h"
+#include "view/observers/server-observables.h"
 
 namespace model {
 class NetworkModel {
@@ -18,7 +19,7 @@ public:
 
     int Run();
 
-    int SetNotification(const std::string& uuid, view::NotificationObserver* notification);
+    int SetNotification(const std::string& uuid, view::ServerObservables* notification);
 
     int EnableBuffer(const std::string& uuid);
 

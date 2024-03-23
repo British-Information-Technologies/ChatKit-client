@@ -4,8 +4,6 @@
   <requires lib="gtk" version="4.10"/>
   <object class="GtkBox" id="serverListBox">
     <property name="orientation">vertical</property>
-    <property name="vexpand">True</property>
-    <property name="visible">False</property>
     <child>
       <object class="GtkBox">
         <property name="margin-bottom">10</property>
@@ -60,7 +58,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkScrolledWindow">
+      <object class="GtkScrolledWindow" id="contactListBox">
         <property name="child">
           <object class="GtkBox" id="contactBox">
             <property name="orientation">vertical</property>

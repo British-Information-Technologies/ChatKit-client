@@ -20,16 +20,20 @@
 #include "view/main/left/friend/injector.h"
 #include "view/main/left/profile/injector.h"
 #include "view/main/left/server/injector.h"
-#include "view/main/left/shared/contact-list-box.h"
 #include "view/main/main-application-window.h"
+#include "view/main/right/direct-message/direct-message-box.h"
+#include "view/main/shared/contact-list-box.h"
 
 #include "view/common/ui-util.h"
 #include "view/main/right/add-friend/injector.h"
 #include "view/main/right/add-server/injector.h"
 #include "view/main/right/direct-message/injector.h"
 #include "view/main/right/home-page-box.h"
+#include "view/main/shared/list-box.h"
 #include "view/observers/notifications/notification-factory.h"
 #include "view/observers/notifications/notification-observer.h"
+#include "view/observers/notifications/vbox-notification-observer.h"
+#include "view/observers/server-observables.h"
 #include "view/observers/workers/worker-factory.h"
 
 using namespace view;
@@ -64,12 +68,12 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
     Gtk::Box** add_friend = (Gtk::Box**)malloc(sizeof(Gtk::Box*));
     Gtk::Box** add_server = (Gtk::Box**)malloc(sizeof(Gtk::Box*));
     Gtk::Box** home_page = (Gtk::Box**)malloc(sizeof(Gtk::Box*));
-    Gtk::Box** direct_msg = (Gtk::Box**)malloc(sizeof(Gtk::Box*));
+    DirectMessage** direct_msg = (DirectMessage**)malloc(sizeof(DirectMessage*));
 
     // create observers
     auto show_messages = view::GetNotification(
         NotificationType::MainLayout,
-        direct_msg,
+        (Gtk::Box**)direct_msg,
         add_friend,
         add_server,
         home_page);
@@ -77,7 +81,7 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
     auto show_add_friend = view::GetNotification(
         NotificationType::MainLayout,
         add_friend,
-        direct_msg,
+        (Gtk::Box**)direct_msg,
         add_server,
         home_page);
 
@@ -85,12 +89,14 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
         NotificationType::MainLayout,
         add_server,
         add_friend,
-        direct_msg,
+        (Gtk::Box**)direct_msg,
         home_page);
 
-    auto append_friend = view::GetNotification(NotificationType::ContactList, (ContactListBox**)friend_list);
+    auto append_message = view::GetNotification(NotificationType::MessageList, (ListBox**)direct_msg);
 
-    auto append_server = view::GetNotification(NotificationType::ContactList, (ContactListBox**)server_list);
+    auto append_friend = view::GetNotification(NotificationType::ContactList, (ListBox**)friend_list);
+
+    auto append_server = view::GetNotification(NotificationType::ContactList, (ListBox**)server_list);
 
     auto send_message = view::GetWorker(WorkerType::SendMessage, network_vm);
 
@@ -122,9 +128,12 @@ std::shared_ptr<Gtk::ApplicationWindow> Injector::inject_main() {
     *direct_msg = injector::inject_direct_message_box(send_message);
 
     *add_friend = injector::inject_add_friend_box(append_friend, show_messages, network_vm);
-    //*add_friend_addr = add_friend;
 
-    *add_server = injector::inject_add_server_box(append_server, show_messages, network_vm);
+    auto append_client = view::GetNotification(NotificationType::ContactList, (ListBox**)direct_msg);
+
+    auto server_observables = new ServerObservables(show_messages, append_message, append_client);
+
+    *add_server = injector::inject_add_server_box(append_server, server_observables, network_vm);
 
     // add widgets to main window
     right_pane->append(**home_page);

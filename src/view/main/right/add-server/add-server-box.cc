@@ -13,6 +13,7 @@
 #include "view/main/right/add-server/join-button.h"
 #include "view/observers/notifications/notification-factory.h"
 #include "view/observers/notifications/notification-observer.h"
+#include "view/observers/server-observables.h"
 
 using namespace view;
 
@@ -36,11 +37,12 @@ AddServer::AddServer(
       server_name_label(refBuilder->get_object<Gtk::Label>("serverNameLabel")),
       server_owner_label(refBuilder->get_object<Gtk::Label>("serverOwnerLabel")),
       join_button(join_button),
-      notification(GetNotification(
+      // todo : horrible, needs to be reworked
+      observables(new ServerObservables(GetNotification(
           NotificationType::ProfileCard,
           add_server_profile_card_box,
           server_name_label,
-          server_owner_label)),
+          server_owner_label))),
       event_ck(Gtk::EventControllerKey::create()) {
     event_ck->signal_key_pressed()
         .connect(
@@ -66,7 +68,7 @@ bool AddServer::EnterPressed(guint keyval, guint _, Gdk::ModifierType state) {
             network_vm->ConnectToServer(
                 this->ip_address,
                 this->port,
-                this->notification.get());
+                this->observables.get());
         }
     }
 

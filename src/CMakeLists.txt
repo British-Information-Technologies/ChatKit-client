@@ -115,10 +115,11 @@ set(SOURCES
 
     view/main/main-application-window.cc
     
+    view/main/shared/contact-list-box.cc
+    view/main/shared/message-list-box.cc
+    
     view/main/right/home-page-box.cc
     
-    view/main/left/shared/contact-list-box.cc
-
     view/main/left/friend/injector.cc
     view/main/left/friend/friend-profile-card-button.cc
     view/main/left/friend/friend-list-box.cc
@@ -150,6 +151,9 @@ set(SOURCES
     view/observers/notifications/profile-card-notification-observer.cc
     view/observers/notifications/main-layout-notification-observer.cc
     view/observers/notifications/contact-list-notification-observer.cc
+    view/observers/notifications/message-list-notification-observer.cc
+    
+    view/observers/server-observables.cc
     
     view/observers/workers/worker-factory.cc
     view/observers/workers/send-message-worker-observer.cc

@@ -19,6 +19,7 @@
 #include "network-manager.h"
 #include "utility/data.h"
 #include "view/observers/notifications/notification-observer.h"
+#include "view/observers/server-observables.h"
 
 using namespace model;
 
@@ -37,12 +38,12 @@ NetworkManager::~NetworkManager() {
     connections.clear();
 }
 
-int NetworkManager::SetNotification(const std::string& uuid, view::NotificationObserver* notification) {
+int NetworkManager::SetNotification(const std::string& uuid, view::ServerObservables* observables) {
     if (!connections.contains(uuid)) {
         return -1;
     }
 
-    connections.at(uuid)->notification = notification;
+    connections.at(uuid)->observables = observables;
 
     return 0;
 }

@@ -26,49 +26,74 @@
       </object>
     </child>
     <child>
-      <object class="GtkScrolledWindow">
-        <property name="child">
-          <object class="GtkBox">
-            <property name="hexpand">True</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">10</property>
-            <property name="vexpand">True</property>
-          </object>
-        </property>
-        <property name="hexpand">True</property>
-        <property name="hscrollbar-policy">never</property>
-        <property name="margin-end">20</property>
-        <property name="margin-start">20</property>
-        <property name="vexpand">True</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkBox">
         <property name="hexpand">True</property>
-        <property name="margin-bottom">20</property>
-        <property name="margin-end">20</property>
-        <property name="margin-start">20</property>
-        <property name="spacing">10</property>
-        <property name="valign">end</property>
+        <property name="vexpand">True</property>
         <child>
-          <object class="GtkButton" id="contentButton">
-            <property name="height-request">32</property>
-            <property name="width-request">32</property>
+          <object class="GtkBox" id="messageListBox">
+            <property name="hexpand">True</property>
+            <property name="orientation">vertical</property>
+            <property name="vexpand">True</property>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkScrolledWindow">
+                <property name="child">
+                  <object class="GtkBox" id="messageBox">
+                    <property name="hexpand">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">10</property>
+                    <property name="vexpand">True</property>
+                  </object>
+                </property>
                 <property name="hexpand">True</property>
-                <property name="label">+</property>
+                <property name="hscrollbar-policy">never</property>
+                <property name="margin-end">20</property>
+                <property name="margin-start">20</property>
                 <property name="vexpand">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="hexpand">True</property>
+                <property name="margin-bottom">20</property>
+                <property name="margin-end">20</property>
+                <property name="margin-start">20</property>
+                <property name="spacing">10</property>
+                <property name="valign">end</property>
+                <child>
+                  <object class="GtkButton" id="contentButton">
+                    <property name="height-request">32</property>
+                    <property name="width-request">32</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="hexpand">True</property>
+                        <property name="label">+</property>
+                        <property name="vexpand">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="messageEntry">
+                    <property name="hexpand">True</property>
+                    <property name="max-length">250</property>
+                    <property name="placeholder-text">Message</property>
+                    <property name="show-emoji-icon">True</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
         </child>
         <child>
-          <object class="GtkEntry" id="messageEntry">
-            <property name="hexpand">True</property>
-            <property name="max-length">250</property>
-            <property name="placeholder-text">Message</property>
-            <property name="show-emoji-icon">True</property>
+          <object class="GtkScrolledWindow" id="contactListBox">
+            <property name="child">
+              <object class="GtkBox" id="connectedClients">
+                <property name="hexpand">True</property>
+                <property name="orientation">vertical</property>
+                <property name="vexpand">True</property>
+              </object>
+            </property>
+            <property name="vexpand">True</property>
           </object>
         </child>
       </object>

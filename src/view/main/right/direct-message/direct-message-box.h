@@ -7,23 +7,31 @@
 #include "gtkmm/button.h"
 #include <memory>
 
+#include "gtkmm/scrolledwindow.h"
+
 #include "view/main/right/direct-message/message-entry.h"
+#include "view/main/shared/contact-list-box.h"
+#include "view/main/shared/list-box.h"
+#include "view/main/shared/message-list-box.h"
 
-class DirectMessage : public Gtk::Box {
+class DirectMessage : public Gtk::Box, public ListBox {
 private:
-    const Glib::RefPtr<Gtk::Builder> refBuilder;
+    Glib::RefPtr<Gtk::Builder> refBuilder;
 
-    const Glib::RefPtr<Gtk::Button> content_button;
+    Glib::RefPtr<MessageListBox> message_list_box;
 
-    const Glib::RefPtr<MessageEntry> message_entry;
+    Glib::RefPtr<ContactListBox> contact_list_box;
 
 public:
     DirectMessage(
         BaseObjectType* cobject,
         const Glib::RefPtr<Gtk::Builder>& refBuilder,
-        Glib::RefPtr<MessageEntry> message_entry);
+        Glib::RefPtr<MessageListBox> message_list_box,
+        Glib::RefPtr<ContactListBox> contact_list_box);
 
     ~DirectMessage() = default;
+
+    void AppendToList(ListType type, const Glib::RefPtr<Gtk::Widget> child);
 };
 
 #endif

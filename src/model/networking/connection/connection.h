@@ -7,6 +7,7 @@
 #include "model/networking/connection/listener/event-listener.h"
 #include "model/networking/connection/tunnel/tunnel.h"
 #include "view/observers/notifications/notification-observer.h"
+#include "view/observers/server-observables.h"
 
 namespace model {
 enum class ConnectionType {
@@ -26,7 +27,7 @@ struct Connection {
     std::string alias;
     std::string name;
 
-    view::NotificationObserver* notification;
+    view::ServerObservables* observables;
 
     std::unique_ptr<Tunnel> tunnel;
     std::unique_ptr<EventListener> listener;

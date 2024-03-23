@@ -14,8 +14,12 @@
 #include "model/networking/connection/tunnel/client-tunnel.h"
 #include "model/networking/connection/tunnel/server-tunnel.h"
 #include "model/networking/messages/stream-in/network/got-info.h"
+#include "model/networking/messages/stream-in/server/connected-clients.h"
+#include "model/networking/messages/stream-in/server/global-chat-messages.h"
 #include "model/networking/messages/stream-out/network/connect.h"
 #include "model/networking/messages/stream-out/network/info.h"
+#include "model/networking/messages/stream-out/server/get-clients.h"
+#include "model/networking/messages/stream-out/server/get-messages.h"
 
 using namespace model;
 
@@ -112,7 +116,7 @@ void NetworkThreadManager::LaunchInputChannelHandler(
             end_point->alias = info->GetServerAlias();
             end_point->name = info->GetServerOwner();
 
-            end_point->notification->Notify(end_point->alias, end_point->name);
+            end_point->observables->open_contents->Notify(end_point->alias, end_point->name);
 
             break;
         }
@@ -120,7 +124,7 @@ void NetworkThreadManager::LaunchInputChannelHandler(
         case Type::Connecting: {
             end_point->state = ConnectionState::Connecting;
 
-            end_point->notification->Notify(end_point->alias, end_point->name);
+            end_point->observables->open_contents->Notify(end_point->alias, end_point->name);
 
             break;
         }
@@ -128,7 +132,29 @@ void NetworkThreadManager::LaunchInputChannelHandler(
         case Type::Connected: {
             end_point->state = ConnectionState::Connected;
 
+            // get clients and messages
+            server_stream_out::GetClients get_clients = server_stream_out::GetClients();
+            server_stream_out::GetMessages get_messages = server_stream_out::GetMessages();
+
+            end_point->tunnel->SendMessage(&get_clients);
+            end_point->tunnel->SendMessage(&get_messages);
+
             break;
+        }
+
+        case Type::ConnectedClients: {
+            server_stream_in::ConnectedClients* connected_clients = dynamic_cast<server_stream_in::ConnectedClients*>(data.value().message.get());
+            std::cout << "connected_clients: " << connected_clients->Serialize() << std::endl;
+            //end_point->observables->connected_users->Notify();
+        }
+
+        case Type::GlobalChatMessages: {
+            server_stream_in::GlobalChatMessages* client_messages = dynamic_cast<server_stream_in::GlobalChatMessages*>(data.value().message.get());
+            std::cout << "client_messages: " << client_messages->Serialize() << std::endl;
+            //end_point->observables->messages->Notify();
+        }
+
+        case Type::GlobalMessage: {
         }
 
         case Type::PublicKey: {

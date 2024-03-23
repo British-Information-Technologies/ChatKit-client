@@ -8,6 +8,7 @@
 
 #include "model/network-model.h"
 #include "view/observers/notifications/notification-observer.h"
+#include "view/observers/server-observables.h"
 
 using namespace view_model;
 using namespace view;
@@ -19,15 +20,15 @@ NetworkViewModel::NetworkViewModel(
 void NetworkViewModel::ConnectToServer(
     const std::string& ip_address,
     const std::string& port,
-    view::NotificationObserver* notification) {
+    view::ServerObservables* observables) {
     const std::string fake_uuid = "micky_server"; // TODO: replace
     if (model->CreateServerConnection(fake_uuid, ip_address, port) != 0) {
         return;
-    }
+    };
 
-    model->SetNotification(fake_uuid, notification);
+    model->SetNotification(fake_uuid, observables);
 
-    model->EnableBuffer(fake_uuid);
+    model->EnableBuffer(fake_uuid); // todo: maybe move back to create connection
 }
 
 void NetworkViewModel::ConnectToClient(
@@ -40,9 +41,9 @@ void NetworkViewModel::ConnectToClient(
         return;
     }
 
-    model->SetNotification(fake_uuid, notification);
+    //model->SetNotification(fake_uuid, notification);
 
-    model->EnableBuffer(fake_uuid);
+    //model->EnableBuffer(fake_uuid);
 }
 
 int NetworkViewModel::SendMessage(const std::string& uuid, const std::string& data) {

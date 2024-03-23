@@ -5,6 +5,7 @@
 
 #include "networking/network-manager.h"
 #include "view/observers/notifications/notification-observer.h"
+#include "view/observers/server-observables.h"
 
 using namespace model;
 
@@ -16,8 +17,8 @@ int NetworkModel::Run() {
     return 0;
 }
 
-int NetworkModel::SetNotification(const std::string& uuid, view::NotificationObserver* notification) {
-    return network_manager->SetNotification(uuid, notification);
+int NetworkModel::SetNotification(const std::string& uuid, view::ServerObservables* observables) {
+    return network_manager->SetNotification(uuid, observables);
 }
 
 int NetworkModel::EnableBuffer(const std::string& uuid) {
@@ -52,13 +53,17 @@ int NetworkModel::CreateServerConnection(
     const std::string& uuid,
     const std::string& ip_address,
     const std::string& port) {
-    return network_manager->CreateConnection(
-        ConnectionType::Server,
-        uuid,
-        ip_address,
-        port);
+    if (network_manager->CreateConnection(
+            ConnectionType::Server,
+            uuid,
+            ip_address,
+            port)
+        != 0) {
+        return -1;
+    }
 
     //return network_manager->InitiateSecureConnection(uuid, /*TODO*/ "some higher hierarchy server");
+    return 0;
 }
 
 int NetworkModel::CreateServiceConnection() {

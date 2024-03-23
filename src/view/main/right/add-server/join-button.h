@@ -10,6 +10,7 @@
 #include "view-model/network-view-model.h"
 #include "view/observers/notifications/notification-observer.h"
 #include "view/observers/notifications/vbox-notification-observer.h"
+#include "view/observers/server-observables.h"
 
 class JoinButton : public Gtk::Button {
 private:
@@ -23,7 +24,7 @@ private:
 
     std::unique_ptr<view::VboxNotificationObserver> append_contact;
 
-    std::unique_ptr<view::NotificationObserver> open_contents;
+    std::unique_ptr<view::ServerObservables> observables;
 
     char* ip_address;
     char* port;
@@ -38,7 +39,7 @@ public:
         char* ip_address,
         char* port,
         view::VboxNotificationObserver* append_contact,
-        view::NotificationObserver* open_contents,
+        view::ServerObservables* observables,
         std::shared_ptr<view_model::NetworkViewModel> network_vm);
 
     ~JoinButton() = default;

@@ -5,21 +5,18 @@
 #include "gtkmm/box.h"
 #include "gtkmm/builder.h"
 #include "gtkmm/button.h"
+#include "gtkmm/scrolledwindow.h"
 
-class ContactListBox : public Gtk::Box {
+class ContactListBox : public Gtk::ScrolledWindow {
 protected:
     const Glib::RefPtr<Gtk::Builder> refBuilder;
-
-    const Glib::RefPtr<Gtk::Button> add_contact_button;
 
     const Glib::RefPtr<Gtk::Box> contact_box;
 
 public:
     ContactListBox(
         BaseObjectType* cobject,
-        const std::string& name,
         const Glib::RefPtr<Gtk::Builder>& refBuilder,
-        const Glib::RefPtr<Gtk::Button> add_contact_button,
         const Glib::RefPtr<Gtk::Box> contact_box);
 
     ~ContactListBox() = default;

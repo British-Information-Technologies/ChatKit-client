@@ -9,7 +9,7 @@
 #include <string>
 
 #include "view-model/network-view-model.h"
-#include "view/observers/notifications/notification-observer.h"
+#include "view/observers/server-observables.h"
 
 class ServerProfileCardButton : public Gtk::Button {
 private:
@@ -20,7 +20,7 @@ private:
     Glib::RefPtr<Gtk::Label> name_label;
     Glib::RefPtr<Gtk::Label> owner_label;
 
-    view::NotificationObserver* notification;
+    view::ServerObservables* observables;
 
     std::string ip_address;
     std::string port;
@@ -35,7 +35,7 @@ public:
         std::shared_ptr<view_model::NetworkViewModel> network_vm,
         const std::string& name,
         const std::string& owner,
-        view::NotificationObserver* notification,
+        view::ServerObservables* observables,
         const std::string& ip_address,
         const std::string& port);
 

@@ -6,6 +6,7 @@
 
 #include "model/network-model.h"
 #include "view/observers/notifications/notification-observer.h"
+#include "view/observers/server-observables.h"
 
 namespace view_model {
 class NetworkViewModel {
@@ -19,7 +20,7 @@ public:
     void ConnectToServer(
         const std::string& ip_address,
         const std::string& port,
-        view::NotificationObserver* notification);
+        view::ServerObservables* observables);
 
     void ConnectToClient(
         const std::string& ip_address,

@@ -5,7 +5,7 @@
 #include "gtkmm/widget.h"
 
 #include "view-model/network-view-model.h"
-#include "view/main/left/shared/contact-list-box.h"
+#include "view/main/shared/list-box.h"
 #include "view/observers/notifications/notification-observer.h"
 #include "view/observers/notifications/vbox-notification-observer.h"
 
@@ -14,6 +14,7 @@ enum class NotificationType {
     ProfileCard,
     MainLayout,
     ContactList,
+    MessageList,
 };
 
 NotificationObserver* GetNotification(
@@ -31,7 +32,7 @@ NotificationObserver* GetNotification(
 
 VboxNotificationObserver* GetNotification(
     const NotificationType type,
-    ContactListBox** contact_list_box);
+    ListBox** list_box);
 } // namespace view
 
 #endif

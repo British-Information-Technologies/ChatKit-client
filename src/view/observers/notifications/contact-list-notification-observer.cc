@@ -4,15 +4,15 @@
 
 #include "gtkmm/button.h"
 #include "gtkmm/widget.h"
-#include "view/main/left/shared/contact-list-box.h"
+#include "view/main/shared/contact-list-box.h"
+#include "view/main/shared/list-box.h"
 #include "view/observers/notifications/contact-list-notification-observer.h"
 #include "view/observers/notifications/vbox-notification-observer.h"
 
 view::ContactListNotificationObserver::ContactListNotificationObserver(
-    ContactListBox** contact_list_box)
-    : VboxNotificationObserver(),
-      contact_list_box(contact_list_box) {}
+    ListBox** list_box)
+    : list_box(list_box) {}
 
-void view::ContactListNotificationObserver::Notify(Glib::RefPtr<Gtk::Button> contact) {
-    (*contact_list_box)->AppendContactToList(contact);
+void view::ContactListNotificationObserver::Notify(const Glib::RefPtr<Gtk::Widget> contact) {
+    (*list_box)->AppendToList(ListType::Contact, contact);
 }

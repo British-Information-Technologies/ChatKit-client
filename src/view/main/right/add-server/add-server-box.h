@@ -31,7 +31,7 @@ private:
 
     std::shared_ptr<view_model::NetworkViewModel> network_vm;
 
-    std::unique_ptr<view::NotificationObserver> notification;
+    std::unique_ptr<view::ServerObservables> observables;
 
     char* ip_address;
     char* port;

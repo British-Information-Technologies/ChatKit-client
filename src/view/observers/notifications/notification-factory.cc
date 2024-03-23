@@ -2,8 +2,12 @@
 
 #include "glibmm/refptr.h"
 #include "view-model/network-view-model.h"
+#include "view/main/shared/contact-list-box.h"
+#include "view/main/shared/list-box.h"
+#include "view/main/shared/message-list-box.h"
 #include "view/observers/notifications/contact-list-notification-observer.h"
 #include "view/observers/notifications/main-layout-notification-observer.h"
+#include "view/observers/notifications/message-list-notification-observer.h"
 #include "view/observers/notifications/profile-card-notification-observer.h"
 #include "view/observers/notifications/vbox-notification-observer.h"
 
@@ -43,6 +47,15 @@ NotificationObserver* view::GetNotification(
 
 VboxNotificationObserver* view::GetNotification(
     const NotificationType type,
-    ContactListBox** contact_list_box) {
-    return new ContactListNotificationObserver(contact_list_box);
+    ListBox** list_box) {
+    switch (type) {
+    case NotificationType::ContactList: {
+        return new ContactListNotificationObserver(list_box);
+    }
+    case NotificationType::MessageList: {
+        return new MessageListNotificationObserver(list_box);
+    }
+    default:
+        return nullptr;
+    }
 }

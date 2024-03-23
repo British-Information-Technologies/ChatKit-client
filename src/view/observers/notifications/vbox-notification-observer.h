@@ -3,14 +3,14 @@
 
 #include "glibmm/refptr.h"
 #include "gtkmm/box.h"
-#include "gtkmm/button.h"
+#include "gtkmm/widget.h"
 
 namespace view {
 class VboxNotificationObserver {
 public:
     virtual ~VboxNotificationObserver() = default;
 
-    virtual void Notify(Glib::RefPtr<Gtk::Button> contact) = 0;
+    virtual void Notify(const Glib::RefPtr<Gtk::Widget>) = 0;
 };
 } // namespace view
 

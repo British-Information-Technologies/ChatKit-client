@@ -59,7 +59,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkScrolledWindow">
+      <object class="GtkScrolledWindow" id="contactListBox">
         <property name="child">
           <object class="GtkBox" id="contactBox">
             <property name="orientation">vertical</property>

@@ -15,6 +15,7 @@
 #include "model/networking/network-thread-manager.h"
 #include "model/networking/utility/data.h"
 #include "view/observers/notifications/notification-observer.h"
+#include "view/observers/server-observables.h"
 
 namespace model {
 class NetworkManager {
@@ -33,7 +34,7 @@ public:
         std::shared_ptr<ChannelWriter> buffer_writer);
     ~NetworkManager();
 
-    int SetNotification(const std::string& uuid, view::NotificationObserver* notification);
+    int SetNotification(const std::string& uuid, view::ServerObservables* observables);
 
     int EnableBuffer(const std::string& uuid);
 

@@ -4,10 +4,12 @@
 #include "gtkmm/box.h"
 
 #include "view-model/network-view-model.h"
+#include "view/main/right/direct-message/direct-message-box.h"
+#include "view/observers/notifications/vbox-notification-observer.h"
 #include "view/observers/workers/worker-observer.h"
 
 namespace injector {
-Gtk::Box* inject_direct_message_box(view::WorkerObserver* send_message);
+DirectMessage* inject_direct_message_box(view::WorkerObserver* send_message);
 } // namespace injector
 
 #endif
